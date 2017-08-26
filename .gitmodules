@@ -1,3 +1,6 @@
 [submodule "/Users/goodscientist1023/dotfiles/vimfiles/nerdtree"]
 	path = /Users/goodscientist1023/dotfiles/vimfiles/nerdtree
 	url = https://github.com/scrooloose/nerdtree
+[submodule "/Users/goodscientist1023/dotfiles/vimfiles/easy_align"]
+	path = /Users/goodscientist1023/dotfiles/vimfiles/easy_align
+	url = https://github.com/junegunn/vim-easy-align
