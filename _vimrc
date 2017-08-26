@@ -14,7 +14,6 @@ set cursorline
 
 
 call plug#begin('~/.vim/plugged') 
-
 Plug 'junegunn/seoul256.vim'
 
 Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle'] }
