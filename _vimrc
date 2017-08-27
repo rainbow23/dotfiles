@@ -9,16 +9,17 @@ set hlsearch
 "set nohlsearch
 set cursorline
 "highlight Normal ctermbg=black ctermfg=white
-"highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
+highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 "highlight CursorLine term=none cterm=none ctermfg=none ctermbg=grey
 
-
 call plug#begin('~/.vim/plugged') 
-Plug 'junegunn/seoul256.vim'
+"Plug 'junegunn/seoul256.vim'
 
 Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle'] }
 
 Plug 'junegunn/vim-easy-align'
+
+Plug 'Shougo/unite.vim'
 
 "Plug 'tpope/vim-fireplace', { 'for': ['clojure'] }
 
