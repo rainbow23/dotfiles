@@ -21,15 +21,18 @@ Plug 'junegunn/vim-easy-align'
 
 Plug 'Shougo/unite.vim'
 
-"Plug 'tpope/vim-fireplace', { 'for': ['clojure'] }
+Plug 'vim-airline/vim-airline'
+
+Plug 'vim-airline/vim-airline-themes'
+
+"Plug 'majutsushi/tagbar'
+
 
 "Plug 'JuliaLang/julia-vim', { 'for': ['julia'] }
 
 "Plug 'zah/nim.vim', { 'for': ['nim'] }
 
 "Plug 'rust-lang/rust.vim', { 'for': ['rust'] }
-
-"Plug 'rhysd/vim-crystal', { 'for': ['crystal'] }
 
 "Plug 'melrief/vim-frege-syntax', { 'for': ['frege'] }
 call plug#end()
@@ -42,3 +45,12 @@ nmap ga <Plug>(EasyAlign)
 nnoremap <silent><C-N> :NERDTreeToggle<CR>
 nnoremap <C-H> :noh <CR>
 
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline_section_b = '%{strftime("%c")}'
+let g:airline_section_y = 'BN: %{bufnr("%")}'
+let g:airline_theme = 'solarized'
+let g:airline_solarized_bg='light'
+
+"nmap <C-T> :TagbarToggle<CR>
