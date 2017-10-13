@@ -14,18 +14,22 @@
 
 tmux-resurrect https://github.com/tmux-plugins/tmux-resurrect
 
-セッション、ウインドウのフォルダ階層、パネル、パネル表示文字を保存、復元するプラグインを入れた
+1 セッション、ウインドウのフォルダ階層、パネル、パネル表示文字を保存、復元するプラグインを入れた
 
-既存バグ：セッション名とウインドウ名が同じだと復元されない
-回避方法：セッション名をウインドウ名と違う名前にする
+2 既存バグ：セッション名とウインドウ名が同じだと復元されない
 
-vim sessionを復元するリポジトリも追加 https://github.com/tmux-plugins/tmux-resurrect/blob/master/docs/restoring_vim_and_neovim_sessions.md
+3 回避方法：セッション名をウインドウ名と違う名前にする
+
+4 vim sessionを復元するリポジトリも追加 https://github.com/tmux-plugins/tmux-resurrect/blob/master/docs/restoring_vim_and_neovim_sessions.md
+
+
 
 tmux-resurrectを動作させた時の問題
 
-復元時bash3.2の名前になる(MAC)
+1 復元時bash3.2の名前になる(MAC)
 
-解決：.bashrcに修正を記載 export PS1='\h:\W \u\$ ' 
+2 解決：.bashrcに修正を記載 export PS1='\h:\W \u\$ ' 
 
-tmuxコマンドを実行したら.bashrcを読むように指定する alias tmux='~/.bashrc'
-.bashrcもdotfilesフォルダに追加、シンボリックファイルを作る　ln -s ~/dotfiles/.bashrc ~/.bashrc
+3 tmuxコマンドを実行したら.bashrcを読むように指定する alias tmux='~/.bashrc'
+
+4 .bashrcもdotfilesフォルダに追加、シンボリックファイルを作る　ln -s ~/dotfiles/.bashrc ~/.bashrc
