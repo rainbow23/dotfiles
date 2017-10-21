@@ -1,7 +1,7 @@
 set number
 set showmatch
 set matchtime=1
-"set autoindent
+set autoindent
 set shiftwidth=4
 set tabstop=4
 syntax on
@@ -75,11 +75,10 @@ noremap! <C-j> <Esc>
 
 "neosnippets start #####################################################################
 "plugin key-mappings.
-imap <c-l>     <plug>(neosnippet_expand_or_jump)
-smap <c-l>     <plug>(neosnippet_expand_or_jump)
-xmap <c-l>     <plug>(neosnippet_expand_target)
+imap <c-k>     <plug>(neosnippet_expand_or_jump)
+smap <c-k>     <plug>(neosnippet_expand_or_jump)
+xmap <c-k>     <plug>(neosnippet_expand_target)
 
-"let g:neosnippet#snippets_directory='~/.vim/dein/repos/github.com/Shougo/neosnippet-snippets/neosnippets'
 let g:neosnippet#snippets_directory='~/.vim/plugged/neosnippet-snippets/neosnippets'
 "起動時に有効
 let g:neocomplete#enable_at_startup = 1
@@ -95,15 +94,15 @@ highlight PMenuSbar ctermbg=0
 
 "inoremap <expr><CR>  pumvisible() ? neocomplete#close_popup() : “<CR>”
 " SuperTab like snippets behavior.
-"imap  <expr><TAB>
-"     \ pumvisible() ? "\<C-n>" :
-"     \ neosnippet#expandable_or_jumpable() ?
-"     \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+imap  <expr><TAB>
+     \ pumvisible() ? "\<C-n>" :
+     \ neosnippet#expandable_or_jumpable() ?
+     \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
-"smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-"	\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+	\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
-"if has('conceal')
-" set conceallevel=2 concealcursor=i
-"endif
+if has('conceal')
+ set conceallevel=2 concealcursor=i
+endif
 
