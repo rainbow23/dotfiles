@@ -22,7 +22,6 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 "Plug 'powerline/fonts'
 Plug 'ctrlpvim/ctrlp.vim'
-
 "Plug 'majutsushi/tagbar'
 "Plug 'JuliaLang/julia-vim', { 'for': ['julia'] }
 "Plug 'zah/nim.vim', { 'for': ['nim'] }
@@ -30,15 +29,24 @@ Plug 'ctrlpvim/ctrlp.vim'
 "Plug 'melrief/vim-frege-syntax', { 'for': ['frege'] }
 call plug#end()
 
+"EasyAlign start #####################################################################
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
+"EasyAlign end  #####################################################################
 
+"NERDTree start #####################################################################
 nnoremap <silent><C-T> :NERDTreeToggle<CR>
 nnoremap <C-H> :noh <CR>
+let g:NERDTreeShowBookmarks=1
+nnoremap <C-N> :bnext<CR>
+nnoremap <C-P> :bprevious<CR>
+nnoremap <C-X> :bdelete<CR>
+nmap <Leader>b :CtrlPBuffer<CR>
+"NERDTree end   #####################################################################
 
-"vim-airline
+"vim-airline start #####################################################################
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:airline_theme='badwolf'
@@ -47,12 +55,17 @@ let g:airline#extensions#syntastic#enabled = 1
 "let g:airline#extensions#tabline#left_alt_sep = '|'
 set laststatus=2
 set t_Co=256 "vim-air-line-themeを反映させる
-nnoremap <C-N> :bnext<CR>
-nnoremap <C-P> :bprevious<CR>
-nnoremap <C-X> :bdelete<CR>
-nmap <Leader>b :CtrlPBuffer<CR>
-
+"vim-airline end  #####################################################################
 
 " x:削除でヤンクしない
 nnoremap x "_x
 nnoremap dd "_dd
+
+"改行後INSERT MODEにしない
+nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
+"nnoremap O o<Esc>
+
+"ノーマルモード＋ビジュアルモード
+noremap <C-j> <Esc>
+"コマンドラインモード＋インサートモード
+noremap! <C-j> <Esc>
