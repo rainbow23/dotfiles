@@ -21,15 +21,9 @@ Plug 'Shougo/unite.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 "Plug 'powerline/fonts'
-"Plug 'ctrlpvim/ctrlp.vim'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 Plug 'Shougo/neocomplcache.vim'
-"Plug 'majutsushi/tagbar'
-"Plug 'JuliaLang/julia-vim', { 'for': ['julia'] }
-"Plug 'zah/nim.vim', { 'for': ['nim'] }
-"Plug 'rust-lang/rust.vim', { 'for': ['rust'] }
-"Plug 'melrief/vim-frege-syntax', { 'for': ['frege'] }
 call plug#end()
 
 "EasyAlign start #####################################################################
@@ -75,14 +69,29 @@ noremap! <C-j> <Esc>
 
 "neosnippets start #####################################################################
 "plugin key-mappings.
-imap <c-k>     <plug>(neosnippet_expand_or_jump)
-smap <c-k>     <plug>(neosnippet_expand_or_jump)
-xmap <c-k>     <plug>(neosnippet_expand_target)
+imap <c-l>     <plug>(neosnippet_expand_or_jump)
+smap <c-l>     <plug>(neosnippet_expand_or_jump)
+xmap <c-l>     <plug>(neosnippet_expand_target)
 
 let g:neosnippet#snippets_directory='~/.vim/plugged/neosnippet-snippets/neosnippets'
+
+"inoremap <expr><CR>  pumvisible() ? neocomplete#close_popup() : “<CR>”
+"SuperTab like snippets behavior.
+imap  <expr><TAB>
+     \ pumvisible() ? "\<C-n>" :
+     \ neosnippet#expandable_or_jumpable() ?
+     \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+	\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+if has('conceal')
+ set conceallevel=2 concealcursor=i
+endif
+"neosnippets end #####################################################################
+
+"neocomplete start #####################################################################
 "起動時に有効
 let g:neocomplete#enable_at_startup=1
-let g:neocomplcache_enable_at_startup=1
 "ポップアップメニューで表示される候補の数
 let g:neocomplete#max_list = 50
 "キーワードの長さ、デフォルトで80
@@ -91,18 +100,8 @@ let g:neocomplete#enable_ignore_case=1
 highlight Pmenu ctermbg=6
 highlight PmenuSel ctermbg=3
 highlight PMenuSbar ctermbg=0
+"neocomplete end #####################################################################
 
-"inoremap <expr><CR>  pumvisible() ? neocomplete#close_popup() : “<CR>”
-"SuperTab like snippets behavior.
-imap  <expr><TAB>
-     \ pumvisible() ? "\<C-n>" :
-     \ neosnippet#expandable_or_jumpable() ?
-     \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-	\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-
-if has('conceal')
- set conceallevel=2 concealcursor=i
-endif
-
+"neocompletecache start #####################################################################
+let g:neocomplcache_enable_at_startup=1
+"neocompletecache end #####################################################################
