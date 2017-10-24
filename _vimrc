@@ -12,7 +12,6 @@ set hlsearch
 "highlight Normal ctermbg=black ctermfg=white
 highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 "highlight CursorLine term=none cterm=none ctermfg=none ctermbg=grey
-
 call plug#begin('~/.vim/plugged') 
 "Plug 'junegunn/seoul256.vim'
 Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle'] }
@@ -74,25 +73,11 @@ noremap <C-j> <Esc>
 noremap! <C-j> <Esc>
 
 "neosnippets start #####################################################################
-"plugin key-mappings.
-imap <c-k>     <plug>(neosnippet_expand_or_jump)
-smap <c-k>     <plug>(neosnippet_expand_or_jump)
-xmap <c-k>     <plug>(neosnippet_expand_target)
-
+imap <C-l>     <plug>(neosnippet_expand_or_jump)
+smap <C-l>     <plug>(neosnippet_expand_or_jump)
+xmap <C-l>     <plug>(neosnippet_expand_target)
 let g:neosnippet#snippets_directory='~/.vim/plugged/neosnippet-snippets/neosnippets'
-"起動時に有効
-let g:neocomplete#enable_at_startup=1
-let g:neocomplcache_enable_at_startup=1
-"ポップアップメニューで表示される候補の数
-let g:neocomplete#max_list = 50
-"キーワードの長さ、デフォルトで80
-let g:neocomplete#max_keyword_width=80
-let g:neocomplete#enable_ignore_case=1
-highlight Pmenu ctermbg=6
-highlight PmenuSel ctermbg=3
-highlight PMenuSbar ctermbg=0
-
-"inoremap <expr><CR>  pumvisible() ? neocomplete#close_popup() : “<CR>”
+map <C-l>     <Plug>(neosnippet_expand_or_jump)
 "SuperTab like snippets behavior.
 imap  <expr><TAB>
      \ pumvisible() ? "\<C-n>" :
@@ -105,4 +90,37 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 if has('conceal')
  set conceallevel=2 concealcursor=i
 endif
+"neosnippets end #####################################################################
 
+"neocomplcache start #####################################################################
+highlight Pmenu ctermbg=6
+highlight PmenuSel ctermbg=3
+highlight PMenuSbar ctermbg=0
+
+let g:neocomplcache_enable_at_startup = 1
+let g:neocomplcache_max_list = 30
+let g:neocomplcache_auto_completion_start_length = 2
+let g:neocomplcache_enable_smart_case = 1
+"" like AutoComplPop
+let g:neocomplcache_enable_auto_select = 1
+"" search with camel case like Eclipse
+let g:neocomplcache_enable_camel_case_completion = 1
+let g:neocomplcache_enable_underbar_completion = 1
+"imap <C-k> <Plug>(neocomplcache_snippets_expand)
+"smap <C-k> <Plug>(neocomplcache_snippets_expand)
+inoremap <expr><C-g> neocomplcache#undo_completion()
+"inoremap <expr><C-l> neocomplcache#complete_common_string()
+
+"" SuperTab like snippets behavior.
+"imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+"" <CR>: close popup and save indent.
+"inoremap <expr><CR> neocomplcache#smart_close_popup() . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
+inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+"" <TAB>: completion.
+"inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+"" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplcache#smart_close_popup() . "\<C-h>"
+inoremap <expr><BS> neocomplcache#smart_close_popup() . "\<C-h>"
+inoremap <expr><C-y> neocomplcache#close_popup()
+inoremap <expr><C-e> neocomplcache#cancel_popup()
+"neocomplcache end #####################################################################
