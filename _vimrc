@@ -20,15 +20,9 @@ Plug 'Shougo/unite.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 "Plug 'powerline/fonts'
-"Plug 'ctrlpvim/ctrlp.vim'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 Plug 'Shougo/neocomplcache.vim'
-"Plug 'majutsushi/tagbar'
-"Plug 'JuliaLang/julia-vim', { 'for': ['julia'] }
-"Plug 'zah/nim.vim', { 'for': ['nim'] }
-"Plug 'rust-lang/rust.vim', { 'for': ['rust'] }
-"Plug 'melrief/vim-frege-syntax', { 'for': ['frege'] }
 call plug#end()
 
 "EasyAlign start #####################################################################
