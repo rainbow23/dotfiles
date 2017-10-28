@@ -16,13 +16,14 @@ call plug#begin('~/.vim/plugged')
 "Plug 'junegunn/seoul256.vim'
 Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle'] }
 Plug 'junegunn/vim-easy-align'
-Plug 'Shougo/unite.vim'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
 "Plug 'powerline/fonts'
+Plug 'Shougo/unite.vim'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 Plug 'Shougo/neocomplcache.vim'
+Plug 'Shougo/unite-session'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 call plug#end()
 
 "EasyAlign start #####################################################################
