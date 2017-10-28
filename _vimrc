@@ -14,7 +14,7 @@ highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 "highlight CursorLine term=none cterm=none ctermfg=none ctermbg=grey
 call plug#begin('~/.vim/plugged') 
 "Plug 'junegunn/seoul256.vim'
-Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle'] }
+"Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle'] }
 Plug 'junegunn/vim-easy-align'
 "Plug 'powerline/fonts'
 Plug 'Shougo/unite.vim'
@@ -22,11 +22,12 @@ Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 Plug 'Shougo/neocomplcache.vim'
 Plug 'Shougo/unite-session'
+Plug 'Shougo/neomru.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 call plug#end()
 
-"EasyAlign start #####################################################################
+"EasyAlign start ####################################################################
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
@@ -35,15 +36,10 @@ nmap ga <Plug>(EasyAlign)
 
 "NERDTree start #####################################################################
 nnoremap <silent><C-T> :NERDTreeToggle<CR>
-nnoremap <C-H> :noh <CR>
 let g:NERDTreeShowBookmarks=1
-nnoremap <C-N> :bnext<CR>
-nnoremap <C-P> :bprevious<CR>
-nnoremap <C-X> :bdelete<CR>
-nmap <Leader>b :CtrlPBuffer<CR>
 "NERDTree end   #####################################################################
 
-"vim-airline start #####################################################################
+"vim-airline start ##################################################################
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:airline_theme='badwolf'
@@ -54,6 +50,11 @@ set laststatus=2
 set t_Co=256 "vim-air-line-themeを反映させる
 "vim-airline end  #####################################################################
 
+nnoremap <C-N> :bnext<CR>
+nnoremap <C-P> :bprevious<CR>
+nnoremap <C-X> :bdelete<CR>
+nmap <Leader>b :CtrlPBuffer<CR>
+nnoremap <C-H> :noh <CR>
 " x:削除でヤンクしない
 nnoremap x "_x
 nnoremap dd "_dd
@@ -67,7 +68,7 @@ noremap <C-j> <Esc>
 "コマンドラインモード＋インサートモード
 noremap! <C-j> <Esc>
 
-"neosnippets start #####################################################################
+"neosnippets start #################################################################
 imap <C-l>     <plug>(neosnippet_expand_or_jump)
 smap <C-l>     <plug>(neosnippet_expand_or_jump)
 xmap <C-l>     <plug>(neosnippet_expand_target)
@@ -85,9 +86,9 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 if has('conceal')
  set conceallevel=2 concealcursor=i
 endif
-"neosnippets end #####################################################################
+"neosnippets end ###################################################################
 
-"neocomplcache start #####################################################################
+"neocomplcache start ###############################################################
 highlight Pmenu ctermbg=6
 highlight PmenuSel ctermbg=3
 highlight PMenuSbar ctermbg=0
@@ -118,4 +119,42 @@ inoremap <expr><C-h> neocomplcache#smart_close_popup() . "\<C-h>"
 inoremap <expr><BS> neocomplcache#smart_close_popup() . "\<C-h>"
 inoremap <expr><C-y> neocomplcache#close_popup()
 inoremap <expr><C-e> neocomplcache#cancel_popup()
-"neocomplcache end #####################################################################
+"neocomplcache end ############################################################
+
+"unite start ##################################################################
+"インサートモードで開始
+"let g:unite_enable_start_insert=1
+"ヒストリー/ヤンク機能を有効化
+let g:unite_source_history_yank_enable =1
+"prefix keyの設定
+nmap     <Space> [unite]
+
+"今開いているファイルに適応 start  ###############################
+"ファイル一覧を表示する
+nnoremap <silent> [unite]f    :<C-u>UniteWithBufferDir -buffer-name=files file <CR>
+"最近使ったファイルの一覧を表示
+nnoremap <silent> [unite]<CR> :<C-u>UniteWithBufferDir file_mru<CR>
+"今開いているファイルに適応 end    ###############################
+
+"現在位置のファイルの一覧を表示
+nnoremap <silent> [unite]c :<C-u>Unite file_rec:!<CR>
+"最近使ったファイルの一覧を表示 MostRecentUse
+nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
+
+"全体に適応 start  ###############################################
+"nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
+nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
+nnoremap <silent> [unite]s :<C-u>Unite session<CR>
+nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
+"スペースキーとrキーでレジストリを表示
+nnoremap <silent> [unite]r :<C-u>Unite register<CR>
+"全体に適応 end    ###############################################
+
+"unite.vimを開いている間のキーマッピング
+autocmd FileType unite call s:unite_my_settings()
+function! s:unite_my_settings()"{{{
+    " ESCでuniteを終了
+    nmap <buffer> <ESC> <Plug>(unite_exit)
+    nmap <buffer> <C-j> <Plug>(unite_exit)
+endfunction"}}}
+"unite end #####################################################################
