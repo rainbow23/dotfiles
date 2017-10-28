@@ -155,6 +155,23 @@ autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()"{{{
     " ESCでuniteを終了
     nmap <buffer> <ESC> <Plug>(unite_exit)
-    nmap <buffer> <C-j> <Plug>(unite_exit)
+	"入力モードのときjjでノーマルモードに移動
+	"map <buffer> jj <Plug>(unite_insert_leave)
+
+	"入力モードのときctrl+wでバックスラッシュも削除
+	imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
+
+	"ctrl+jで縦に分割して開く
+	nnoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
+	inoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
+
+	"ctrl+lで横に分割して開く
+	nnoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
+	inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
+	"ctrl+oでその場所に開く
+	nnoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
+	inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
+
+"	nmap <buffer> <C-j> <Plug>(unite_exit)
 endfunction"}}}
 "unite end #####################################################################
