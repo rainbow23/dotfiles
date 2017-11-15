@@ -141,6 +141,21 @@ nnoremap <silent> [unite]c :<C-u>Unite file_rec:!<CR>
 "最近使ったファイルの一覧を表示 MostRecentUse
 nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
 
+"セッションを保存 start   ##
+:command! -nargs=? Uss call s:Unite_session_save(<f-args>)
+:function! s:Unite_session_save(...)
+: if a:0 >= 1
+:	let hogearg = a:1
+:	echo "UniteSessionSave ".hogearg
+:	execute 'UniteSessionSave ' . a:1
+: else
+:   echo "UniteSessionSave default"
+":  echo "noarg!"
+:   execute 'UniteSessionSave default'
+: end
+:endfunction
+"セッションを保存 enc    ##
+
 "全体に適応 start  ###############################################
 "nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
 nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
@@ -175,3 +190,4 @@ function! s:unite_my_settings()"{{{
 "	nmap <buffer> <C-j> <Plug>(unite_exit)
 endfunction"}}}
 "unite end #####################################################################
+
