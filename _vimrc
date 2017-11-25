@@ -7,7 +7,8 @@ set tabstop=4
 syntax on
 set hlsearch
 autocmd InsertLeave * set nopaste
-
+"ヤンクをクリップボードに保存　kana/vim-fakeclipと連動
+set clipboard=unnamed
 "set termguicolors nvim用
 "set nohlsearch
 "set cursorline
@@ -16,8 +17,6 @@ highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 "highlight CursorLine term=none cterm=none ctermfg=none ctermbg=grey
 
 call plug#begin('~/.vim/plugged') 
-"Plug 'junegunn/seoul256.vim'
-"Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle'] }
 Plug 'junegunn/vim-easy-align'
 "Plug 'powerline/fonts'
 Plug 'Shougo/unite.vim'
@@ -30,7 +29,7 @@ Plug 'Shougo/neomru.vim'
 Plug 'Shougo/unite-outline'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-"Plug 'universal-ctags/ctags'
+Plug 'kana/vim-fakeclip'
 call plug#end()
 
 "EasyAlign start ####################################################################
