@@ -6,12 +6,15 @@ set shiftwidth=4
 set tabstop=4
 syntax on
 set hlsearch
+autocmd InsertLeave * set nopaste
+
 "set termguicolors nvim用
 "set nohlsearch
 "set cursorline
 "highlight Normal ctermbg=black ctermfg=white
 highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 "highlight CursorLine term=none cterm=none ctermfg=none ctermbg=grey
+
 call plug#begin('~/.vim/plugged') 
 "Plug 'junegunn/seoul256.vim'
 "Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle'] }
@@ -23,8 +26,11 @@ Plug 'Shougo/neosnippet-snippets'
 Plug 'Shougo/neocomplcache.vim'
 Plug 'Shougo/unite-session'
 Plug 'Shougo/neomru.vim'
+"unite-outline brew install ctagsが必要
+Plug 'Shougo/unite-outline'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+"Plug 'universal-ctags/ctags'
 call plug#end()
 
 "EasyAlign start ####################################################################
@@ -33,11 +39,6 @@ xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 "EasyAlign end  #####################################################################
-
-"NERDTree start #####################################################################
-nnoremap <silent><C-T> :NERDTreeToggle<CR>
-let g:NERDTreeShowBookmarks=1
-"NERDTree end   #####################################################################
 
 "vim-airline start ##################################################################
 let g:airline#extensions#tabline#enabled = 1
@@ -176,13 +177,13 @@ function! s:unite_my_settings()"{{{
 	"入力モードのときctrl+wでバックスラッシュも削除
 	imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
 
-	"ctrl+jで縦に分割して開く
-	nnoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
-	inoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
+	"横に分割して開く
+	nnoremap <silent> <buffer> <expr> <C-t> unite#do_action('split')
+	inoremap <silent> <buffer> <expr> <C-t> unite#do_action('split')
 
-	"ctrl+lで横に分割して開く
-	nnoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
-	inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
+	"縦に分割して開く
+	nnoremap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
+	inoremap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
 	"ctrl+oでその場所に開く
 	nnoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
 	inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
@@ -191,3 +192,16 @@ function! s:unite_my_settings()"{{{
 endfunction"}}}
 "unite end #####################################################################
 
+"unite out-line start ##########################################################
+:command! -nargs=? Uo call s:Unite_outline(<f-args>)
+:function! s:Unite_outline(...)
+: if a:0 >= 1
+:	let hogearg = a:1
+:	execute 'Unite -winheight=' . a:1.' outline'
+: else
+:   echo "Unite outline"
+:	execute "Unite -winheight=10 outline"
+: end
+:endfunction
+
+"unite out-line end   ##########################################################
