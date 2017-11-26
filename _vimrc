@@ -30,6 +30,7 @@ Plug 'Shougo/unite-outline'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'kana/vim-fakeclip'
+Plug 'terryma/vim-multiple-cursors'
 call plug#end()
 
 "EasyAlign start ####################################################################
@@ -174,7 +175,7 @@ function! s:unite_my_settings()"{{{
 	"map <buffer> jj <Plug>(unite_insert_leave)
 
 	"入力モードのときctrl+wでバックスラッシュも削除
-	imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
+	imap <buffer> <c-w> <plug>(unite_delete_backward_path)
 
 	"横に分割して開く
 	nnoremap <silent> <buffer> <expr> <C-t> unite#do_action('split')
@@ -187,7 +188,7 @@ function! s:unite_my_settings()"{{{
 	nnoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
 	inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
 
-"	nmap <buffer> <C-j> <Plug>(unite_exit)
+	nmap <buffer> <C-j> <Plug>(unite_exit)
 endfunction"}}}
 "unite end #####################################################################
 
@@ -202,5 +203,15 @@ endfunction"}}}
 :	execute "Unite -winheight=10 outline"
 : end
 :endfunction
-
 "unite out-line end   ##########################################################
+
+"vim-multiple-cursors start ####################################################
+"prefix keyの設定
+let g:multi_cursor_use_default_mapping=0
+let g:multi_cursor_start_key='r<Space>s'
+let g:multi_cursor_start_word_key='r<Space>w'
+let g:multi_cursor_next_key='r<Space>n'
+let g:multi_cursor_prev_key='r<Space>p'
+let g:multi_cursor_skip_key='r<Space>k'
+let g:multi_cursor_quit_key='<Esc>'
+"vim-multiple-cursors end ######################################################
