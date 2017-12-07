@@ -51,14 +51,15 @@ set laststatus=2
 set t_Co=256 "vim-air-line-themeを反映させる
 "vim-airline end  #####################################################################
 
-nnoremap <C-N> :bnext<CR>
-nnoremap <C-P> :bprevious<CR>
+"nnoremap <C-N> :bnext<CR>
+"nnoremap <C-P> :bprevious<CR>
 nnoremap <C-X> :bdelete<CR>
 nmap <Leader>b :CtrlPBuffer<CR>
 nnoremap <C-H> :noh <CR>
 " x:削除でヤンクしない
 nnoremap x "_x
 nnoremap dd "_dd
+nnoremap dw "_dw
 
 "改行後INSERT MODEにしない
 nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
@@ -208,10 +209,10 @@ endfunction"}}}
 "vim-multiple-cursors start ####################################################
 "prefix keyの設定
 let g:multi_cursor_use_default_mapping=0
-let g:multi_cursor_start_key='r<Space>s'
-let g:multi_cursor_start_word_key='r<Space>w'
-let g:multi_cursor_next_key='r<Space>n'
-let g:multi_cursor_prev_key='r<Space>p'
-let g:multi_cursor_skip_key='r<Space>k'
+let g:multi_cursor_next_key='<C-n>'
+let g:multi_cursor_prev_key='<C-p>'
+let g:multi_cursor_skip_key='<C-x>'
 let g:multi_cursor_quit_key='<Esc>'
+let g:multi_cursor_start_key='<C-n>'
+let g:multi_cursor_start_word_key='g<C-n>'
 "vim-multiple-cursors end ######################################################
