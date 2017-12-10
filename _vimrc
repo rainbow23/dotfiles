@@ -18,6 +18,7 @@ highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 "highlight CursorLine term=none cterm=none ctermfg=none ctermbg=grey
 nnoremap <Space>. :<C-u>tabedit $MYVIMRC<CR>
 
+
 call plug#begin('~/.vim/plugged') 
 Plug 'junegunn/vim-easy-align'
 "Plug 'powerline/fonts'
@@ -132,6 +133,7 @@ inoremap <expr><C-e> neocomplcache#cancel_popup()
 "neocomplcache end ############################################################
 
 "unite start ##################################################################
+let g:unite_data_directory = expand('~/.vim/etc/unite')
 "インサートモードで開始
 "let g:unite_enable_start_insert=1
 "ヒストリー/ヤンク機能を有効化
