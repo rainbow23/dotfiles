@@ -243,7 +243,17 @@ let g:quickrun_config = {
 \       "outputter/buffer/split" : ":8split",
 \       "runner" : "vimproc",
 \       "runner/vimproc/updatetime" : 40,
-\   }
+\   },
+\    'php': {
+\        'command':                             'php',
+\        'exec':                                '%c %s',
+\        'hook/close_buffer/enable_empty_data': 0,
+\        'hook/close_buffer/enable_failure':    0,
+\        'outputter':                           'buffer',
+\        'outputter/buffer/close_on_empty':     0,
+\        'outputter/buffer/into':               0,
+\        'outputter/buffer/split':              ':botright 7sp'
+\    }
 \}
 
 
