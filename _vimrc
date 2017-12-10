@@ -26,7 +26,7 @@ Plug 'Shougo/unite.vim'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 Plug 'Shougo/neocomplcache.vim'
-Plug 'Shougo/unite-session'
+Plug 'rainbow23/unite-session'
 Plug 'Shougo/neomru.vim'
 Plug 'Shougo/vimfiler.vim'
 "unite-outline brew install ctagsが必要
