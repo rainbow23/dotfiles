@@ -4,6 +4,7 @@ set matchtime=1
 set autoindent
 set shiftwidth=4
 set tabstop=4
+set noswapfile
 syntax on
 set hlsearch
 autocmd InsertLeave * set nopaste
@@ -15,6 +16,7 @@ set clipboard=unnamed
 "highlight Normal ctermbg=black ctermfg=white
 highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 "highlight CursorLine term=none cterm=none ctermfg=none ctermbg=grey
+nnoremap <Space>. :<C-u>tabedit $MYVIMRC<CR>
 
 call plug#begin('~/.vim/plugged') 
 Plug 'junegunn/vim-easy-align'
@@ -25,12 +27,18 @@ Plug 'Shougo/neosnippet-snippets'
 Plug 'Shougo/neocomplcache.vim'
 Plug 'Shougo/unite-session'
 Plug 'Shougo/neomru.vim'
+Plug 'Shougo/vimfiler.vim'
 "unite-outline brew install ctagsが必要
 Plug 'Shougo/unite-outline'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'kana/vim-fakeclip'
 Plug 'terryma/vim-multiple-cursors'
+Plug 'thinca/vim-quickrun'
+Plug 'osyo-manga/unite-quickfix'
+Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+Plug 'osyo-manga/shabadou.vim'
+
 call plug#end()
 
 "EasyAlign start ####################################################################
@@ -165,6 +173,8 @@ nnoremap <silent> [unite]s :<C-u>Unite session<CR>
 nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
 "スペースキーとrキーでレジストリを表示
 nnoremap <silent> [unite]r :<C-u>Unite register<CR>
+nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir -explorer -toggle<CR>
+
 "全体に適応 end    ###############################################
 
 "unite.vimを開いている間のキーマッピング
@@ -216,3 +226,33 @@ let g:multi_cursor_quit_key='<Esc>'
 let g:multi_cursor_start_key='<C-n>'
 let g:multi_cursor_start_word_key='g<C-n>'
 "vim-multiple-cursors end ######################################################
+
+"quickrun start ################################################################
+let g:quickrun_config = {
+\   "_" : {
+\       "hook/close_unite_quickfix/enable_hook_loaded" : 1,
+\       "hook/unite_quickfix/enable_failure" : 1,
+\       "hook/close_quickfix/enable_exit" : 1,
+\       "hook/close_buffer/enable_failure" : 1,
+\       "hook/close_buffer/enable_empty_data" : 1,
+\       "outputter" : "multi:buffer:quickfix",
+\       "hook/shabadoubi_touch_henshin/enable" : 1,
+\       "hook/shabadoubi_touch_henshin/wait" : 20,
+\       "outputter/buffer/split" : ":8split",
+\       "runner" : "vimproc",
+\       "runner/vimproc/updatetime" : 40,
+\   }
+\}
+
+
+
+:command! -nargs=1 Qr call s:Quick_run(<f-args>)
+:function! s:Quick_run(...)
+: if a:0 >= 1
+:	let hogearg = a:1
+:	execute 'QuickRun ' . a:1
+: else
+: end
+:endfunction
+"quickrun end  #################################################################
+
