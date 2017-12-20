@@ -17,9 +17,9 @@ set clipboard=unnamed
 highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 "highlight CursorLine term=none cterm=none ctermfg=none ctermbg=grey
 nnoremap <Space>. :<C-u>tabedit $MYVIMRC<CR>
-:set list lcs=tab:\|\  
+:set list lcs=tab:\|\ 
 
-call plug#begin('~/.vim/plugged') 
+call plug#begin('~/.vim/plugged')
 Plug 'junegunn/vim-easy-align'
 "Plug 'powerline/fonts'
 Plug 'Shougo/unite.vim'
@@ -40,6 +40,7 @@ Plug 'osyo-manga/unite-quickfix'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
+Plug 'bronson/vim-trailing-whitespace'
 call plug#end()
 
 "EasyAlign start ####################################################################
@@ -283,3 +284,8 @@ let g:indentLine_color_dark = 1 " (default: 2)
 let g:indentLine_bgcolor_term = 202
 let g:indentLine_bgcolor_gui = '#FF5F00'
 "Yggdroot/indentLine end #######################################################
+
+"bronson/vim-trailing-whitespace start #########################################
+let g:extra_whitespace_ignored_filetypes = ['unite', 'mkd']
+"bronson/vim-trailing-whitespace end   #########################################
+
