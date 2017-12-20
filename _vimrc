@@ -41,6 +41,7 @@ Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'bronson/vim-trailing-whitespace'
+Plug 'ctrlpvim/ctrlp.vim'
 call plug#end()
 
 "EasyAlign start ####################################################################
@@ -140,7 +141,8 @@ let g:unite_data_directory = expand('~/.vim/etc/unite')
 "ヒストリー/ヤンク機能を有効化
 let g:unite_source_history_yank_enable =1
 "prefix keyの設定
-nmap     <Space> [unite]
+nnoremap [unite]    <Nop>
+nmap     <Space>u [unite]
 
 "今開いているファイルに適応 start  ###############################
 "ファイル一覧を表示する
@@ -177,7 +179,6 @@ nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
 "スペースキーとrキーでレジストリを表示
 nnoremap <silent> [unite]r :<C-u>Unite register<CR>
 nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir -explorer -toggle<CR>
-
 "全体に適応 end    ###############################################
 
 "unite.vimを開いている間のキーマッピング
@@ -289,3 +290,24 @@ let g:indentLine_bgcolor_gui = '#FF5F00'
 let g:extra_whitespace_ignored_filetypes = ['unite', 'mkd']
 "bronson/vim-trailing-whitespace end   #########################################
 
+"ctrlp start ###################################################################
+nnoremap [ctrlp]    <Nop>
+nmap     <Space>c [ctrlp]
+nnoremap [ctrlp]p :<C-u>CtrlP<Space>
+nnoremap [ctrlp]b :<C-u>CtrlPBuffer<CR>
+nnoremap [ctrlp]d :<C-u>CtrlPDir<CR>
+nnoremap [ctrlp]f :<C-u>CtrlP<CR>
+nnoremap [ctrlp]l :<C-u>CtrlPLine<CR>
+nnoremap [ctrlp]m :<C-u>CtrlPMRUFiles<CR>
+nnoremap [ctrlp]q :<C-u>CtrlPQuickfix<CR>
+nnoremap [ctrlp]s :<C-u>CtrlPMixed<CR>
+nnoremap [ctrlp]t :<C-u>CtrlPTag<CR>
+
+let g:ctrlp_map = '<Nop>'
+" Guess vcs root dir
+let g:ctrlp_working_path_mode = 'ra'
+" Open new file in current window
+let g:ctrlp_open_new_file = 'r'
+let g:ctrlp_extensions = ['tag', 'quickfix', 'dir', 'line', 'mixed']
+let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:18'
+"cnnoremap [ctrlp]trlp end   ###################################################################
