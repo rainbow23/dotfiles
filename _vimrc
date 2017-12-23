@@ -209,7 +209,10 @@ function! s:unite_my_settings()"{{{
 	"縦に分割して開く
 	nnoremap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
 	inoremap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
-	"ctrl+oでその場所に開く
+	"タブで開く
+	nnoremap <silent> <buffer> <expr> <C-t> unite#do_action('tabopen')
+	inoremap <silent> <buffer> <expr> <C-t> unite#do_action('tabopen')
+	"その場所に開く
 	nnoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
 	inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
 
@@ -283,10 +286,8 @@ let g:quickrun_config = {
 "Yggdroot/indentLine start #####################################################
 " Vim
 let g:indentLine_color_term = 239
-
 " GVim
 let g:indentLine_color_gui = '#A4E57E'
-
 " none X terminal
 let g:indentLine_color_tty_light = 7 " (default: 4)
 let g:indentLine_color_dark = 1 " (default: 2)
@@ -338,5 +339,3 @@ set statusline=%{anzu#search_status()}
 nnoremap [tagbar]    <Nop>
 nmap     <Space>t [tagbar]
 nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
-
-
