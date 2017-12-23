@@ -47,6 +47,9 @@ Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'ctrlpvim/ctrlp.vim'
+Plug 'cohama/lexima.vim'
+Plug 'osyo-manga/vim-anzu'
+Plug 'majutsushi/tagbar'
 call plug#end()
 
 "EasyAlign start ####################################################################
@@ -184,6 +187,7 @@ nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
 "スペースキーとrキーでレジストリを表示
 nnoremap <silent> [unite]r :<C-u>Unite register<CR>
 nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir -explorer -toggle<CR>
+nnoremap <silent> [unite]o :<C-u>Uo<CR>
 "全体に適応 end    ###############################################
 
 "unite.vimを開いている間のキーマッピング
@@ -317,3 +321,21 @@ let g:ctrlp_open_new_file = 'r'
 let g:ctrlp_extensions = ['tag', 'quickfix', 'dir', 'line', 'mixed']
 let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:18'
 "cnnoremap [ctrlp]trlp end   ###################################################################
+
+"osyo-manga/vim-anzu' start  ###################################################################
+" mapping
+nmap n <Plug>(anzu-n-with-echo)
+nmap N <Plug>(anzu-N-with-echo)
+nmap * <Plug>(anzu-star-with-echo)
+nmap # <Plug>(anzu-sharp-with-echo)
+" clear status
+nmap <Esc><Esc> <Plug>(anzu-clear-search-status)
+" statusline
+set statusline=%{anzu#search_status()}
+"osyo-manga/vim-anzu' end    ###################################################################
+
+nnoremap [tagbar]    <Nop>
+nmap     <Space>t [tagbar]
+nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
+
+
