@@ -10,6 +10,11 @@ set hlsearch
 autocmd InsertLeave * set nopaste
 "ヤンクをクリップボードに保存　kana/vim-fakeclipと連動
 set clipboard=unnamed
+" タブ入力を複数の空白入力に置き換える
+set expandtab
+" 画面上でタブ文字が占める幅
+set tabstop=4
+
 "set termguicolors nvim用
 "set nohlsearch
 "set cursorline
@@ -282,12 +287,13 @@ let g:indentLine_color_tty_light = 7 " (default: 4)
 let g:indentLine_color_dark = 1 " (default: 2)
 
 " Background (Vim, GVim)
-let g:indentLine_bgcolor_term = 202
-let g:indentLine_bgcolor_gui = '#FF5F00'
+"let g:indentLine_bgcolor_term = 202
+"let g:indentLine_bgcolor_gui = '#FF5F00'
 "Yggdroot/indentLine end #######################################################
 
 "bronson/vim-trailing-whitespace start #########################################
 let g:extra_whitespace_ignored_filetypes = ['unite', 'mkd']
+:highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
 "bronson/vim-trailing-whitespace end   #########################################
 
 "ctrlp start ###################################################################
