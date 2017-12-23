@@ -50,6 +50,7 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'cohama/lexima.vim'
 Plug 'osyo-manga/vim-anzu'
 Plug 'majutsushi/tagbar'
+Plug 'rhysd/clever-f.vim'
 call plug#end()
 
 "EasyAlign start ####################################################################
