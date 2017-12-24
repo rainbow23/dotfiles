@@ -51,6 +51,7 @@ Plug 'cohama/lexima.vim'
 Plug 'osyo-manga/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
+Plug 'MattesGroeger/vim-bookmarks'
 call plug#end()
 
 "EasyAlign start ####################################################################
@@ -311,6 +312,7 @@ nnoremap [ctrlp]d :<C-u>CtrlPDir<CR>
 nnoremap [ctrlp]f :<C-u>CtrlP<CR>
 nnoremap [ctrlp]l :<C-u>CtrlPLine<CR>
 nnoremap [ctrlp]m :<C-u>CtrlPMRUFiles<CR>
+nnoremap [ctrlp]k :<C-u>CtrlPBookmark<CR>
 nnoremap [ctrlp]q :<C-u>CtrlPQuickfix<CR>
 nnoremap [ctrlp]s :<C-u>CtrlPMixed<CR>
 nnoremap [ctrlp]t :<C-u>CtrlPTag<CR>
