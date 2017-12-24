@@ -15,6 +15,26 @@ set expandtab
 " 画面上でタブ文字が占める幅
 set tabstop=4
 
+nnoremap <silent>bp :bprevious<CR>
+nnoremap <silent>bn :bnext<CR>
+nnoremap <silent>bb :b#<CR>
+"直前のバッファを開く
+nnoremap <silent>bd :bdelete<CR>
+
+nnoremap <C-H> :noh <CR>
+" x:削除でヤンクしない
+nnoremap x "_x
+nnoremap dd "_dd
+nnoremap dw "_dw
+
+"改行後INSERT MODEにしない
+nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
+"nnoremap O o<Esc>
+
+"ノーマルモード＋ビジュアルモード
+noremap <C-j> <Esc>
+"コマンドラインモード＋インサートモード
+noremap! <C-j> <Esc>
 "set termguicolors nvim用
 "set nohlsearch
 "set cursorline
@@ -71,25 +91,6 @@ let g:airline#extensions#syntastic#enabled = 1
 set laststatus=2
 set t_Co=256 "vim-air-line-themeを反映させる
 "vim-airline end  #####################################################################
-
-"nnoremap <C-N> :bnext<CR>
-"nnoremap <C-P> :bprevious<CR>
-nnoremap <C-X> :bdelete<CR>
-nmap <Leader>b :CtrlPBuffer<CR>
-nnoremap <C-H> :noh <CR>
-" x:削除でヤンクしない
-nnoremap x "_x
-nnoremap dd "_dd
-nnoremap dw "_dw
-
-"改行後INSERT MODEにしない
-nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
-"nnoremap O o<Esc>
-
-"ノーマルモード＋ビジュアルモード
-noremap <C-j> <Esc>
-"コマンドラインモード＋インサートモード
-noremap! <C-j> <Esc>
 
 "neosnippets start #################################################################
 imap <C-l>     <plug>(neosnippet_expand_or_jump)
