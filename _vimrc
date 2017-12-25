@@ -15,11 +15,14 @@ set expandtab
 " 画面上でタブ文字が占める幅
 set tabstop=4
 
-nnoremap <silent>bp :bprevious<CR>
-nnoremap <silent>bn :bnext<CR>
-nnoremap <silent>bb :b#<CR>
+nnoremap [buffer]    <Nop>
+nmap     <Space>b [buffer]
+nnoremap [buffer]p :bprevious<CR>
+nnoremap [buffer]n :bnext<CR>
+"前に開いたファイルを開く
+nnoremap [buffer]r :b#<CR>
 "直前のバッファを開く
-nnoremap <silent>bd :bdelete<CR>
+nnoremap [buffer]d :bdelete<CR>
 
 nnoremap <C-H> :noh <CR>
 " x:削除でヤンクしない
