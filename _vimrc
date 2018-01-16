@@ -70,7 +70,7 @@ Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'ctrlpvim/ctrlp.vim'
-Plug 'cohama/lexima.vim'
+"Plug 'cohama/lexima.vim'
 Plug 'osyo-manga/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
@@ -272,7 +272,7 @@ let g:quickrun_config = {
 \        'outputter':                           'buffer',
 \        'outputter/buffer/close_on_empty':     0,
 \        'outputter/buffer/into':               0,
-\        'outputter/buffer/split':              ':botright 7sp'
+\        'outputter/buffer/split':              ':botright 13sp'
 \    }
 \}
 
