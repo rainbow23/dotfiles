@@ -108,7 +108,7 @@ imap  <expr><TAB>
      \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-	\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+    \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
 if has('conceal')
  set conceallevel=2 concealcursor=i
@@ -171,19 +171,45 @@ nnoremap <silent> [unite]c :<C-u>Unite file_rec:!<CR>
 nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
 
 "セッションを保存 start   ##
+let g:unite_source_session_default_session_name = 'default'
+
 :command! -nargs=? Uss call s:Unite_session_save(<f-args>)
 :function! s:Unite_session_save(...)
 : if a:0 >= 1
-:	let hogearg = a:1
-:	echo "UniteSessionSave ".hogearg
-:	execute 'UniteSessionSave ' . a:1
+:   let hogearg = a:1
+:   echo "UniteSessionSave ".hogearg
+:   execute 'UniteSessionSave ' . a:1
 : else
-:   echo "UniteSessionSave default"
-":  echo "noarg!"
-:   execute 'UniteSessionSave default'
+:   echo "UniteSessionSave ".g:unite_source_session_default_session_name
+:   execute 'UniteSessionSave '.g:unite_source_session_default_session_name
 : end
 :endfunction
 "セッションを保存 enc    ##
+
+"セッションを上書き保存
+command! Usos call s:Unite_session_override_save()
+function! s:Unite_session_override_save()
+   let filepath = v:this_session
+    if filepath  == ''
+        let filepath = g:unite_source_session_default_session_name
+    endif
+
+   let filename = fnamemodify(filepath, ":t:r")
+   let inputtext = input("save current session? "."session_name=".filename." y or n ")
+      redraw
+   if inputtext == 'y'
+      echo "UniteSessionSave ".filename
+      execute 'UniteSessionSave ' .filename
+   else
+      echo "canceled save current session. session_name=".filename
+   endif
+":   let answer = confirm('save current session? '.filename, "&Yes\n&No", 1)
+":   if answer == 1
+":      echo "UniteSessionSave ".filename
+":      execute 'UniteSessionSave ' .filename
+":    endif
+": end
+:endfunction
 
 "全体に適応 start  ###############################################
 "nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
@@ -201,27 +227,27 @@ autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()"{{{
     " ESCでuniteを終了
     nmap <buffer> <ESC> <Plug>(unite_exit)
-	"入力モードのときjjでノーマルモードに移動
-	"map <buffer> jj <Plug>(unite_insert_leave)
+    "入力モードのときjjでノーマルモードに移動
+    "map <buffer> jj <Plug>(unite_insert_leave)
 
-	"入力モードのときctrl+wでバックスラッシュも削除
-	imap <buffer> <c-w> <plug>(unite_delete_backward_path)
+    "入力モードのときctrl+wでバックスラッシュも削除
+    imap <buffer> <c-w> <plug>(unite_delete_backward_path)
 
-	"横に分割して開く
-	nnoremap <silent> <buffer> <expr> <C-t> unite#do_action('split')
-	inoremap <silent> <buffer> <expr> <C-t> unite#do_action('split')
+    "横に分割して開く
+    nnoremap <silent> <buffer> <expr> <C-t> unite#do_action('split')
+    inoremap <silent> <buffer> <expr> <C-t> unite#do_action('split')
 
-	"縦に分割して開く
-	nnoremap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
-	inoremap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
-	"タブで開く
-	nnoremap <silent> <buffer> <expr> <C-t> unite#do_action('tabopen')
-	inoremap <silent> <buffer> <expr> <C-t> unite#do_action('tabopen')
-	"その場所に開く
-	nnoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
-	inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
+    "縦に分割して開く
+    nnoremap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
+    inoremap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
+    "タブで開く
+    nnoremap <silent> <buffer> <expr> <C-t> unite#do_action('tabopen')
+    inoremap <silent> <buffer> <expr> <C-t> unite#do_action('tabopen')
+    "その場所に開く
+    nnoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
+    inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
 
-	nmap <buffer> <C-j> <Plug>(unite_exit)
+    nmap <buffer> <C-j> <Plug>(unite_exit)
 endfunction"}}}
 "unite end #####################################################################
 
@@ -229,11 +255,11 @@ endfunction"}}}
 :command! -nargs=? Uo call s:Unite_outline(<f-args>)
 :function! s:Unite_outline(...)
 : if a:0 >= 1
-:	let hogearg = a:1
-:	execute 'Unite -winheight=' . a:1.' outline'
+:   let hogearg = a:1
+:   execute 'Unite -winheight=' . a:1.' outline'
 : else
 :   echo "Unite outline"
-:	execute "Unite -winheight=10 outline"
+:   execute "Unite -winheight=10 outline"
 : end
 :endfunction
 "unite out-line end   ##########################################################
@@ -281,8 +307,8 @@ let g:quickrun_config = {
 :command! -nargs=1 Qr call s:Quick_run(<f-args>)
 :function! s:Quick_run(...)
 : if a:0 >= 1
-:	let hogearg = a:1
-:	execute 'QuickRun ' . a:1
+:   let hogearg = a:1
+:   execute 'QuickRun ' . a:1
 : else
 : end
 :endfunction
