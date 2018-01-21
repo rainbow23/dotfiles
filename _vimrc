@@ -24,6 +24,11 @@ nnoremap [buffer]r :b#<CR>
 "直前のバッファを開く
 nnoremap [buffer]d :bdelete<CR>
 
+nnoremap [panelwidthsize]    <Nop>
+nmap     <Space>w [panelwidthsize]
+nnoremap [panelwidthsize]j :vertical resize -10<CR>
+nnoremap [panelwidthsize]k :vertical resize +10<CR>
+
 nnoremap <C-H> :noh <CR>
 " x:削除でヤンクしない
 nnoremap x "_x
