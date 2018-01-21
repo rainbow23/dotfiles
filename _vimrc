@@ -63,7 +63,7 @@ Plug 'rainbow23/unite-session'
 Plug 'Shougo/neomru.vim'
 Plug 'Shougo/vimfiler.vim'
 "unite-outline brew install ctagsが必要
-Plug 'Shougo/unite-outline'
+plug 'Shougo/unite-outline'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'kana/vim-fakeclip'
@@ -80,6 +80,8 @@ Plug 'osyo-manga/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
 Plug 'MattesGroeger/vim-bookmarks'
+Plug 'ivalkeen/vim-ctrlp-tjump'
+Plug 'tpope/vim-fugitive'
 call plug#end()
 
 "EasyAlign start ####################################################################
@@ -376,3 +378,10 @@ set statusline=%{anzu#search_status()}
 nnoremap [tagbar]    <Nop>
 nmap     <Space>t [tagbar]
 nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
+
+
+"ivalkeen/vim-ctrlp-tjump start  ###################################################################
+nnoremap [tagbar]p :CtrlPtjump<cr>
+vnoremap [tagbar]p :CtrlPtjumpVisual<cr>
+"ivalkeen/vim-ctrlp-tjump end    ###################################################################
+
