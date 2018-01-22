@@ -26,12 +26,12 @@ nnoremap [buffer]d :bdelete<CR>
 
 " panel size start ################################
 nnoremap [panelwidthsize]    <Nop>
-nmap     <Space>s [panelwidthsize]
+nmap     <Space>pw [panelwidthsize]
 nnoremap [panelwidthsize]j :vertical resize -10<CR>
 nnoremap [panelwidthsize]k :vertical resize +10<CR>
 
 nnoremap [panelheightsize]    <Nop>
-nmap     <Space>s [panelheightsize]
+nmap     <Space>ph [panelheightsize]
 nnoremap [panelheightsize]j :resize -10<CR>
 nnoremap [panelheightsize]k :resize +10<CR>
 " panel size end  #################################
