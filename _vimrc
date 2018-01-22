@@ -24,16 +24,33 @@ nnoremap [buffer]r :b#<CR>
 "直前のバッファを開く
 nnoremap [buffer]d :bdelete<CR>
 
+" panel size start ################################
 nnoremap [panelwidthsize]    <Nop>
-nmap     <Space>w [panelwidthsize]
+nmap     <Space>s [panelwidthsize]
 nnoremap [panelwidthsize]j :vertical resize -10<CR>
 nnoremap [panelwidthsize]k :vertical resize +10<CR>
+
+nnoremap [panelheightsize]    <Nop>
+nmap     <Space>s [panelheightsize]
+nnoremap [panelheightsize]j :resize -10<CR>
+nnoremap [panelheightsize]k :resize +10<CR>
+" panel size end  #################################
+
+nnoremap [ctrlw]    <Nop>
+nmap     <Space>w [ctrlw]
+nnoremap [ctrlw]h <C-w>h
+nnoremap [ctrlw]l <C-w>l
+nnoremap [ctrlw]j <C-w>j
+nnoremap [ctrlw]k <C-w>k
 
 nnoremap <C-H> :noh <CR>
 " x:削除でヤンクしない
 nnoremap x "_x
 nnoremap dd "_dd
 nnoremap dw "_dw
+
+nnoremap ; :
+nnoremap : ;
 
 "改行後INSERT MODEにしない
 nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
@@ -63,7 +80,7 @@ Plug 'rainbow23/unite-session'
 Plug 'Shougo/neomru.vim'
 Plug 'Shougo/vimfiler.vim'
 "unite-outline brew install ctagsが必要
-plug 'Shougo/unite-outline'
+Plug 'Shougo/unite-outline'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'kana/vim-fakeclip'
@@ -82,6 +99,7 @@ Plug 'rhysd/clever-f.vim'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'ivalkeen/vim-ctrlp-tjump'
 Plug 'tpope/vim-fugitive'
+Plug 'soramugi/auto-ctags.vim'
 call plug#end()
 
 "EasyAlign start ####################################################################
@@ -385,3 +403,6 @@ nnoremap [tagbar]p :CtrlPtjump<cr>
 vnoremap [tagbar]p :CtrlPtjumpVisual<cr>
 "ivalkeen/vim-ctrlp-tjump end    ###################################################################
 
+"soramugi/auto-ctags.vim  start  ###################################################################
+let g:auto_ctags = 1
+"soramugi/auto-ctags.vim  end    ###################################################################
