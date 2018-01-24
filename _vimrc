@@ -5,6 +5,7 @@ set autoindent
 set shiftwidth=4
 set tabstop=4
 set noswapfile
+set tags=./tags;
 syntax on
 set hlsearch
 autocmd InsertLeave * set nopaste
@@ -250,6 +251,7 @@ nnoremap <silent> [unite]o :<C-u>Uo<CR>
 "unite.vimを開いている間のキーマッピング
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()"{{{
+:set number
     " ESCでuniteを終了
     nmap <buffer> <ESC> <Plug>(unite_exit)
     "入力モードのときjjでノーマルモードに移動
