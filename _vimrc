@@ -246,6 +246,7 @@ nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
 nnoremap <silent> [unite]r :<C-u>Unite register<CR>
 nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir -explorer -toggle<CR>
 nnoremap <silent> [unite]o :<C-u>Uo<CR>
+nnoremap <silent> [unite]k :<C-u>Unite vim_bookmarks<CR>
 "全体に適応 end    ###############################################
 
 "unite.vimを開いている間のキーマッピング
