@@ -101,6 +101,7 @@ Plug 'MattesGroeger/vim-bookmarks'
 Plug 'ivalkeen/vim-ctrlp-tjump'
 Plug 'tpope/vim-fugitive'
 Plug 'soramugi/auto-ctags.vim'
+Plug 'airblade/vim-gitgutter'
 call plug#end()
 
 "EasyAlign start ####################################################################
@@ -400,7 +401,6 @@ nnoremap [tagbar]    <Nop>
 nmap     <Space>t [tagbar]
 nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
 
-
 "ivalkeen/vim-ctrlp-tjump start  ###################################################################
 nnoremap [tagbar]p :CtrlPtjump<cr>
 vnoremap [tagbar]p :CtrlPtjumpVisual<cr>
@@ -409,3 +409,14 @@ vnoremap [tagbar]p :CtrlPtjumpVisual<cr>
 "soramugi/auto-ctags.vim  start  ###################################################################
 let g:auto_ctags = 1
 "soramugi/auto-ctags.vim  end    ###################################################################
+
+"airblade/vim-gitgutter   start  ###################################################################
+nnoremap [gitgutter]    <Nop>
+nmap     <Space>g [gitgutter]
+nnoremap [gitgutter]t :<C-u>GitGutterLineHighlightsToggle<CR>
+nnoremap [gitgutter]n :<c-u>gitgutternexthunk<cr>
+nnoremap [gitgutter]p :<c-u>gitgutterprevhunk<cr>
+nnoremap [gitgutter]s :<C-u>GitGutterStageHunk<CR>
+nnoremap [gitgutter]u :<C-u>GitGutterUndoHunk<CR>
+nnoremap [gitgutter]v :<C-u>GitGutterPreviewHunk<CR>
+"airblade/vim-gitgutter   end   ###################################################################
