@@ -16,6 +16,8 @@ set expandtab
 " 画面上でタブ文字が占める幅
 set tabstop=4
 
+nnoremap setp :<C-u>set paste<CR>
+
 nnoremap [buffer]    <Nop>
 nmap     <Space>b [buffer]
 nnoremap [buffer]p :bprevious<CR>
@@ -45,10 +47,12 @@ nnoremap [ctrlw]j <C-w>j
 nnoremap [ctrlw]k <C-w>k
 
 nnoremap <C-H> :noh <CR>
-" x:削除でヤンクしない
+" 削除でヤンクしない
 nnoremap x "_x
 nnoremap dd "_dd
 nnoremap dw "_dw
+nnoremap d$ "_d$
+nnoremap diw "_diw
 
 nnoremap ; :
 nnoremap : ;
@@ -362,6 +366,10 @@ let g:extra_whitespace_ignored_filetypes = ['unite', 'mkd']
 :highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
 "bronson/vim-trailing-whitespace end   #########################################
 
+"vim-trailing-whitespace start  ################################################
+nnoremap fws :<C-u>FixWhitespace<Space><CR>
+"vim-trailing-whitespace end    ################################################
+
 "ctrlp start ###################################################################
 nnoremap [ctrlp]    <Nop>
 nmap     <Space>c [ctrlp]
@@ -414,9 +422,54 @@ let g:auto_ctags = 1
 nnoremap [gitgutter]    <Nop>
 nmap     <Space>g [gitgutter]
 nnoremap [gitgutter]t :<C-u>GitGutterLineHighlightsToggle<CR>
-nnoremap [gitgutter]n :<c-u>gitgutternexthunk<cr>
-nnoremap [gitgutter]p :<c-u>gitgutterprevhunk<cr>
+"nnoremap [gitgutter]n :<c-u>GitGutterNextHunk<cr>
+nnoremap [gitgutter]n :call NextHunkAllBuffers()<cr>
+nnoremap [gitgutter]p :call PrevHunkAllBuffers()<cr>
+"カーソル行だけステージングに追加する、Git diffで表示されなくなる
 nnoremap [gitgutter]s :<C-u>GitGutterStageHunk<CR>
 nnoremap [gitgutter]u :<C-u>GitGutterUndoHunk<CR>
 nnoremap [gitgutter]v :<C-u>GitGutterPreviewHunk<CR>
+nnoremap [gitgutter]a :<C-u>GitGutterAll<CR>
+"バッファで次のハンクがあれば移動する
+function! NextHunkAllBuffers()
+  let line = line('.')
+  GitGutterNextHunk
+  if line('.') != line
+    return
+  endif
+
+  let bufnr = bufnr('')
+  while 1
+    bnext
+    if bufnr('') == bufnr
+      return
+    endif
+    if !empty(GitGutterGetHunks())
+      normal! 1G
+      GitGutterNextHunk
+      return
+    endif
+  endwhile
+endfunction
+
+function! PrevHunkAllBuffers()
+  let line = line('.')
+  GitGutterPrevHunk
+  if line('.') != line
+    return
+  endif
+
+  let bufnr = bufnr('')
+  while 1
+    bprevious
+    if bufnr('') == bufnr
+      return
+    endif
+    if !empty(GitGutterGetHunks())
+      normal! G
+      GitGutterPrevHunk
+      return
+    endif
+  endwhile
+endfunction
 "airblade/vim-gitgutter   end   ###################################################################
