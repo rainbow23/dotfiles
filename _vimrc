@@ -1,3 +1,4 @@
+set backspace=indent,eol,start
 set number
 set showmatch
 set matchtime=1
