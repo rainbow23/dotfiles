@@ -68,6 +68,8 @@ nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
 noremap <C-j> <Esc>
 "コマンドラインモード＋インサートモード
 noremap! <C-j> <Esc>
+noremap  <Space>j <Esc>
+noremap! <Space>j <Esc>
 "set termguicolors nvim用
 "set nohlsearch
 "set cursorline
@@ -202,6 +204,7 @@ let g:unite_data_directory = expand('~/.vim/etc/unite')
 "let g:unite_enable_start_insert=1
 "ヒストリー/ヤンク機能を有効化
 let g:unite_source_history_yank_enable =1
+
 "prefix keyの設定
 nnoremap [unite]    <Nop>
 nmap     <Space>u [unite]
