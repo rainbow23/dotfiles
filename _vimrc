@@ -16,6 +16,8 @@ set clipboard=unnamed
 set expandtab
 " 画面上でタブ文字が占める幅
 set tabstop=4
+"fzf.vim 読み込み
+set rtp+=/usr/local/opt/fzf
 
 nnoremap setp :<C-u>set paste<CR>
 
@@ -107,7 +109,21 @@ Plug 'ivalkeen/vim-ctrlp-tjump'
 Plug 'tpope/vim-fugitive'
 Plug 'soramugi/auto-ctags.vim'
 Plug 'airblade/vim-gitgutter'
+Plug 'junegunn/fzf.vim'
 call plug#end()
+
+command! FZFMru call fzf#run({
+\ 'source':  reverse(s:all_files()),
+\ 'sink':    'edit',
+\ 'options': '-m -x +s',
+\ 'down':    '40%' })
+
+function! s:all_files()
+  return extend(
+  \ filter(copy(v:oldfiles),
+  \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
+  \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
+endfunction
 
 "EasyAlign start ####################################################################
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -202,6 +218,55 @@ nnoremap <silent> [unite]c :<C-u>Unite file_rec:!<CR>
 "最近使ったファイルの一覧を表示 MostRecentUse
 nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
 
+"全体に適応 start  ###############################################
+nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
+nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
+nnoremap <silent> [unite]s :<C-u>Unite session<CR>
+nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
+"スペースキーとrキーでレジストリを表示
+nnoremap <silent> [unite]r :<C-u>Unite register<CR>
+nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir -explorer -toggle -no-quit<CR>
+nnoremap <silent> [unite]o :<C-u>Uo<CR>
+"MattesGroeger/vim-bookmarksを開く
+nnoremap <silent> [unite]kk :<C-u>Unite vim_bookmarks<CR>
+"Unite bookmarkを開く
+nnoremap <silent> [unite]k  :<C-u>Unite bookmark<CR>
+"Uniteのbookmarkに追加 ~/.unite/bookmark/default に格納
+nnoremap <silent> [unite]ab :<C-u>UniteBookmarkAdd<CR>
+"全体に適応 end    ###############################################
+
+"vimfiler ##################
+"vimデフォルトのエクスプローラをvimfilerで置き換える
+let g:vimfiler_as_default_explorer = 1
+"セーフモードを無効にした状態で起動する
+let g:vimfiler_safe_mode_by_default = 0
+
+"autocmd VimEnter * VimFilerExplorer
+autocmd FileType vimfiler nmap <buffer> <Space>uv <Plug>(vimfiler_close)
+
+augroup vimrc
+    autocmd FileType vimfiler call s:vimfiler_my_settings()
+augroup END
+
+function! s:vimfiler_my_settings()
+echo 'vimfiler_my_settings'
+let loaded_trailing_whitespace_plugin = 0
+    nmap <buffer> q <Plug>(vimfiler_close)
+    nmap <buffer> Q <Plug>(vimfiler_hide)
+"横に分割して開く
+    nnoremap <silent> <buffer> <expr> <C-s> vimfiler#do_switch_action('split')
+    inoremap <silent> <buffer> <expr> <C-s> vimfiler#do_switch_action('split')
+    nnoremap <silent> <buffer> <expr> <C-h> vimfiler#do_switch_action('split')
+    inoremap <silent> <buffer> <expr> <C-h> vimfiler#do_switch_action('split')
+"縦に分割して開く
+    nnoremap <silent> <buffer> <expr> <C-v> vimfiler#do_switch_action('vsplit')
+    inoremap <silent> <buffer> <expr> <C-v> vimfiler#do_switch_action('vsplit')
+"タブで開く
+    nnoremap <silent> <buffer> <expr> <C-t> vimfiler#do_action('tabopen')
+    nnoremap <silent> <buffer> <expr> <C-t> vimfiler#do_action('tabopen')
+endfunction
+"vimfiler ##################
+
 "セッションを保存 start   ##
 let g:unite_source_session_default_session_name = 'default'
 
@@ -243,24 +308,15 @@ function! s:Unite_session_override_save()
 ": end
 :endfunction
 
-"全体に適応 start  ###############################################
-"nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
-nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
-nnoremap <silent> [unite]s :<C-u>Unite session<CR>
-nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
-"スペースキーとrキーでレジストリを表示
-nnoremap <silent> [unite]r :<C-u>Unite register<CR>
-nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir -explorer -toggle<CR>
-nnoremap <silent> [unite]o :<C-u>Uo<CR>
-nnoremap <silent> [unite]k :<C-u>Unite vim_bookmarks<CR>
-"全体に適応 end    ###############################################
-
 "unite.vimを開いている間のキーマッピング
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()"{{{
-:set number
+set number
     " ESCでuniteを終了
     nmap <buffer> <ESC> <Plug>(unite_exit)
+    nmap <buffer> <C-j> <Plug>(unite_exit)
+    nmap <buffer> q     <Plug>(unite_exit)
+
     "入力モードのときjjでノーマルモードに移動
     "map <buffer> jj <Plug>(unite_insert_leave)
 
@@ -268,8 +324,10 @@ function! s:unite_my_settings()"{{{
     imap <buffer> <c-w> <plug>(unite_delete_backward_path)
 
     "横に分割して開く
-    nnoremap <silent> <buffer> <expr> <C-t> unite#do_action('split')
-    inoremap <silent> <buffer> <expr> <C-t> unite#do_action('split')
+    nnoremap <silent> <buffer> <expr> <C-s> unite#do_action('split')
+    inoremap <silent> <buffer> <expr> <C-s> unite#do_action('split')
+    nnoremap <silent> <buffer> <expr> <C-h> unite#do_action('split')
+    inoremap <silent> <buffer> <expr> <C-h> unite#do_action('split')
 
     "縦に分割して開く
     nnoremap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
@@ -280,8 +338,6 @@ function! s:unite_my_settings()"{{{
     "その場所に開く
     nnoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
     inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
-
-    nmap <buffer> <C-j> <Plug>(unite_exit)
 endfunction"}}}
 "unite end #####################################################################
 
@@ -365,11 +421,8 @@ let g:indentLine_color_dark = 1 " (default: 2)
 "bronson/vim-trailing-whitespace start #########################################
 let g:extra_whitespace_ignored_filetypes = ['unite', 'mkd']
 :highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
-"bronson/vim-trailing-whitespace end   #########################################
-
-"vim-trailing-whitespace start  ################################################
 nnoremap fws :<C-u>FixWhitespace<Space><CR>
-"vim-trailing-whitespace end    ################################################
+"bronson/vim-trailing-whitespace end   #########################################
 
 "ctrlp start ###################################################################
 nnoremap [ctrlp]    <Nop>
