@@ -530,3 +530,7 @@ function! PrevHunkAllBuffers()
   endwhile
 endfunction
 "airblade/vim-gitgutter   end   ###################################################################
+
+"rhysd/clever-f.vim ##################################################
+let g:clever_f_smart_case = 1
+"rhysd/clever-f.vim ##################################################
