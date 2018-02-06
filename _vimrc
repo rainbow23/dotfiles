@@ -393,6 +393,11 @@ let g:quickrun_config = {
 \        'outputter/buffer/close_on_empty':     0,
 \        'outputter/buffer/into':               0,
 \        'outputter/buffer/split':              ':botright 13sp'
+\    },
+\    'phpunit': {
+\        'command':   'phpunit',
+\        'exec':      '%c %s',
+\        'outputter': 'buffer'
 \    }
 \}
 
