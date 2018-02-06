@@ -112,6 +112,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'soramugi/auto-ctags.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/fzf.vim'
+Plug 'deris/vim-gothrough-jk'
 call plug#end()
 
 command! FZFMru call fzf#run({
@@ -534,3 +535,7 @@ endfunction
 "rhysd/clever-f.vim ##################################################
 let g:clever_f_smart_case = 1
 "rhysd/clever-f.vim ##################################################
+
+"deris/vim-gothrough-jk  ##################################################
+let g:gothrough_jk_go_step = 5
+"deris/vim-gothrough-jk  ##################################################
