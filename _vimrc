@@ -23,9 +23,9 @@ let mapleader = "\<Space>"
 "let mapleader = ","
 
 "カーソル位置から画面移動
-nnoremap ,t zt
-nnoremap ,m zz
-nnoremap ,b zb
+nnoremap .t zt
+nnoremap .m zz
+nnoremap .b zb
 
 nnoremap setp :<C-u>set paste<CR>
 
