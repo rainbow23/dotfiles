@@ -28,6 +28,11 @@ nnoremap .m zz
 nnoremap .b zb
 
 nnoremap setp :<C-u>set paste<CR>
+nnoremap tn :tabnew<CR>
+nnoremap tk :tabnext<CR>
+nnoremap tj :tabprev<CR>
+nnoremap th :tabfirst<CR>
+nnoremap tl :tablast<CR>
 
 nnoremap [buffer]    <Nop>
 nmap     <Leader>b [buffer]
@@ -50,13 +55,6 @@ nnoremap [panelheightsize]j :resize -10<CR>
 nnoremap [panelheightsize]k :resize +10<CR>
 " panel size end  #################################
 
-nnoremap [ctrlw]    <Nop>
-nmap     <Leader>w [ctrlw]
-nnoremap [ctrlw]h <C-w>h
-nnoremap [ctrlw]l <C-w>l
-nnoremap [ctrlw]j <C-w>j
-nnoremap [ctrlw]k <C-w>k
-
 nnoremap <C-H> :noh <CR>
 " 削除でヤンクしない
 nnoremap x "_x
@@ -74,9 +72,9 @@ nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
 
 "ノーマルモード＋ビジュアルモード
 noremap <C-j> <Esc>
+noremap <Leader>j <Esc>
 "コマンドラインモード＋インサートモード
 noremap! <C-j> <Esc>
-noremap  <Leader>j <Esc>
 noremap! <Leader>j <Esc>
 "set termguicolors nvim用
 "set nohlsearch
@@ -111,7 +109,7 @@ Plug 'Yggdroot/indentLine'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'ctrlpvim/ctrlp.vim'
 "Plug 'cohama/lexima.vim'
-Plug 'osyo-manga/vim-anzu'
+Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
 Plug 'MattesGroeger/vim-bookmarks'
@@ -471,6 +469,7 @@ nmap n <Plug>(anzu-n-with-echo)
 nmap N <Plug>(anzu-N-with-echo)
 nmap * <Plug>(anzu-star-with-echo)
 nmap # <Plug>(anzu-sharp-with-echo)
+
 " clear status
 nmap <Esc><Esc> <Plug>(anzu-clear-search-status)
 " statusline
@@ -559,13 +558,14 @@ let g:EasyMotion_do_mapping = 0 " Disable default mappings
 let g:EasyMotion_smartcase = 1
 
 nnoremap [easymotion]    <Nop>
-nmap . [easymotion]
+nmap <Leader> [easymotion]
 
 map [easymotion] <Plug>(easymotion-prefix)
 
 " <Leader>f{char} to move to {char}
 map  [easymotion]f <Plug>(easymotion-bd-f)
 nmap [easymotion]f <Plug>(easymotion-overwin-f)
+
 " Turn on case insensitive feature
 
 " s{char}{char} to move to {char}{char}
@@ -588,8 +588,8 @@ omap / <Plug>(easymotion-tn)
 " These `n` & `N` mappings are options. You do not have to map `n` & `N` to EasyMotion.
 " Without these mappings, `n` & `N` works fine. (These mappings just provide
 " different highlight method and have some other features )
-map  n <Plug>(easymotion-next)
-map  N <Plug>(easymotion-prev)
+"map  n <Plug>(easymotion-next)
+"map  N <Plug>(easymotion-prev)
 
 " Move to line
 map [easymotion]L <Plug>(easymotion-bd-jk)
@@ -597,7 +597,7 @@ nmap [easymotion]L <Plug>(easymotion-overwin-line)
 
 " JK motions: Line motions
 map [easymotion]l <Plug>(easymotion-lineforward)
-map [easymotion]j <Plug>(easymotion-j)
+map [easymotion]n <Plug>(easymotion-j)
 map [easymotion]k <Plug>(easymotion-k)
 map [easymotion]h <Plug>(easymotion-linebackward)
 
