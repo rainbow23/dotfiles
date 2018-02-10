@@ -19,10 +19,18 @@ set tabstop=4
 "fzf.vim 読み込み
 set rtp+=/usr/local/opt/fzf
 
+let mapleader = "\<Space>"
+"let mapleader = ","
+
+"カーソル位置から画面移動
+nnoremap ,t zt
+nnoremap ,m zz
+nnoremap ,b zb
+
 nnoremap setp :<C-u>set paste<CR>
 
 nnoremap [buffer]    <Nop>
-nmap     <Space>b [buffer]
+nmap     <Leader>b [buffer]
 nnoremap [buffer]p :bprevious<CR>
 nnoremap [buffer]n :bnext<CR>
 "前に開いたファイルを開く
@@ -32,18 +40,18 @@ nnoremap [buffer]d :bdelete<CR>
 
 " panel size start ################################
 nnoremap [panelwidthsize]    <Nop>
-nmap     <Space>pw [panelwidthsize]
+nmap     <Leader>pw [panelwidthsize]
 nnoremap [panelwidthsize]j :vertical resize -10<CR>
 nnoremap [panelwidthsize]k :vertical resize +10<CR>
 
 nnoremap [panelheightsize]    <Nop>
-nmap     <Space>ph [panelheightsize]
+nmap     <Leader>ph [panelheightsize]
 nnoremap [panelheightsize]j :resize -10<CR>
 nnoremap [panelheightsize]k :resize +10<CR>
 " panel size end  #################################
 
 nnoremap [ctrlw]    <Nop>
-nmap     <Space>w [ctrlw]
+nmap     <Leader>w [ctrlw]
 nnoremap [ctrlw]h <C-w>h
 nnoremap [ctrlw]l <C-w>l
 nnoremap [ctrlw]j <C-w>j
@@ -68,15 +76,15 @@ nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
 noremap <C-j> <Esc>
 "コマンドラインモード＋インサートモード
 noremap! <C-j> <Esc>
-noremap  <Space>j <Esc>
-noremap! <Space>j <Esc>
+noremap  <Leader>j <Esc>
+noremap! <Leader>j <Esc>
 "set termguicolors nvim用
 "set nohlsearch
 "set cursorline
 "highlight Normal ctermbg=black ctermfg=white
 highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 "highlight CursorLine term=none cterm=none ctermfg=none ctermbg=grey
-nnoremap <Space>. :<C-u>tabedit $MYVIMRC<CR>
+nnoremap <Leader>. :<C-u>tabedit $MYVIMRC<CR>
 :set list lcs=tab:\|\ 
 
 call plug#begin('~/.vim/plugged')
@@ -113,6 +121,7 @@ Plug 'soramugi/auto-ctags.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/fzf.vim'
 Plug 'deris/vim-gothrough-jk'
+Plug 'easymotion/vim-easymotion'
 call plug#end()
 
 command! FZFMru call fzf#run({
@@ -208,7 +217,7 @@ let g:unite_source_history_yank_enable =1
 
 "prefix keyの設定
 nnoremap [unite]    <Nop>
-nmap     <Space>u [unite]
+nmap     <Leader>u [unite]
 
 "今開いているファイルに適応 start  ###############################
 "ファイル一覧を表示する
@@ -246,7 +255,7 @@ let g:vimfiler_as_default_explorer = 1
 let g:vimfiler_safe_mode_by_default = 0
 
 "autocmd VimEnter * VimFilerExplorer
-autocmd FileType vimfiler nmap <buffer> <Space>uv <Plug>(vimfiler_close)
+autocmd FileType vimfiler nmap <buffer> <Leader>uv <Plug>(vimfiler_close)
 
 augroup vimrc
     autocmd FileType vimfiler call s:vimfiler_my_settings()
@@ -430,13 +439,13 @@ let g:indentLine_color_dark = 1 " (default: 2)
 "bronson/vim-trailing-whitespace start #########################################
 let g:extra_whitespace_ignored_filetypes = ['unite', 'mkd']
 :highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
-nnoremap fws :<C-u>FixWhitespace<Space><CR>
+nnoremap fws :<C-u>FixWhitespace<Leader><CR>
 "bronson/vim-trailing-whitespace end   #########################################
 
 "ctrlp start ###################################################################
 nnoremap [ctrlp]    <Nop>
-nmap     <Space>c [ctrlp]
-nnoremap [ctrlp]p :<C-u>CtrlP<Space>
+nmap     <Leader>c [ctrlp]
+nnoremap [ctrlp]p :<C-u>CtrlP<Leader>
 nnoremap [ctrlp]b :<C-u>CtrlPBuffer<CR>
 nnoremap [ctrlp]d :<C-u>CtrlPDir<CR>
 nnoremap [ctrlp]f :<C-u>CtrlP<CR>
@@ -469,7 +478,7 @@ set statusline=%{anzu#search_status()}
 "osyo-manga/vim-anzu' end    ###################################################################
 
 nnoremap [tagbar]    <Nop>
-nmap     <Space>t [tagbar]
+nmap     <Leader>t [tagbar]
 nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
 
 "ivalkeen/vim-ctrlp-tjump start  ###################################################################
@@ -483,7 +492,7 @@ let g:auto_ctags = 1
 
 "airblade/vim-gitgutter   start  ###################################################################
 nnoremap [gitgutter]    <Nop>
-nmap     <Space>g [gitgutter]
+nmap     <Leader>g [gitgutter]
 nnoremap [gitgutter]t :<C-u>GitGutterLineHighlightsToggle<CR>
 "nnoremap [gitgutter]n :<c-u>GitGutterNextHunk<cr>
 nnoremap [gitgutter]n :call NextHunkAllBuffers()<cr>
@@ -544,3 +553,55 @@ let g:clever_f_smart_case = 1
 "deris/vim-gothrough-jk  ##################################################
 let g:gothrough_jk_go_step = 5
 "deris/vim-gothrough-jk  ##################################################
+
+"Plug 'easymotion/vim-easymotion' start ##################################################
+let g:EasyMotion_do_mapping = 0 " Disable default mappings
+let g:EasyMotion_smartcase = 1
+
+nnoremap [easymotion]    <Nop>
+nmap . [easymotion]
+
+map [easymotion] <Plug>(easymotion-prefix)
+
+" <Leader>f{char} to move to {char}
+map  [easymotion]f <Plug>(easymotion-bd-f)
+nmap [easymotion]f <Plug>(easymotion-overwin-f)
+" Turn on case insensitive feature
+
+" s{char}{char} to move to {char}{char}
+" Jump to anywhere you want with minimal keystrokes, with just one key binding.
+" `s{char}{label}`
+"nmap s <Plug>(easymotion-overwin-f)
+" or
+" `s{char}{char}{label}`
+" Need one more keystroke, but on average, it may be more comfortable.
+nmap s <Plug>(easymotion-overwin-f2)
+
+" Gif config
+"nmap s <Plug>(easymotion-s2)
+"nmap t <Plug>(easymotion-t2)
+
+" Gif config
+map  / <Plug>(easymotion-sn)
+omap / <Plug>(easymotion-tn)
+
+" These `n` & `N` mappings are options. You do not have to map `n` & `N` to EasyMotion.
+" Without these mappings, `n` & `N` works fine. (These mappings just provide
+" different highlight method and have some other features )
+map  n <Plug>(easymotion-next)
+map  N <Plug>(easymotion-prev)
+
+" Move to line
+map [easymotion]L <Plug>(easymotion-bd-jk)
+nmap [easymotion]L <Plug>(easymotion-overwin-line)
+
+" JK motions: Line motions
+map [easymotion]l <Plug>(easymotion-lineforward)
+map [easymotion]j <Plug>(easymotion-j)
+map [easymotion]k <Plug>(easymotion-k)
+map [easymotion]h <Plug>(easymotion-linebackward)
+
+" Move to word
+map  [easymotion]w <Plug>(easymotion-bd-w)
+nmap [easymotion]w <Plug>(easymotion-overwin-w)
+"Plug 'easymotion/vim-easymotion' end  ##################################################
