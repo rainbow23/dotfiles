@@ -90,6 +90,29 @@ noremap <Leader>j <Esc>
 "コマンドラインモード＋インサートモード
 noremap! <C-j> <Esc>
 noremap! <Leader>j <Esc>
+
+" Commenting
+
+" space-1 insert "!" commenting
+nnoremap <leader>1 :norm ^<cr>:norm i!<cr>
+vnoremap <leader>1 :norm i!<cr>
+
+" space-' insert """ commenting
+nnoremap <leader>' :norm ^<cr>:norm i"<cr>
+vnoremap <leader>' :norm i"<cr>
+
+" space-3 insert "#" commenting
+nnoremap <leader>3 :norm ^<cr>:norm i#<cr>
+vnoremap <leader>3 :norm i#<cr>
+
+" space-- insert "--" commenting
+nnoremap <leader>- :norm ^<cr>:norm i--<cr>
+vnoremap <leader>- :norm i--<cr>
+
+" space-6 uncomment
+nnoremap <leader>6 :norm ^x<cr>
+vnoremap <leader>6 :norm ^x<cr>
+
 "set termguicolors nvim用
 "set nohlsearch
 "set cursorline
