@@ -44,15 +44,20 @@ nnoremap [buffer]r :b#<CR>
 nnoremap [buffer]d :bdelete<CR>
 
 " panel size start ################################
-nnoremap [panelwidthsize]    <Nop>
-nmap     <Leader>pw [panelwidthsize]
-nnoremap [panelwidthsize]j :vertical resize -10<CR>
-nnoremap [panelwidthsize]k :vertical resize +10<CR>
-
-nnoremap [panelheightsize]    <Nop>
-nmap     <Leader>ph [panelheightsize]
-nnoremap [panelheightsize]j :resize -10<CR>
-nnoremap [panelheightsize]k :resize +10<CR>
+nnoremap noremap [panel]    <Nop>
+nmap     <Leader>p [panel]
+nnoremap [panel]hh  :vertical resize -10<CR>
+nnoremap [panel]hhh :vertical resize -20<CR>
+nnoremap [panel]ll  :vertical resize +10<CR>
+nnoremap [panel]lll :vertical resize +20<CR>
+nnoremap [panel]jj  :resize -10<CR>
+nnoremap [panel]jjj :resize -20<CR>
+nnoremap [panel]kk  :resize +10<CR>
+nnoremap [panel]kkk :resize +20<CR>
+nnoremap [panel]l <C-w>l<CR>
+nnoremap [panel]h <C-w>h<CR>
+nnoremap [panel]j <C-w>j<CR>
+nnoremap [panel]k <C-w>k<CR>
 " panel size end  #################################
 
 nnoremap <C-H> :noh <CR>
@@ -541,7 +546,20 @@ nnoremap [gitgutter]a :<C-u>GitGutterAll<CR>
 "バッファで次のハンクがあれば移動する
 function! NextHunkAllBuffers()
   let line = line('.')
+  let firstLine  = line('w0')
+  let lastLine   = line('w$')
+  "let halfDistance  = ((lastLine - firstLine) / 2)
+  let halfLine = ((lastLine - firstLine) / 2) + firstLine
+  "((line('w$') - line('w0')) / 2) + line('w0')
   GitGutterNextHunk
+
+  "let movedDistance = line('.') - line
+  "if movedDistance > halfDistance
+" 画面の半分以上移動したら真ん中に表示させる
+  if line('.') > halfLine
+      :norm zz<cr>
+  endif
+
   if line('.') != line
     return
   endif
@@ -555,6 +573,7 @@ function! NextHunkAllBuffers()
     if !empty(GitGutterGetHunks())
       normal! 1G
       GitGutterNextHunk
+      :norm zz<cr>
       return
     endif
   endwhile
@@ -562,7 +581,15 @@ endfunction
 
 function! PrevHunkAllBuffers()
   let line = line('.')
+  let firstLine = line('w0')
+  let lastLine = line('w$')
+  let halfLine = ((lastLine - firstLine) / 2) + firstLine
   GitGutterPrevHunk
+
+  if line('.') < halfLine
+      :norm zz<cr>
+  endif
+
   if line('.') != line
     return
   endif
@@ -576,6 +603,7 @@ function! PrevHunkAllBuffers()
     if !empty(GitGutterGetHunks())
       normal! G
       GitGutterPrevHunk
+      :norm zz<cr>
       return
     endif
   endwhile
