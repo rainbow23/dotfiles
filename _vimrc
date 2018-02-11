@@ -68,7 +68,21 @@ nnoremap : ;
 
 "改行後INSERT MODEにしない
 nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
-"nnoremap O o<Esc>
+"検索ハイライトを消す
+nnoremap ns :<C-u>nohlsearch<CR>
+
+"進む 一行
+nnoremap <silent> <C-e> <C-e>j
+"進む 画面半分
+nnoremap <silent> <C-d> <C-d>zz
+"進む 画面1ページ分
+nnoremap <silent> <C-f> <C-f>zz
+"戻る 一行
+nnoremap <silent> <C-y> <C-y>k
+"戻る 画面半分
+nnoremap <silent> <C-u> <C-u>zz
+"戻る 画面1ページ分
+nnoremap <silent> <C-b> <C-b>zz
 
 "ノーマルモード＋ビジュアルモード
 noremap <C-j> <Esc>
