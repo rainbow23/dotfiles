@@ -45,7 +45,7 @@ nnoremap [buffer]d :bdelete<CR>
 
 " panel size start ################################
 nnoremap noremap [panel]    <Nop>
-nmap     <Leader>p [panel]
+nmap     <Leader>w [panel]
 nnoremap [panel]hh  :vertical resize -10<CR>
 nnoremap [panel]hhh :vertical resize -20<CR>
 nnoremap [panel]ll  :vertical resize +10<CR>
@@ -640,15 +640,15 @@ nmap [easymotion]f <Plug>(easymotion-overwin-f)
 " or
 " `s{char}{char}{label}`
 " Need one more keystroke, but on average, it may be more comfortable.
-nmap s <Plug>(easymotion-overwin-f2)
+"nmap s <Plug>(easymotion-overwin-f2)
 
 " Gif config
 "nmap s <Plug>(easymotion-s2)
 "nmap t <Plug>(easymotion-t2)
 
 " Gif config
-map  / <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-tn)
+"map  / <Plug>(easymotion-sn)
+"omap / <Plug>(easymotion-tn)
 
 " These `n` & `N` mappings are options. You do not have to map `n` & `N` to EasyMotion.
 " Without these mappings, `n` & `N` works fine. (These mappings just provide
@@ -667,6 +667,6 @@ map [easymotion]k <Plug>(easymotion-k)
 map [easymotion]h <Plug>(easymotion-linebackward)
 
 " Move to word
-map  [easymotion]w <Plug>(easymotion-bd-w)
-nmap [easymotion]w <Plug>(easymotion-overwin-w)
+"map  [easymotion]w <Plug>(easymotion-bd-w)
+"nmap [easymotion]w <Plug>(easymotion-overwin-w)
 "Plug 'easymotion/vim-easymotion' end  ##################################################
