@@ -58,6 +58,7 @@ nnoremap [panel]l <C-w>l<CR>
 nnoremap [panel]h <C-w>h<CR>
 nnoremap [panel]j <C-w>j<CR>
 nnoremap [panel]k <C-w>k<CR>
+nnoremap [panel]w <C-w>w<CR>
 " panel size end  #################################
 
 nnoremap <C-H> :noh <CR>
