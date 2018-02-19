@@ -163,6 +163,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/fzf.vim'
 Plug 'deris/vim-gothrough-jk'
 Plug 'easymotion/vim-easymotion'
+Plug 'elzr/vim-json'
 call plug#end()
 
 command! FZFMru call fzf#run({
@@ -671,3 +672,7 @@ map [easymotion]h <Plug>(easymotion-linebackward)
 "map  [easymotion]w <Plug>(easymotion-bd-w)
 "nmap [easymotion]w <Plug>(easymotion-overwin-w)
 "Plug 'easymotion/vim-easymotion' end  ##################################################
+
+"Plug 'elzr/vim-json' start ##################################################
+let g:vim_json_syntax_conceal = 0
+"Plug 'elzr/vim-json' end ##################################################
