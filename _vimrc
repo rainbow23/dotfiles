@@ -115,6 +115,10 @@ vnoremap <leader>3 :norm i#<cr>
 nnoremap <leader>- :norm ^<cr>:norm i--<cr>
 vnoremap <leader>- :norm i--<cr>
 
+" space-- insert "//" commenting
+nnoremap <leader>7 :norm ^<cr>:norm i//<cr>
+vnoremap <leader>7 :norm i//<cr>
+
 " space-6 uncomment
 nnoremap <leader>6 :norm ^x<cr>
 vnoremap <leader>6 :norm ^x<cr>
@@ -484,10 +488,14 @@ let g:extra_whitespace_ignored_filetypes = ['unite', 'mkd']
 nnoremap fws :<C-u>FixWhitespace<Leader><CR>
 "bronson/vim-trailing-whitespace end   #########################################
 
+"Yggdroot/indentLine start  #########################################
+nnoremap ilt :<C-u>IndentLinesToggle<CR>
+"Yggdroot/indentLine end    #########################################
+
 "ctrlp start ###################################################################
 nnoremap [ctrlp]    <Nop>
 nmap     <Leader>c [ctrlp]
-nnoremap [ctrlp]p :<C-u>CtrlP<Leader>
+nnoremap [ctrlp]p :<C-u>CtrlP<CR>
 nnoremap [ctrlp]b :<C-u>CtrlPBuffer<CR>
 nnoremap [ctrlp]d :<C-u>CtrlPDir<CR>
 nnoremap [ctrlp]f :<C-u>CtrlP<CR>
