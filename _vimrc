@@ -8,6 +8,7 @@ set tabstop=4
 set noswapfile
 set tags=./tags;
 syntax on
+filetype on
 set hlsearch
 autocmd InsertLeave * set nopaste
 "ヤンクをクリップボードに保存　kana/vim-fakeclipと連動
@@ -168,6 +169,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'deris/vim-gothrough-jk'
 Plug 'easymotion/vim-easymotion'
 Plug 'elzr/vim-json'
+Plug 'scrooloose/nerdcommenter'
 call plug#end()
 
 command! FZFMru call fzf#run({
@@ -684,3 +686,9 @@ map [easymotion]h <Plug>(easymotion-linebackward)
 "Plug 'elzr/vim-json' start ##################################################
 let g:vim_json_syntax_conceal = 0
 "Plug 'elzr/vim-json' end ##################################################
+
+"Plug 'scrooloose/nerdcommenter' start ##################################################
+let g:NERDSpaceDelims =1
+let g:NERDDefaultAlign ='left'
+"Plug 'scrooloose/nerdcommenter' end ##################################################
+
