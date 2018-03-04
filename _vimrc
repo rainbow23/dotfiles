@@ -6,7 +6,7 @@ set autoindent
 set shiftwidth=4
 set tabstop=4
 set noswapfile
-set tags=./tags;
+"set tags=./tags;
 syntax on
 filetype on
 set hlsearch
@@ -98,31 +98,6 @@ noremap <Leader>j <Esc>
 noremap! <C-j> <Esc>
 noremap! <Leader>j <Esc>
 
-" Commenting
-
-" space-1 insert "!" commenting
-nnoremap <leader>1 :norm ^<cr>:norm i!<cr>
-vnoremap <leader>1 :norm i!<cr>
-
-" space-' insert """ commenting
-nnoremap <leader>' :norm ^<cr>:norm i"<cr>
-vnoremap <leader>' :norm i"<cr>
-
-" space-3 insert "#" commenting
-nnoremap <leader>3 :norm ^<cr>:norm i#<cr>
-vnoremap <leader>3 :norm i#<cr>
-
-" space-- insert "--" commenting
-nnoremap <leader>- :norm ^<cr>:norm i--<cr>
-vnoremap <leader>- :norm i--<cr>
-
-" space-- insert "//" commenting
-nnoremap <leader>7 :norm ^<cr>:norm i//<cr>
-vnoremap <leader>7 :norm i//<cr>
-
-" space-6 uncomment
-nnoremap <leader>6 :norm ^x<cr>
-vnoremap <leader>6 :norm ^x<cr>
 
 "set termguicolors nvim用
 "set nohlsearch
@@ -170,6 +145,7 @@ Plug 'deris/vim-gothrough-jk'
 Plug 'easymotion/vim-easymotion'
 Plug 'elzr/vim-json'
 Plug 'scrooloose/nerdcommenter'
+Plug 'vim-syntastic/syntastic'
 call plug#end()
 
 command! FZFMru call fzf#run({
@@ -541,6 +517,8 @@ vnoremap [tagbar]p :CtrlPtjumpVisual<cr>
 
 "soramugi/auto-ctags.vim  start  ###################################################################
 let g:auto_ctags = 1
+let g:auto_ctags_directory_list = ['.git', '.svn']
+set tags+=.svn/tags
 "soramugi/auto-ctags.vim  end    ###################################################################
 
 "airblade/vim-gitgutter   start  ###################################################################
@@ -701,3 +679,13 @@ nnoremap [nerdcommenter]s :call NERDComment(0,"Sexy")<CR>
 vnoremap [nerdcommenter]s :call NERDComment(0,"Sexy")<CR>
 "Plug 'scrooloose/nerdcommenter' end ##################################################
 
+"vim-syntastic/syntastic start ####################################################################
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+"vim-syntastic/syntastic end  ####################################################################
