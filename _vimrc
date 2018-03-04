@@ -146,6 +146,7 @@ Plug 'easymotion/vim-easymotion'
 Plug 'elzr/vim-json'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-syntastic/syntastic'
+Plug 'Townk/vim-autoclose'
 call plug#end()
 
 command! FZFMru call fzf#run({
