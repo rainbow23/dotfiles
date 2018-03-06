@@ -494,6 +494,18 @@ let g:ctrlp_extensions = ['tag', 'quickfix', 'dir', 'line', 'mixed']
 let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:18'
 "cnnoremap [ctrlp]trlp end   ###################################################################
 
+"tpope/vim-fugitive start   ###################################################################
+nnoremap [fugitive] <Nop>
+nmap     <Leader>f [fugitive]
+nnoremap [fugitive]s  :<C-u>Gstatus<CR>
+nnoremap [fugitive]d :<C-u>Gvdiff<CR>
+nnoremap [fugitive]l  :<C-u>Glog<CR>
+nnoremap [fugitive]b :<C-u>Gblame<CR>
+nnoremap [fugitive]rd :<C-u>Gread<CR>
+nnoremap [fugitive]g :<C-u>Ggrep 
+
+"tpope/vim-fugitive end      ###################################################################
+
 "osyo-manga/vim-anzu' start  ###################################################################
 " mapping
 nmap n <Plug>(anzu-n-with-echo)
@@ -619,8 +631,8 @@ nmap <Leader> [easymotion]
 map [easymotion] <Plug>(easymotion-prefix)
 
 " <Leader>f{char} to move to {char}
-map  [easymotion]f <Plug>(easymotion-bd-f)
-nmap [easymotion]f <Plug>(easymotion-overwin-f)
+" map  [easymotion]f <Plug>(easymotion-bd-f)
+" nmap [easymotion]f <Plug>(easymotion-overwin-f)
 
 " Turn on case insensitive feature
 
