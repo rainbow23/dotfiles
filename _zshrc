@@ -8,6 +8,23 @@ export LANG
 
 alias chefsakura="knife ssh 'name:node1-sakura' 'sudo chef-client' --ssh-user rainbow --ssh-port 1023 --identity-file ~/.ssh/id_rsa  --attribute ipaddress"
 
+alias kl='kitchen login'
+alias kt='kitchen test --destroy=never'
+alias kc='kitchen converge'
+
+## -------------------------------------
+# git operation
+# -------------------------------------
+alias gl='git log'
+alias glo='git log --oneline'
+alias gls='git log --stat'
+alias glg='git log --graph'
+alias gs='git status'
+alias gc='git checkout'
+alias gd='git diff'
+alias gr='git reset'
+alias gp='git push'
+alias gb='git branch'
 # -------------------------------------
 # 環境変数
 # -------------------------------------
