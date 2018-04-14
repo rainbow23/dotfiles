@@ -3,3 +3,5 @@ export PS1='\h:\W \u\$ '
 # alias tmux='~/.bashrc'
 MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"
 [[ -s $HOME/.autojump/etc/profile.d/autojump.sh ]] && source $HOME/.autojump/etc/profile.d/autojump.sh
+LANG=ja_JP.utf8
+export LANG

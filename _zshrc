@@ -3,6 +3,11 @@ export XDG_CONFIG_HOME=$HOME/.config
 [[ -s $HOME/.autojump/etc/profile.d/autojump.sh ]] && source $HOME/.autojump/etc/profile.d/autojump.sh
 autoload -U compinit && compinit -u
 
+LANG=ja_JP.utf8
+export LANG
+
+alias chefsakura="knife ssh 'name:node1-sakura' 'sudo chef-client' --ssh-user rainbow --ssh-port 1023 --identity-file ~/.ssh/id_rsa  --attribute ipaddress"
+
 # -------------------------------------
 # 環境変数
 # -------------------------------------
