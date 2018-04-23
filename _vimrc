@@ -114,7 +114,6 @@ Plug 'junegunn/vim-easy-align'
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
-Plug 'Shougo/neocomplcache.vim'
 Plug 'rainbow23/unite-session'
 Plug 'Shougo/neomru.vim'
 Plug 'Shougo/vimfiler.vim'
@@ -147,6 +146,16 @@ Plug 'elzr/vim-json'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+if !has('nvim')
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
+Plug 'zchee/deoplete-go', { 'do': 'make'}
+Plug 'fatih/vim-go'
+Plug 'sebdah/vim-delve'
+Plug 'Shougo/vimshell.vim'
 call plug#end()
 
 command! FZFMru call fzf#run({
@@ -187,51 +196,32 @@ xmap <C-l>     <plug>(neosnippet_expand_target)
 let g:neosnippet#snippets_directory='~/.vim/plugged/neosnippet-snippets/neosnippets'
 map <C-l>     <Plug>(neosnippet_expand_or_jump)
 "SuperTab like snippets behavior.
-imap  <expr><TAB>
-     \ pumvisible() ? "\<C-n>" :
-     \ neosnippet#expandable_or_jumpable() ?
-     \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+" imap  <expr><TAB>
+"      \ pumvisible() ? "\<C-n>" :
+"      \ neosnippet#expandable_or_jumpable() ?
+"      \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-    \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+" smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+"     \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
 if has('conceal')
  set conceallevel=2 concealcursor=i
 endif
 "neosnippets end ###################################################################
 
-"neocomplcache start ###############################################################
-highlight Pmenu ctermbg=6
-highlight PmenuSel ctermbg=3
-highlight PMenuSbar ctermbg=0
+" deoplete start ###################################################################
+let g:deoplete#enable_at_startup = 1
 
-let g:neocomplcache_enable_at_startup = 1
-let g:neocomplcache_max_list = 30
-let g:neocomplcache_auto_completion_start_length = 2
-let g:neocomplcache_enable_smart_case = 1
-"" like AutoComplPop
-let g:neocomplcache_enable_auto_select = 1
-"" search with camel case like Eclipse
-let g:neocomplcache_enable_camel_case_completion = 1
-let g:neocomplcache_enable_underbar_completion = 1
-"imap <C-k> <Plug>(neocomplcache_snippets_expand)
-"smap <C-k> <Plug>(neocomplcache_snippets_expand)
-inoremap <expr><C-g> neocomplcache#undo_completion()
-"inoremap <expr><C-l> neocomplcache#complete_common_string()
+inoremap <silent><expr> <TAB>
+\ pumvisible() ? "\<C-n>" :
+\ <SID>check_back_space() ? "\<TAB>" :
+\ deoplete#mappings#manual_complete()
 
-"" SuperTab like snippets behavior.
-"imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
-"" <CR>: close popup and save indent.
-"inoremap <expr><CR> neocomplcache#smart_close_popup() . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
-inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
-"" <TAB>: completion.
-"inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-"" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplcache#smart_close_popup() . "\<C-h>"
-inoremap <expr><BS> neocomplcache#smart_close_popup() . "\<C-h>"
-inoremap <expr><C-y> neocomplcache#close_popup()
-inoremap <expr><C-e> neocomplcache#cancel_popup()
-"neocomplcache end ############################################################
+function! s:check_back_space() abort "{{{
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction"}}}
+" deoplete end #####################################################################
 
 "unite start ##################################################################
 let g:unite_data_directory = expand('~/.vim/etc/unite')
