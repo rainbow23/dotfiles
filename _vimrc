@@ -154,8 +154,8 @@ endif
 Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'fatih/vim-go'
-Plug 'sebdah/vim-delve'
-Plug 'Shougo/vimshell.vim'
+" Plug 'sebdah/vim-delve'
+" Plug 'Shougo/vimshell.vim'
 call plug#end()
 
 command! FZFMru call fzf#run({
