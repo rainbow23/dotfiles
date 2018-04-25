@@ -1,6 +1,0 @@
-let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =4
-let g:netrw_dirhist_1='/Users/goodscientist1023/3D-CoatV4'
-let g:netrw_dirhist_2='/Users/goodscientist1023/dotfiles/vimrepos/etc/unite/session'
-let g:netrw_dirhist_3='/Users/goodscientist1023/3D-CoatV3'
-let g:netrw_dirhist_4='/Users/goodscientist1023/docker/nginx'
