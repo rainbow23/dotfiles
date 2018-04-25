@@ -12,6 +12,16 @@ alias kl='kitchen login'
 alias kt='kitchen test --destroy=never'
 alias kc='kitchen converge'
 
+# anyenv
+if [ -d $HOME/.anyenv ] ; then
+    export PATH="$HOME/.anyenv/bin:$PATH"
+    eval "$(anyenv init -)"
+fi
+
+# Go
+export GOPATH=$HOME/go
+export GOBIN=$GOPATH/bin
+
 ## -------------------------------------
 # git operation
 # -------------------------------------
