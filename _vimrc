@@ -46,7 +46,7 @@ nnoremap [buffer]d :bdelete<CR>
 
 " panel size start ################################
 nnoremap noremap [panel]    <Nop>
-nmap     <Leader>w [panel]
+nmap     s [panel]
 nnoremap [panel]hh  :vertical resize -10<CR>
 nnoremap [panel]hhh :vertical resize -20<CR>
 nnoremap [panel]ll  :vertical resize +10<CR>
@@ -60,6 +60,18 @@ nnoremap [panel]h <C-w>h<CR>
 nnoremap [panel]j <C-w>j<CR>
 nnoremap [panel]k <C-w>k<CR>
 nnoremap [panel]w <C-w>w<CR>
+nnoremap [panel]s :split<CR>
+nnoremap [panel]v :vsplit<CR>
+nnoremap [panel]H <C-w>H
+nnoremap [panel]J <C-w>J
+nnoremap [panel]K <C-w>K
+nnoremap [panel]L <C-w>L
+nnoremap [panel]r <C-w>r
+noremap [panel]o <C-w>=
+" 縦に最大化
+nnoremap [panel]z <C-w>_
+" 横に最大化
+nnoremap [panel]x <C-w>\|
 " panel size end  #################################
 
 nnoremap <C-H> :noh <CR>
