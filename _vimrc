@@ -55,23 +55,28 @@ nnoremap [panel]jj  :resize -10<CR>
 nnoremap [panel]jjj :resize -20<CR>
 nnoremap [panel]kk  :resize +10<CR>
 nnoremap [panel]kkk :resize +20<CR>
-nnoremap [panel]l <C-w>l<CR>
-nnoremap [panel]h <C-w>h<CR>
-nnoremap [panel]j <C-w>j<CR>
-nnoremap [panel]k <C-w>k<CR>
-nnoremap [panel]w <C-w>w<CR>
-nnoremap [panel]s :split<CR>
-nnoremap [panel]v :vsplit<CR>
-nnoremap [panel]H <C-w>H
-nnoremap [panel]J <C-w>J
-nnoremap [panel]K <C-w>K
-nnoremap [panel]L <C-w>L
-nnoremap [panel]r <C-w>r
-noremap [panel]o <C-w>=
+nnoremap [panel]l <C-w>l <C-g><CR>
+nnoremap [panel]h <C-w>h <C-g><CR>
+nnoremap [panel]j <C-w>j <C-g><CR>
+nnoremap [panel]k <C-w>k <C-g><CR>
+nnoremap [panel]w <C-w>w <C-g><CR>
+nnoremap [panel]s :split <C-g><CR>
+nnoremap [panel]v :vsplit <C-g><CR>
+nnoremap [panel]H <C-w>H <C-g><CR>
+nnoremap [panel]J <C-w>J <C-g><CR>
+nnoremap [panel]K <C-w>K <C-g><CR>
+nnoremap [panel]L <C-w>L <C-g><CR>
+" 上向きにローテーションする
+nnoremap [panel]r <C-w>r <C-g><CR>
+" 下向きにローテーションする
+nnoremap [panel]R <C-w>R <C-g><CR>
+" 現在カーソルがあるウィンドウと一つ前のウィンドウを入れ替える
+nnoremap [panel]x <C-w>x <C-g><CR>
+noremap [panel]o <C-w>= <C-g><CR>
 " 縦に最大化
-nnoremap [panel]z <C-w>_
+nnoremap [panel]u <C-w>_ <C-g><CR>
 " 横に最大化
-nnoremap [panel]x <C-w>\|
+nnoremap [panel]i <C-w>\| <C-g><CR>
 " panel size end  #################################
 
 nnoremap <C-H> :noh <CR>
