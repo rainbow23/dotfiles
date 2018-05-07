@@ -73,10 +73,16 @@ nnoremap [panel]R <C-w>R <C-g><CR>
 " 現在カーソルがあるウィンドウと一つ前のウィンドウを入れ替える
 nnoremap [panel]x <C-w>x <C-g><CR>
 noremap [panel]o <C-w>= <C-g><CR>
+
 " 縦に最大化
 nnoremap [panel]u <C-w>_ <C-g><CR>
+" 縦に最小化
+nnoremap [panel]m <C-w>1_ <C-g><CR>
+
 " 横に最大化
 nnoremap [panel]i <C-w>\| <C-g><CR>
+" 横に最小化
+nnoremap [panel], <C-w>1\| <C-g><CR>
 " panel size end  #################################
 
 nnoremap <C-H> :noh <CR>
