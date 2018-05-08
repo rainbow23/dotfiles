@@ -175,6 +175,7 @@ Plug 'roxma/nvim-yarp'
 Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'fatih/vim-go'
+Plug 'Shougo/neco-syntax'
 call plug#end()
 
 command! FZFMru call fzf#run({
@@ -230,6 +231,7 @@ endif
 
 " deoplete start ###################################################################
 let g:deoplete#enable_at_startup = 1
+let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 
 inoremap <silent><expr> <TAB>
 \ pumvisible() ? "\<C-n>" :
