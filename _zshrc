@@ -6,21 +6,9 @@ autoload -U compinit && compinit -u
 LANG=ja_JP.utf8
 export LANG
 
-alias chefsakura="knife ssh 'name:node1-sakura' 'sudo chef-client' --ssh-user rainbow --ssh-port 1023 --identity-file ~/.ssh/id_rsa  --attribute ipaddress"
 
-alias kl='kitchen login'
-alias kt='kitchen test --destroy=never'
-alias kc='kitchen converge'
-
-# anyenv
-if [ -d $HOME/.anyenv ] ; then
-    export PATH="$HOME/.anyenv/bin:$PATH"
-    eval "$(anyenv init -)"
-fi
-
-# Go
-export GOPATH=$HOME/go
-export GOBIN=$GOPATH/bin
+alias ansiblevagrant=' ansible-playbook -i ~/Documents/Ansible/ansible-examples/Inventory/vagrantHosts site.yml --verbose'
+alias ansiblesakura='ansible-playbook -i ~/Documents/Ansible/ansible-examples/Inventory/sakuraHosts site.yml --verbose --ask-become-pass'
 
 ## -------------------------------------
 # git operation

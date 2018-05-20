@@ -6,12 +6,3 @@ MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"
 LANG=ja_JP.utf8
 export LANG
 
-# Go
-export GOPATH=$HOME/go
-export GOBIN=$GOPATH/bin
-
-# anyenv
-if [ -d $HOME/.anyenv ] ; then
-    export PATH="$HOME/.anyenv/bin:$PATH"
-    eval "$(anyenv init -)"
-fi
