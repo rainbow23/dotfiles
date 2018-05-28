@@ -20,6 +20,26 @@ set tabstop=4
 "fzf.vim 読み込み
 set rtp+=/usr/local/opt/fzf
 
+" Mapping selecting mappings
+nmap <leader><tab> <plug>(fzf-maps-n)
+xmap <leader><tab> <plug>(fzf-maps-x)
+omap <leader><tab> <plug>(fzf-maps-o)
+" Insert mode completion
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+imap <c-x><c-j> <plug>(fzf-complete-file-ag)
+imap <c-x><c-l> <plug>(fzf-complete-line)
+
+" Advanced customization using autoload functions
+inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
+
+command! FZFMru call fzf#run({
+\  'source':  v:oldfiles,
+\  'sink':    'e',
+\  'options': '-m -x +s',
+\  'down':    '40%'})
+nnoremap <Leader>r :FZFMru<CR>
+
 let mapleader = "\<Space>"
 "let mapleader = ","
 
@@ -162,6 +182,7 @@ Plug 'ivalkeen/vim-ctrlp-tjump'
 Plug 'tpope/vim-fugitive'
 Plug 'soramugi/auto-ctags.vim'
 Plug 'airblade/vim-gitgutter'
+Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'deris/vim-gothrough-jk'
 Plug 'easymotion/vim-easymotion'
@@ -713,3 +734,13 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 "vim-syntastic/syntastic end  ####################################################################
+
+" grep検索
+nnoremap <silent> ,g  :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
+
+" unite grepにhw(highway)を使う
+if executable('hw')
+  let g:unite_source_grep_command = 'hw'
+  let g:unite_source_grep_default_opts = '--no-group --no-color'
+  let g:unite_source_grep_recursive_opt = ''
+endif
