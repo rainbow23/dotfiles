@@ -17,28 +17,6 @@ set clipboard=unnamed
 set expandtab
 " 画面上でタブ文字が占める幅
 set tabstop=4
-"fzf.vim 読み込み
-set rtp+=/usr/local/opt/fzf
-
-" Mapping selecting mappings
-nmap <leader><tab> <plug>(fzf-maps-n)
-xmap <leader><tab> <plug>(fzf-maps-x)
-omap <leader><tab> <plug>(fzf-maps-o)
-" Insert mode completion
-imap <c-x><c-k> <plug>(fzf-complete-word)
-imap <c-x><c-f> <plug>(fzf-complete-path)
-imap <c-x><c-j> <plug>(fzf-complete-file-ag)
-imap <c-x><c-l> <plug>(fzf-complete-line)
-
-" Advanced customization using autoload functions
-inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
-
-command! FZFMru call fzf#run({
-\  'source':  v:oldfiles,
-\  'sink':    'e',
-\  'options': '-m -x +s',
-\  'down':    '40%'})
-nnoremap <Leader>r :FZFMru<CR>
 
 let mapleader = "\<Space>"
 "let mapleader = ","
@@ -199,18 +177,60 @@ Plug 'fatih/vim-go'
 Plug 'Shougo/neco-syntax'
 call plug#end()
 
-command! FZFMru call fzf#run({
-\ 'source':  reverse(s:all_files()),
-\ 'sink':    'edit',
-\ 'options': '-m -x +s',
-\ 'down':    '40%' })
-
 function! s:all_files()
   return extend(
   \ filter(copy(v:oldfiles),
   \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
   \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
 endfunction
+
+"FZF start ####################################################################
+"fzf.vim 読み込み
+set rtp+=/usr/local/opt/fzf
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+nnoremap [fzf] <Nop>
+nmap <Leader>z [fzf]
+
+" Mapping selecting mappings
+nmap <leader><tab> <plug>(fzf-maps-n)
+xmap <leader><tab> <plug>(fzf-maps-x)
+omap <leader><tab> <plug>(fzf-maps-o)
+" Insert mode completion
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+imap <c-x><c-j> <plug>(fzf-complete-file-ag)
+imap <c-x><c-l> <plug>(fzf-complete-line)
+" Advanced customization using autoload functions
+inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
+
+nnoremap [fzf]m :FZFMru<CR>
+nnoremap [fzf]f :FZFFileList<CR>
+
+command! FZFMru call fzf#run({
+\  'source':  v:oldfiles,
+\  'sink':    'e',
+\  'options': '-m -x +s',
+\  'down':    '40%'})
+
+command! FZFFileList call fzf#run({
+            \ 'source': 'find . -type d -name .git -prune -o ! -name .DS_Store',
+            \ 'sink': 'e'})
+
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+command! -bang -nargs=* Find
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always '.shellescape(expand('<cword>')), 1,
+  \   <bang>0 ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \   <bang>0)
+
+"FZF end  ####################################################################
 
 "EasyAlign start ####################################################################
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -528,13 +548,13 @@ let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:18'
 
 "tpope/vim-fugitive start   ###################################################################
 nnoremap [fugitive] <Nop>
-nmap     <Leader>f [fugitive]
+nmap     <Leader>fu [fugitive]
 nnoremap [fugitive]s  :<C-u>Gstatus<CR>
 nnoremap [fugitive]d :<C-u>Gvdiff<CR>
 nnoremap [fugitive]l  :<C-u>Glog<CR>
 nnoremap [fugitive]b :<C-u>Gblame<CR>
 nnoremap [fugitive]rd :<C-u>Gread<CR>
-nnoremap [fugitive]g :<C-u>Ggrep 
+nnoremap [fugitive]g :<C-u>Ggrep
 
 "tpope/vim-fugitive end      ###################################################################
 
