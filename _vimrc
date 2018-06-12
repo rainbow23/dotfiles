@@ -10,6 +10,9 @@ set noswapfile
 syntax on
 filetype on
 set hlsearch
+
+autocmd BufEnter *.yml set shiftwidth=2
+
 autocmd InsertLeave * set nopaste
 "ヤンクをクリップボードに保存　kana/vim-fakeclipと連動
 set clipboard=unnamed
