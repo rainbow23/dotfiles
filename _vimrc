@@ -210,8 +210,19 @@ imap <c-x><c-l> <plug>(fzf-complete-line)
 " Advanced customization using autoload functions
 inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
 
-nnoremap [fzf]m :FZFMru<CR>
-nnoremap [fzf]f :FZFFileList<CR>
+nnoremap [fzf]m :<C-u>FZFMru<CR>
+nnoremap [fzf]f :<C-u>Files<CR>
+" git ls-files
+nnoremap [fzf]g :<C-u>GFiles<CR>
+" git staus
+nnoremap [fzf]G :<C-u>GFiles?<CR>
+nnoremap [fzf]b :<C-u>Buffers<CR>
+nnoremap [fzf]b :<C-u>Buffers<CR>
+nnoremap [fzf]h :<C-u>History<CR>
+" list tabs
+nnoremap [fzf]w :<C-u>Windows<CR>
+nnoremap [fzf]a :<C-u>Ag<CR>
+
 
 command! FZFMru call fzf#run({
 \  'source':  v:oldfiles,
