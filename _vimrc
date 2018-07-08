@@ -215,13 +215,13 @@ nnoremap [fzf]f :FZFFileList<CR>
 
 command! FZFMru call fzf#run({
 \  'source':  v:oldfiles,
-\  'sink':    'e',
+\  'sink':    'tabe',
 \  'options': '-m -x +s',
 \  'down':    '40%'})
 
 command! FZFFileList call fzf#run({
             \ 'source': 'find . -type d -name .git -prune -o ! -name .DS_Store',
-            \ 'sink': 'e'})
+            \ 'sink': 'tabe'})
 
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
