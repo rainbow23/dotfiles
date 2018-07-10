@@ -163,7 +163,6 @@ Plug 'ivalkeen/vim-ctrlp-tjump'
 Plug 'tpope/vim-fugitive'
 Plug 'soramugi/auto-ctags.vim'
 Plug 'airblade/vim-gitgutter'
-Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'deris/vim-gothrough-jk'
 Plug 'easymotion/vim-easymotion'
@@ -188,8 +187,12 @@ function! s:all_files()
 endfunction
 
 "FZF start ####################################################################
-"fzf.vim 読み込み
-set rtp+=/usr/local/opt/fzf
+"fzf.vim 読み込み mac
+" set rtp+=/usr/local/opt/fzf
+
+"fzf.vim 読み込み linux
+set rtp+=~/.fzf
+
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
   \ 'ctrl-x': 'split',
