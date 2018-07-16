@@ -178,3 +178,7 @@ function chpwd() { ls -1 }
 function title {
     echo -ne "\033]0;"$*"\007"
 }
+
+glf() {
+    git ls-files | fzf --preview 'head -100 {}'
+}

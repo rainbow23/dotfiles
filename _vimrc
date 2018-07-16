@@ -188,10 +188,10 @@ endfunction
 
 "FZF start ####################################################################
 "fzf.vim 読み込み mac
-" set rtp+=/usr/local/opt/fzf
+set rtp+=/usr/local/opt/fzf
 
 "fzf.vim 読み込み linux
-set rtp+=~/.fzf
+" set rtp+=~/.fzf
 
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
@@ -220,22 +220,15 @@ nnoremap [fzf]g :<C-u>GFiles<CR>
 " git staus
 nnoremap [fzf]G :<C-u>GFiles?<CR>
 nnoremap [fzf]b :<C-u>Buffers<CR>
-nnoremap [fzf]b :<C-u>Buffers<CR>
 nnoremap [fzf]h :<C-u>History<CR>
 " list tabs
 nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]a :<C-u>Ag<CR>
 
+command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview())
 
-command! FZFMru call fzf#run({
-\  'source':  v:oldfiles,
-\  'sink':    'tabe',
-\  'options': '-m -x +s',
-\  'down':    '40%'})
-
-command! FZFFileList call fzf#run({
-            \ 'source': 'find . -type d -name .git -prune -o ! -name .DS_Store',
-            \ 'sink': 'tabe'})
+command! -bang -nargs=? GFiles
+\ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview(), <bang>0),
 
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
@@ -247,6 +240,11 @@ command! -bang -nargs=* Find
   \           : fzf#vim#with_preview('right:50%:hidden', '?'),
   \   <bang>0)
 
+command! -bang -nargs=* Ag
+  \ call fzf#vim#ag(<q-args>,
+  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+  \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \                 <bang>0)
 "FZF end  ####################################################################
 
 "EasyAlign start ####################################################################
