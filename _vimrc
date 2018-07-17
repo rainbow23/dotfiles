@@ -188,10 +188,10 @@ endfunction
 
 "FZF start ####################################################################
 "fzf.vim 読み込み mac
-set rtp+=/usr/local/opt/fzf
+" set rtp+=/usr/local/opt/fzf
 
 "fzf.vim 読み込み linux
-" set rtp+=~/.fzf
+set rtp+=~/.fzf
 
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
@@ -199,7 +199,7 @@ let g:fzf_action = {
   \ 'ctrl-v': 'vsplit' }
 
 nnoremap [fzf] <Nop>
-nmap <Leader>z [fzf]
+nmap <Leader>f [fzf]
 
 " Mapping selecting mappings
 nmap <leader><tab> <plug>(fzf-maps-n)
