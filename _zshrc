@@ -7,8 +7,6 @@ export LANG
 
 alias ansiblesakura='ansible-playbook -i ~/Documents/Ansible/ansible-examples/Inventory/sakuraHosts site.yml --verbose --ask-become-pass'
 
-source ~/set.sh
-
 ## -------------------------------------
 # git operation
 # -------------------------------------
@@ -177,3 +175,5 @@ function chpwd() { ls -1 }
 function title {
     echo -ne "\033]0;"$*"\007"
 }
+
+source ~/set.sh
