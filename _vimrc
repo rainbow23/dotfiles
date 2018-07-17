@@ -187,11 +187,11 @@ function! s:all_files()
 endfunction
 
 "FZF start ####################################################################
-"fzf.vim 読み込み mac
-" set rtp+=/usr/local/opt/fzf
-
-"fzf.vim 読み込み linux
-set rtp+=~/.fzf
+if has("mac")
+    set rtp+=/usr/local/opt/fzf
+elseif has("unix")
+    set rtp+=~/.fzf
+endif
 
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
