@@ -182,3 +182,12 @@ function title {
 glf() {
     git ls-files | fzf --preview 'head -100 {}'
 }
+
+source ~/enhancd/init.sh
+source ~/mru.sh
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export FZF_DEFAULT_OPTS='--height 40% --border --inline-info'
+# alias j="cd (cat ~/Library/autojump/autojump.txt | sort -nr | awk '{print \$2}' | fzf +s)"
+

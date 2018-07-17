@@ -6,3 +6,5 @@ MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"
 LANG=ja_JP.utf8
 export LANG
 
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
