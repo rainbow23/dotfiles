@@ -12,6 +12,8 @@ filetype on
 set hlsearch
 
 autocmd BufEnter *.yml set shiftwidth=2
+autocmd BufEnter *.sh  set shiftwidth=2
+autocmd BufEnter *.zsh set shiftwidth=2
 
 autocmd InsertLeave * set nopaste
 "ヤンクをクリップボードに保存　kana/vim-fakeclipと連動
@@ -224,6 +226,7 @@ nnoremap [fzf]h :<C-u>History<CR>
 " list tabs
 nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]a :<C-u>Ag<CR>
+nnoremap [fzf]l :<C-u>Lines<CR>
 
 command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview())
 
