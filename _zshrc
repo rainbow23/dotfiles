@@ -7,19 +7,6 @@ export LANG
 
 alias ansiblesakura='ansible-playbook -i ~/Documents/Ansible/ansible-examples/Inventory/sakuraHosts site.yml --verbose --ask-become-pass'
 
-## -------------------------------------
-# git operation
-# -------------------------------------
-alias gl='git log --reverse'
-alias glo='git log --oneline --reverse'
-alias gls='git log --stat --reverse'
-alias glg='git log --graph'
-alias gs='git status'
-alias gc='git checkout'
-alias gd='git diff'
-alias gr='git reset'
-alias gp='git push'
-alias gb='git branch'
 # -------------------------------------
 # 環境変数
 # -------------------------------------
@@ -176,4 +163,4 @@ function title {
     echo -ne "\033]0;"$*"\007"
 }
 
-source ~/set.sh
+source $HOME/dotfiles/init.sh
