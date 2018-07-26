@@ -12,7 +12,7 @@ alias gr='git reset'
 alias gp='git push'
 alias gb='git branch'
 
-
+alias fdr='finder'
 # autojump
 [[ -s $HOME/.autojump/etc/profile.d/autojump.sh ]] && source $HOME/.autojump/etc/profile.d/autojump.sh
 
