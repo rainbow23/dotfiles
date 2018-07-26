@@ -305,10 +305,29 @@ endfunction"}}}
 
 "unite start ##################################################################
 let g:unite_data_directory = expand('~/.vim/etc/unite')
-"インサートモードで開始
-"let g:unite_enable_start_insert=1
 "ヒストリー/ヤンク機能を有効化
 let g:unite_source_history_yank_enable =1
+" insert modeで開始
+let g:unite_enable_start_insert = 1
+" 大文字小文字を区別しない
+let g:unite_enable_ignore_case = 1
+let g:unite_enable_smart_case = 1
+
+" grep検索
+nnoremap <silent> ,g  :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
+
+" カーソル位置の単語をgrep検索
+nnoremap <silent> ,cg :<C-u>Unite grep:. -buffer-name=search-buffer<CR><C-R><C-W>
+
+" grep検索結果の再呼出
+nnoremap <silent> ,r  :<C-u>UniteResume search-buffer<CR>
+
+" unite grep に ag(The Silver Searcher) を使う
+if executable('ag')
+  let g:unite_source_grep_command = 'ag'
+  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
+  let g:unite_source_grep_recursive_opt = ''
+endif
 
 "prefix keyの設定
 nnoremap [unite]    <Nop>
@@ -562,6 +581,7 @@ let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_open_new_file = 'r'
 let g:ctrlp_extensions = ['tag', 'quickfix', 'dir', 'line', 'mixed']
 let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:18'
+let g:ctrlp_user_command = 'ag %s -l'
 "cnnoremap [ctrlp]trlp end   ###################################################################
 
 "tpope/vim-fugitive start   ###################################################################
@@ -773,12 +793,3 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 "vim-syntastic/syntastic end  ####################################################################
 
-" grep検索
-nnoremap <silent> ,g  :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
-
-" unite grepにhw(highway)を使う
-if executable('hw')
-  let g:unite_source_grep_command = 'hw'
-  let g:unite_source_grep_default_opts = '--no-group --no-color'
-  let g:unite_source_grep_recursive_opt = ''
-endif
