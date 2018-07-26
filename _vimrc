@@ -227,6 +227,7 @@ nnoremap [fzf]h :<C-u>History<CR>
 nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]a :<C-u>Ag<CR>
 nnoremap [fzf]l :<C-u>Lines<CR>
+nnoremap [fzf]s :<C-u>Search<CR>
 
 command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview())
 
@@ -236,11 +237,11 @@ command! -bang -nargs=? GFiles
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 
-command! -bang -nargs=* Find
+command! -bang -nargs=* Search
   \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always '.shellescape(expand('<cword>')), 1,
+  \   'ag --nogroup --column --color ^', 1,
   \   <bang>0 ? fzf#vim#with_preview('up:60%')
-  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \           : fzf#vim#with_preview('right:50%'),
   \   <bang>0)
 
 command! -bang -nargs=* Ag
