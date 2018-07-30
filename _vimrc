@@ -177,6 +177,7 @@ Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'fatih/vim-go'
 Plug 'Shougo/neco-syntax'
+Plug 'machakann/vim-sandwich'
 call plug#end()
 
 function! s:all_files()
