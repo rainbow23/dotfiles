@@ -7,6 +7,10 @@ set shiftwidth=4
 set tabstop=4
 set noswapfile
 "set tags=./tags;
+" 開いたファイルにワーキングディレクトリを移動する
+if 1 == exists("+autochdir")
+    set autochdir
+endif
 syntax on
 filetype on
 set hlsearch
@@ -37,6 +41,8 @@ nnoremap tk :tabnext<CR>
 nnoremap tj :tabprev<CR>
 nnoremap th :tabfirst<CR>
 nnoremap tl :tablast<CR>
+" 現在開いているファイルにワーキングディレクトリを移動する
+nnoremap mvd :<C-u>cd %:h<CR> :pwd<CR>
 
 nnoremap [buffer]    <Nop>
 nmap     <Leader>b [buffer]
