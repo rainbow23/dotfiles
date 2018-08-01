@@ -176,9 +176,13 @@ Plug 'elzr/vim-json'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'roxma/vim-hug-neovim-rpc'
-Plug 'roxma/nvim-yarp'
+if has('nvim')
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+    Plug 'Shougo/deoplete.nvim'
+    Plug 'roxma/vim-hug-neovim-rpc'
+    Plug 'roxma/nvim-yarp'
+endif
 Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'fatih/vim-go'
