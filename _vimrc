@@ -158,7 +158,6 @@ Plug 'osyo-manga/unite-quickfix'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
-Plug 'bronson/vim-trailing-whitespace'
 Plug 'ctrlpvim/ctrlp.vim'
 "Plug 'cohama/lexima.vim'
 Plug 'rainbow23/vim-anzu'
@@ -188,6 +187,7 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'fatih/vim-go'
 Plug 'Shougo/neco-syntax'
 Plug 'machakann/vim-sandwich'
+Plug 'ntpeters/vim-better-whitespace'
 call plug#end()
 
 function! s:all_files()
@@ -557,11 +557,11 @@ let g:indentLine_color_dark = 1 " (default: 2)
 "let g:indentLine_bgcolor_gui = '#FF5F00'
 "Yggdroot/indentLine end #######################################################
 
-"bronson/vim-trailing-whitespace start #########################################
-let g:extra_whitespace_ignored_filetypes = ['unite', 'mkd']
+" ntpeters/vim-better-whitespace start ########################################
 :highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
-nnoremap fws :<C-u>FixWhitespace<Leader><CR>
-"bronson/vim-trailing-whitespace end   #########################################
+let g:better_whitespace_filetypes_blacklist=['vimfiler', 'diff', 'gitcommit', 'unite', 'qf', 'help']
+nnoremap sws :<C-u>StripWhitespace<CR>
+" ntpeters/vim-better-whitespace end ##########################################
 
 "Yggdroot/indentLine start  #########################################
 nnoremap ilt :<C-u>IndentLinesToggle<CR>
@@ -626,7 +626,7 @@ vnoremap [tagbar]p :CtrlPtjumpVisual<cr>
 "ivalkeen/vim-ctrlp-tjump end    ###################################################################
 
 "soramugi/auto-ctags.vim  start  ###################################################################
-let g:auto_ctags = 1
+let g:auto_ctags = 0
 let g:auto_ctags_directory_list = ['.git', '.svn']
 set tags+=.svn/tags
 "soramugi/auto-ctags.vim  end    ###################################################################
