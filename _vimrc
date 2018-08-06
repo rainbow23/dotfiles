@@ -57,11 +57,11 @@ nnoremap [buffer]d :bdelete<CR>
 nnoremap noremap [panel]    <Nop>
 nmap     s [panel]
 nnoremap [panel]hh  :vertical resize -10<CR>
-nnoremap [panel]hhh :vertical resize -20<CR>
+nnoremap [panel]hhh :vertical resize -40<CR>
 " 横に最小化
 nnoremap [panel]hhhh <C-w>1\| <C-g><CR>
 nnoremap [panel]ll  :vertical resize +10<CR>
-nnoremap [panel]lll :vertical resize +20<CR>
+nnoremap [panel]lll :vertical resize +40<CR>
 " 横に最大化
 nnoremap [panel]llll <C-w>\| <C-g><CR>
 nnoremap [panel]jj  :resize +10<CR>
@@ -182,6 +182,18 @@ else
     Plug 'roxma/vim-hug-neovim-rpc'
     Plug 'roxma/nvim-yarp'
 endif
+
+if ((has('nvim')  || has('timers')) && has('python3')) && system('pip3 show neovim') !=# ''
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    if !has('nvim')
+        Plug 'roxma/vim-hug-neovim-rpc'
+        Plug 'roxma/nvim-yarp'
+    endif
+    elseif has('lua')
+        " Plug 'Shougo/neocomplete.vim'
+        Plug 'Shougo/neocomplcache.vim'
+endif
+
 Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'fatih/vim-go'
@@ -312,6 +324,39 @@ function! s:check_back_space() abort "{{{
     return !col || getline('.')[col - 1]  =~ '\s'
 endfunction"}}}
 " deoplete end #####################################################################
+
+"neocomplcache start ###############################################################
+highlight Pmenu ctermbg=6
+highlight PmenuSel ctermbg=3
+highlight PMenuSbar ctermbg=0
+
+let g:neocomplcache_enable_at_startup = 1
+let g:neocomplcache_max_list = 30
+let g:neocomplcache_auto_completion_start_length = 2
+let g:neocomplcache_enable_smart_case = 1
+"" like AutoComplPop
+let g:neocomplcache_enable_auto_select = 1
+"" search with camel case like Eclipse
+let g:neocomplcache_enable_camel_case_completion = 1
+let g:neocomplcache_enable_underbar_completion = 1
+"imap <C-k> <Plug>(neocomplcache_snippets_expand)
+"smap <C-k> <Plug>(neocomplcache_snippets_expand)
+inoremap <expr><C-g> neocomplcache#undo_completion()
+"inoremap <expr><C-l> neocomplcache#complete_common_string()
+
+"" SuperTab like snippets behavior.
+"imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+"" <CR>: close popup and save indent.
+"inoremap <expr><CR> neocomplcache#smart_close_popup() . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
+inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+"" <TAB>: completion.
+"inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+"" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplcache#smart_close_popup() . "\<C-h>"
+inoremap <expr><BS> neocomplcache#smart_close_popup() . "\<C-h>"
+inoremap <expr><C-y> neocomplcache#close_popup()
+inoremap <expr><C-e> neocomplcache#cancel_popup()
+"neocomplcache end ############################################################
 
 "unite start ##################################################################
 let g:unite_data_directory = expand('~/.vim/etc/unite')
