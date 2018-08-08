@@ -13,6 +13,9 @@ alias gp='git push'
 alias gb='git branch'
 
 alias fdr='finder'
+
+#ansible
+alias asbp='ansible-playbook'
 # autojump
 [[ -s $HOME/.autojump/etc/profile.d/autojump.sh ]] && source $HOME/.autojump/etc/profile.d/autojump.sh
 
