@@ -29,6 +29,13 @@ else
     [ -f ~/.fzf.bash ] && source ~/.fzf.bash;
 fi
 
+gcb() {
+  local brh cbrh
+  IFS=$'\n'
+  brh=$(git branch | fzf +m | sed -e 's/ //g' | sed -e 's/*//g')
+  git checkout "$brh"
+}
+
 glf() {
   local out file key
   IFS=$'\n'
