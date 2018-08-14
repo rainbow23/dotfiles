@@ -32,7 +32,7 @@ fi
 gcb() {
   local brh cbrh
   IFS=$'\n'
-  brh=$(git branch | fzf +m | sed -e 's/ //g' | sed -e 's/*//g')
+  brh=$(git branch | fzf +m | sed -e 's/ //g' -e 's/*//g')
   git checkout "$brh"
 }
 
