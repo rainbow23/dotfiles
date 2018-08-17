@@ -127,9 +127,24 @@ alias grep="grep --color -n -I --exclude='*.svn-*' --exclude='entries' --exclude
 
 # ls
 alias ls="ls -G" # color for darwin
-alias l="ls -la"
-alias la="ls -la"
-alias l1="ls -1"
+
+# lsがカラー表示になるようエイリアスを設定
+case "${OSTYPE}" in
+darwin*)
+  # Mac
+  alias ls="ls -GF"
+  alias l="ls -la -GF"
+  alias la="ls -la -GF"
+  alias l1="ls -1 -GF"
+  ;;
+linux*)
+  # Linux
+  alias ls='ls -F --color'
+  alias l="ls -la -color"
+  alias la="ls -la -color"
+  alias l1="ls -1 -color"
+  ;;
+esac
 
 # tree
 alias tree="tree -NC" # N: 文字化け対策, C:色をつける
