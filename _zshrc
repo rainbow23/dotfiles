@@ -140,7 +140,7 @@ darwin*)
 linux*)
   # Linux
   alias ls='ls -F --color'
-  alias l="ls -la -color"
+  alias l="ls -l -color"
   alias la="ls -la -color"
   alias l1="ls -1 -color"
   ;;
