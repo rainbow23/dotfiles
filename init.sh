@@ -19,7 +19,9 @@ alias asbp='ansible-playbook'
 # autojump
 [[ -s $HOME/.autojump/etc/profile.d/autojump.sh ]] && source $HOME/.autojump/etc/profile.d/autojump.sh
 
+## -------------------------------------
 # fzf
+# -------------------------------------
 if [  -n "$ZSH_NAME" ]
 then
     # echo 'running zsh';
@@ -29,6 +31,9 @@ else
     [ -f ~/.fzf.bash ] && source ~/.fzf.bash;
 fi
 
+## -------------------------------------
+# fzf git
+# -------------------------------------
 gcb() {
   local brh cbrh
   IFS=$'\n'
@@ -58,6 +63,18 @@ gsh() {
                 xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
                 {}
 FZF-EOF"
+}
+
+## -------------------------------------
+# fzf fd
+# -------------------------------------
+
+# fd - cd to selected directory
+fd() {
+  local dir
+  dir=$(find ${1:-.} -path '*/\.*' -prune \
+                  -o -type d -print 2> /dev/null | fzf +m) &&
+  cd "$dir"
 }
 
 j() {

@@ -43,6 +43,8 @@ nnoremap th :tabfirst<CR>
 nnoremap tl :tablast<CR>
 " 現在開いているファイルにワーキングディレクトリを移動する
 nnoremap mvd :<C-u>cd %:h<CR> :pwd<CR>
+" fullpathでファイル名表示
+nnoremap <C-G> :echo expand('%:p') <CR>
 
 nnoremap [buffer]    <Nop>
 nmap     <Leader>b [buffer]
@@ -249,6 +251,7 @@ nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]a :<C-u>Ag<CR>
 nnoremap [fzf]l :<C-u>Lines<CR>
 nnoremap [fzf]s :<C-u>Search<CR>
+nnoremap [fzf]S :<C-u>SearchFromCurrDir<CR>
 
 command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview())
 
@@ -262,7 +265,14 @@ command! -bang -nargs=* Search
   \ call fzf#vim#grep(
   \   'ag --nogroup --column --color ^ $(git rev-parse --show-toplevel main)', 1,
   \   <bang>0 ? fzf#vim#with_preview('up:60%')
-  \           : fzf#vim#with_preview('right:50%'),
+  \           : fzf#vim#with_preview('right:hidden', '?'),
+  \   <bang>0)
+
+command! -bang -nargs=* SearchFromCurrDir
+  \ call fzf#vim#grep(
+  \   'ag --nogroup --column --color ^ $(pwd)', 1,
+  \   <bang>0 ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview('right:hidden', '?'),
   \   <bang>0)
 
 command! -bang -nargs=* Ag

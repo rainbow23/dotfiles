@@ -1,10 +1,11 @@
 mru() {
     local -a f
     f=(
-    ~/.vim_mru_files(N)
-    ~/.unite/file_mru(N)
+    ~/.cache/neomru/directory(N)
     ~/.cache/ctrlp/mru/cache.txt(N)
-    ~/.frill(N)
+    # ~/.vim_mru_files(N)
+    # ~/.unite/file_mru(N)
+    # ~/.frill(N)
     )
     if [[ $#f -eq 0 ]]; then
         echo "There is no available MRU Vim plugins" >&2
