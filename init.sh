@@ -77,6 +77,14 @@ fd() {
   cd "$dir"
 }
 
+# Another fd - cd into the selected directory
+# This one differs from the above, by only showing the sub directories and not
+#  showing the directories within those.
+fdo() {
+  DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf-tmux` \
+    && cd "$DIR"
+}
+
 # fdp - cd to selected parent directory
 fdp() {
   local declare dirs=()
