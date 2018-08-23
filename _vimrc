@@ -373,36 +373,39 @@ let g:unite_data_directory = expand('~/.vim/etc/unite')
 "ヒストリー/ヤンク機能を有効化
 let g:unite_source_history_yank_enable =1
 " insert modeで開始
-let g:unite_enable_start_insert = 1
+let g:unite_enable_start_insert = 0
 " 大文字小文字を区別しない
 let g:unite_enable_ignore_case = 1
 let g:unite_enable_smart_case = 1
 
+call vimfiler#custom#profile('default', 'context', {
+    \   'preview_action' : 'preview',
+    \ })
 
 "prefix keyの設定
 nnoremap [unite]    <Nop>
 nmap     <Leader>u [unite]
 
-"今開いているファイルに適応 start  ###############################
+"今開いているファイルに適応 start  ##################
 "ファイル一覧を表示する
 nnoremap <silent> [unite]f    :<C-u>UniteWithBufferDir -buffer-name=files file <CR>
 "最近使ったファイルの一覧を表示
 nnoremap <silent> [unite]<CR> :<C-u>UniteWithBufferDir file_mru<CR>
-"今開いているファイルに適応 end    ###############################
+"今開いているファイルに適応 end    ##################
 
 "現在位置のファイルの一覧を表示
 nnoremap <silent> [unite]c :<C-u>Unite file_rec:!<CR>
 "最近使ったファイルの一覧を表示 MostRecentUse
 nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
 
-"全体に適応 start  ###############################################
+"全体に適応 start  ###########
 nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
 nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
 nnoremap <silent> [unite]s :<C-u>Unite session<CR>
 nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
 "スペースキーとrキーでレジストリを表示
 nnoremap <silent> [unite]r :<C-u>Unite register<CR>
-nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir -explorer -toggle -no-quit<CR>
+nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir -split -explorer -toggle -no-quit<CR>
 nnoremap <silent> [unite]o :<C-u>Uo<CR>
 "MattesGroeger/vim-bookmarksを開く
 nnoremap <silent> [unite]kk :<C-u>Unite vim_bookmarks<CR>
@@ -422,7 +425,7 @@ if executable('ag')
   let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
   let g:unite_source_grep_recursive_opt = ''
 endif
-"全体に適応 end    ###############################################
+"全体に適応 end    ##########
 
 "vimfiler ##################
 "vimデフォルトのエクスプローラをvimfilerで置き換える
