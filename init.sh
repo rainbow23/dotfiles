@@ -65,6 +65,20 @@ gsh() {
 FZF-EOF"
 }
 
+# alias glNoGraph='git log --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
+# _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
+# _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | diff-so-fancy'"
+
+# # fshow_preview - git commit browser with previews
+# fshow() {
+#     glNoGraph |
+#         fzf --no-sort --reverse --tiebreak=index --no-multi \
+#             --ansi --preview="$_viewGitLogLine" \
+#                 --header "enter to view, alt-y to copy hash" \
+#                 --bind "enter:execute:$_viewGitLogLine   | less -R" \
+#                 --bind "alt-y:execute:$_gitLogLineToHash | xclip"
+# }
+
 ## -------------------------------------
 # fzf fd
 # -------------------------------------
@@ -107,6 +121,38 @@ j() {
     fi
     cd "$(autojump -s | sed '/_____/Q; s/^[0-9,.:]*\s*//' |  fzf --height 40% --nth 1.. --reverse --inline-info +s --tac --query "${*##-* }" )"
 }
+
+# c - browse chrome history
+c() {
+  local cols sep google_history open
+  cols=$(( COLUMNS / 3 ))
+  sep='{::}'
+
+  if [ "$(uname)" = "Darwin" ]; then
+    google_history="$HOME/Library/Application Support/Google/Chrome/Default/History"
+    open=open
+  else
+    google_history="$HOME/.config/google-chrome/Default/History"
+    open=xdg-open
+  fi
+  cp -f "$google_history" /tmp/h
+  sqlite3 -separator $sep /tmp/h \
+    "select substr(title, 1, $cols), url
+     from urls order by last_visit_time desc" |
+  awk -F $sep '{printf "%-'$cols's  \x1b[36m%s\x1b[m\n", $1, $2}' |
+  fzf --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs $open > /dev/null 2> /dev/null
+}
+
+# LastPass CLI
+# Search through your LastPass vault with LastPass CLI and copy password to clipboard. 
+lp() {
+  lpass show -c --password $(lpass ls  | fzf | awk '{print $(NF)}' | sed 's/\]//g')
+}
+
+
+
+
+
 
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
 export FZF_DEFAULT_OPTS='--height 70% --reverse --border'
