@@ -5,8 +5,6 @@ autoload -U compinit && compinit -u
 LANG=ja_JP.utf8
 export LANG
 
-alias ansiblesakura='ansible-playbook -i ~/Documents/Ansible/ansible-examples/Inventory/sakuraHosts site.yml --verbose --ask-become-pass'
-
 # -------------------------------------
 # 環境変数
 # -------------------------------------
@@ -22,6 +20,22 @@ export EDITOR=/usr/local/bin/vim
 export MANPAGER="less -"
 # export PAGER=/usr/local/bin/vimpager
 
+# -------------------------------------
+# zplug
+# -------------------------------------
+export ZPLUG_HOME=$HOME/.zplug
+source $HOME/.zplug/init.zsh
+
+zplug "b4b4r07/easy-oneliner", if:"which fzf"
+
+if ! zplug check --verbose; then
+  printf "Install? [y/N]: "
+  if read -q; then
+    echo; zplug install
+  fi
+fi
+
+zplug load --verbose
 
 # -------------------------------------
 # zshのオプション
@@ -148,7 +162,7 @@ esac
 
 # tree
 alias tree="tree -NC" # N: 文字化け対策, C:色をつける
-
+alias szsh='source ~/.zshrc'
 
 # -------------------------------------
 # キーバインド
