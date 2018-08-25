@@ -5,7 +5,5 @@ MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"
 LANG=ja_JP.utf8
 export LANG
 
-source $HOME/dotfiles/init.sh
-
-# mru
-source $HOME/dotfiles/mru.sh
+source $HOME/dotfiles/source.sh
+source $HOME/dotfiles/alias.sh

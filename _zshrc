@@ -1,5 +1,5 @@
 export XDG_CONFIG_HOME=$HOME/.config
-
+## 補完機能の強化
 autoload -U compinit && compinit -u
 
 LANG=ja_JP.utf8
@@ -21,29 +21,9 @@ export MANPAGER="less -"
 # export PAGER=/usr/local/bin/vimpager
 
 # -------------------------------------
-# zplug
-# -------------------------------------
-export ZPLUG_HOME=$HOME/.zplug
-source $HOME/.zplug/init.zsh
-
-zplug "b4b4r07/easy-oneliner", if:"which fzf"
-
-if ! zplug check --verbose; then
-  printf "Install? [y/N]: "
-  if read -q; then
-    echo; zplug install
-  fi
-fi
-
-zplug load --verbose
-
-# -------------------------------------
 # zshのオプション
 # -------------------------------------
 
-## 補完機能の強化
-autoload -U compinit
-compinit
 
 ## 入力しているコマンド名が間違っている場合にもしかして：を出す。
 setopt correct
@@ -133,38 +113,6 @@ PROMPT+="%% "
 RPROMPT="[%*]"
 
 # -------------------------------------
-# エイリアス
-# -------------------------------------
-
-# -n 行数表示, -I バイナリファイル無視, svn関係のファイルを無視
-alias grep="grep --color -n -I --exclude='*.svn-*' --exclude='entries' --exclude='*/cache/*'"
-
-# ls
-alias ls="ls -G" # color for darwin
-
-# lsがカラー表示になるようエイリアスを設定
-case "${OSTYPE}" in
-darwin*)
-  # Mac
-  alias ls="ls -GF"
-  alias l="ls -la -GF"
-  alias la="ls -la -GF"
-  alias l1="ls -1 -GF"
-  ;;
-linux*)
-  # Linux
-  alias ls='ls -F --color'
-  alias l="ls -l -color"
-  alias la="ls -la -color"
-  alias l1="ls -1 -color"
-  ;;
-esac
-
-# tree
-alias tree="tree -NC" # N: 文字化け対策, C:色をつける
-alias szsh='source ~/.zshrc'
-
-# -------------------------------------
 # キーバインド
 # -------------------------------------
 
@@ -192,7 +140,10 @@ function title {
     echo -ne "\033]0;"$*"\007"
 }
 
-source $HOME/dotfiles/init.sh
-
-# mru
+# -------------------------------------
+# source
+# -------------------------------------
+source $HOME/dotfiles/source.sh
+source $HOME/dotfiles/alias.sh
+source $HOME/dotfiles/fzf.sh
 source $HOME/dotfiles/mru.sh
