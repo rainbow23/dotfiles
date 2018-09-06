@@ -202,6 +202,7 @@ Plug 'fatih/vim-go'
 Plug 'Shougo/neco-syntax'
 Plug 'machakann/vim-sandwich'
 Plug 'ntpeters/vim-better-whitespace'
+Plug 'tyru/current-func-info.vim'
 call plug#end()
 
 function! s:all_files()
@@ -858,3 +859,7 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 "vim-syntastic/syntastic end  ####################################################################
 
+"Plug 'tyru/current-func-info.vim' ###################################################################
+nnoremap <C-g>j :echo cfi#format("%s", "")<CR>
+let &statusline .= ' [%{cfi#format("%s", "")}]'
+"Plug 'tyru/current-func-info.vim' ###################################################################
