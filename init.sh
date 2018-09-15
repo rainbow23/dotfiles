@@ -55,5 +55,5 @@ fi
 
 # cli-finder
 if [ ! -f /usr/local/bin/finder ] ; then
-  curl https://raw.githubusercontent.com/b4b4r07/cli-finder/master/bin/finder -o /usr/local/bin/finder && chmod +x /usr/local/bin/finder
+  sudo sh -c "curl https://raw.githubusercontent.com/b4b4r07/cli-finder/master/bin/finder -o /usr/local/bin/finder && chmod +x /usr/local/bin/finder"
 fi
