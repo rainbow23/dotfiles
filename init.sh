@@ -52,3 +52,8 @@ if [ ! -d $HOME/enhancd ] ; then
   git clone https://github.com/rainbow23/enhancd.git ~/enhancd
   source $HOME/enhancd/init.sh
 fi
+
+# cli-finder
+if [ ! -f /usr/local/bin/finder ] ; then
+  curl https://raw.githubusercontent.com/b4b4r07/cli-finder/master/bin/finder -o /usr/local/bin/finder && chmod +x /usr/local/bin/finder
+fi
