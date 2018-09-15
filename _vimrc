@@ -140,6 +140,13 @@ highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 nnoremap <Leader>. :<C-u>tabedit $MYVIMRC<CR>
 :set list lcs=tab:\|\ 
 
+
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 call plug#begin('~/.vim/plugged')
 Plug 'junegunn/vim-easy-align'
 "Plug 'powerline/fonts'
@@ -264,14 +271,14 @@ command! -bang -nargs=? -complete=dir Files
 
 command! -bang -nargs=* Search
   \ call fzf#vim#grep(
-  \   'ag --nogroup --column --color ^ $(git rev-parse --show-toplevel main)', 1,
+  \   'ag --nogroup --column --nocolor ^ $(git rev-parse --show-toplevel main)', 1,
   \   <bang>0 ? fzf#vim#with_preview('up:60%')
   \           : fzf#vim#with_preview('right:hidden', '?'),
   \   <bang>0)
 
 command! -bang -nargs=* SearchFromCurrDir
   \ call fzf#vim#grep(
-  \   'ag --nogroup --column --color ^ $(pwd)', 1,
+  \   'ag --nogroup --column --nocolor ^ $(pwd)', 1,
   \   <bang>0 ? fzf#vim#with_preview('up:60%')
   \           : fzf#vim#with_preview('right:hidden', '?'),
   \   <bang>0)
@@ -373,15 +380,18 @@ endfunction"}}}
 let g:unite_data_directory = expand('~/.vim/etc/unite')
 "ヒストリー/ヤンク機能を有効化
 let g:unite_source_history_yank_enable =1
-" insert modeで開始
-let g:unite_enable_start_insert = 0
 " 大文字小文字を区別しない
 let g:unite_enable_ignore_case = 1
 let g:unite_enable_smart_case = 1
 
-call vimfiler#custom#profile('default', 'context', {
-    \   'preview_action' : 'preview',
-    \ })
+"  \ 'split' : 1,
+" \ 'quit' : 1,
+call unite#custom#profile('default', 'context', {
+  \ 'split' : 1,
+  \ 'start_insert': 0,
+  \ 'vertical_preview': 1,
+ \ 'toggle' : 1,
+  \ })
 
 "prefix keyの設定
 nnoremap [unite]    <Nop>
@@ -406,7 +416,8 @@ nnoremap <silent> [unite]s :<C-u>Unite session<CR>
 nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
 "スペースキーとrキーでレジストリを表示
 nnoremap <silent> [unite]r :<C-u>Unite register<CR>
-nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir -split -explorer -toggle -no-quit<CR>
+" nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir  -buffer-name=default -no-quit<CR>
+nnoremap <silent> [unite]v :<C-u>VimFiler -buffer-name=default -split -simple -winwidth=35 -toggle -no-quit<CR>
 nnoremap <silent> [unite]o :<C-u>Uo<CR>
 "MattesGroeger/vim-bookmarksを開く
 nnoremap <silent> [unite]kk :<C-u>Unite vim_bookmarks<CR>
@@ -435,7 +446,7 @@ let g:vimfiler_as_default_explorer = 1
 let g:vimfiler_safe_mode_by_default = 0
 
 "autocmd VimEnter * VimFilerExplorer
-autocmd FileType vimfiler nmap <buffer> <Leader>uv <Plug>(vimfiler_close)
+" autocmd FileType vimfiler nmap <buffer> <Leader>uv <Plug>(vimfiler_close)
 
 augroup vimrc
     autocmd FileType vimfiler call s:vimfiler_my_settings()
