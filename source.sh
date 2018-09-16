@@ -38,6 +38,8 @@ fi
 
 # easy-oneliner
 if [ -d $HOME/.easy-oneliner ] ; then
+  cd $HOME/.easy-oneliner
+  git pull
   source $HOME/.easy-oneliner/easy-oneliner.zsh
 fi
 
