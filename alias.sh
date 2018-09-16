@@ -1,5 +1,14 @@
 #!/bin/sh
-
+## -------------------------------------
+# docker operation
+# -------------------------------------
+alias dk='docker'
+alias dkcls='docker container ls'
+alias dkils='docker image ls'
+alias dkr='docker container run'
+alias dkcpr='docker container prune'
+alias dkipr='docker image prune'
+alias dkcs='docker container stats'
 ## -------------------------------------
 # git operation
 # -------------------------------------
