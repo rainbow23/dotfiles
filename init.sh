@@ -43,7 +43,7 @@ fi
 
 # easy-oneliner
 if [ ! -d $HOME/.easy-oneliner ] ; then
-  git clone https://github.com/b4b4r07/easy-oneliner.git ~/.easy-oneliner
+  git clone git@github.com:rainbow23/easy-oneliner.git ~/.easy-oneliner
   source $HOME/.easy-oneliner/easy-oneliner.zsh
 fi
 

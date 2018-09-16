@@ -3,9 +3,9 @@
 ## -------------------------------------
 # git operation
 # -------------------------------------
-alias gl='git log --reverse'
-alias glo='git log --oneline --reverse'
-alias gls='git log --stat --reverse'
+alias gl='git log'
+alias glo='git log --oneline'
+alias gls='git log --stat'
 alias glg='git log --graph'
 alias gs='git status'
 alias gc='git checkout'
