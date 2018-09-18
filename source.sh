@@ -38,9 +38,12 @@ fi
 
 # easy-oneliner
 if [ -d $HOME/.easy-oneliner ] ; then
+  local currdir
+  currdir=$PWD
   cd $HOME/.easy-oneliner
-  git pull
-  source $HOME/.easy-oneliner/easy-oneliner.zsh
+  git pull 1>/dev/null
+  source $HOME/.easy-oneliner/easy-oneliner.zsh 1>/dev/null
+  cd "$currdir" 1>/dev/null
 fi
 
 # enhancd
