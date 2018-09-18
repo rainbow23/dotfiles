@@ -184,17 +184,11 @@ Plug 'elzr/vim-json'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
-if has('nvim')
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-    Plug 'Shougo/deoplete.nvim'
-    Plug 'roxma/vim-hug-neovim-rpc'
-    Plug 'roxma/nvim-yarp'
-endif
 
 if ((has('nvim')  || has('timers')) && has('python3')) && system('pip3 show neovim') !=# ''
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     if !has('nvim')
+        Plug 'Shougo/deoplete.nvim'
         Plug 'roxma/vim-hug-neovim-rpc'
         Plug 'roxma/nvim-yarp'
     endif
