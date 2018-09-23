@@ -92,6 +92,12 @@ nnoremap [panel]R <C-w>R <C-g><CR>
 " 現在カーソルがあるウィンドウと一つ前のウィンドウを入れ替える
 nnoremap [panel]x <C-w>x <C-g><CR>
 noremap [panel]o <C-w>= <C-g><CR>
+
+" Plug 'regedarek/ZoomWin' ###########################################################################
+" 選択したパネルの最大化
+nnoremap [panel]wo :ZoomWin<CR>
+" Plug 'regedarek/ZoomWin' ###########################################################################
+
 " panel size end  #################################
 
 nnoremap <C-H> :noh <CR>
@@ -182,6 +188,7 @@ Plug 'deris/vim-gothrough-jk'
 Plug 'easymotion/vim-easymotion'
 Plug 'elzr/vim-json'
 Plug 'scrooloose/nerdcommenter'
+Plug 'scrooloose/nerdtree'
 Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
 if has('nvim')
@@ -210,6 +217,9 @@ Plug 'Shougo/neco-syntax'
 Plug 'machakann/vim-sandwich'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'tyru/current-func-info.vim'
+Plug 'jlanzarotta/bufexplorer'
+Plug 'regedarek/ZoomWin'
+Plug 'leafcage/yankround.vim'
 call plug#end()
 
 function! s:all_files()
@@ -859,6 +869,11 @@ nnoremap [nerdcommenter]s :call NERDComment(0,"Sexy")<CR>
 vnoremap [nerdcommenter]s :call NERDComment(0,"Sexy")<CR>
 "Plug 'scrooloose/nerdcommenter' end ##################################################
 
+" Plug 'scrooloose/nerdtree' #########################################################
+let g:NERDTreeMapActivateNode ='l'
+let g:NERDTreeMapOpenVSplit ='v'
+" Plug 'scrooloose/nerdtree' #########################################################
+
 "vim-syntastic/syntastic start ####################################################################
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -874,3 +889,7 @@ let g:syntastic_check_on_wq = 0
 nnoremap <C-g>j :echo cfi#format("%s", "")<CR>
 let &statusline .= ' [%{cfi#format("%s", "")}]'
 "Plug 'tyru/current-func-info.vim' ###################################################################
+
+" Plug 'leafcage/yankround.vim' ######################################################################
+nnoremap <leader>y :<C-u>Unite yankround<CR>
+" Plug 'leafcage/yankround.vim' ######################################################################
