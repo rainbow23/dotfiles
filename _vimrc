@@ -21,7 +21,7 @@ autocmd BufEnter *.zsh set shiftwidth=2
 
 autocmd InsertLeave * set nopaste
 
-vimfile or NERDTreeをUniteSessionから開いた場合、空ファイルになるので自動で閉じるようにする
+" vimfile or NERDTreeをUniteSessionから開いた場合、空ファイルになるので自動で閉じるようにする
 autocmd BufRead * if getfsize(expand(@%)) == -1 | :q | endif
 
 "ヤンクをクリップボードに保存　kana/vim-fakeclipと連動
