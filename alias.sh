@@ -31,6 +31,12 @@ alias gba='git branch --all'
 alias gbr='git branch --remotes'
 alias fdr='finder'
 
+## -------------------------------------
+# tmux operation
+# -------------------------------------
+alias tx='tmux'
+alias txl='tmux ls'
+
 # tree
 alias tree="tree -NC" # N: 文字化け対策, C:色をつける
 alias szsh='source ~/.zshrc'
