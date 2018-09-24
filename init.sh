@@ -45,6 +45,12 @@ fi
 if [ ! -d $HOME/.easy-oneliner ] ; then
   git clone https://github.com/rainbow23/easy-oneliner.git ~/.easy-oneliner
   source $HOME/.easy-oneliner/easy-oneliner.zsh
+else
+  currwd=$PWD
+  cd $HOME/.easy-oneliner
+  echo "git pull in $(echo $HOME/.easy-oneliner)"
+  git pull
+  cd "$currwd"
 fi
 
 # enhancd
