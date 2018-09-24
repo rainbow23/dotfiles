@@ -124,7 +124,7 @@ function cdup() {
    zle reset-prompt
 }
 zle -N cdup
-bindkey '^K' cdup
+# bindkey '^K' cdup
 
 bindkey "^R" history-incremental-search-backward
 
