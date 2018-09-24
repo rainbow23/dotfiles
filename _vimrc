@@ -139,6 +139,8 @@ noremap <Leader>j <Esc>
 "コマンドラインモード＋インサートモード
 noremap! <C-j> <Esc>
 noremap! <Leader>j <Esc>
+" インサートモード
+inoremap <silent> jj <ESC>:w<CR>:noh<CR>
 
 
 "set termguicolors nvim用
