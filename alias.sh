@@ -1,4 +1,7 @@
 #!/bin/sh
+
+alias hsn='hostname'
+
 ## -------------------------------------
 # docker operation
 # -------------------------------------
@@ -19,10 +22,13 @@ alias glg='git log --graph'
 alias gs='git status'
 alias gc='git checkout'
 alias gd='git diff'
+alias gds='git diff --staged'
 alias gr='git reset'
-alias gp='git push'
+alias gph='git push'
+alias gpl='git pull'
 alias gb='git branch'
-
+alias gba='git branch --all'
+alias gbr='git branch --remotes'
 alias fdr='finder'
 
 # tree
