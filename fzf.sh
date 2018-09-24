@@ -92,6 +92,11 @@ tm() {
   session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --exit-0) &&  tmux $change -t "$session" || echo "No sessions found."
 }
 
+# tmux-kill-session
+tks() {
+  tmux ls | fzf-tmux --query="$1" | awk '{print $1}' | sed "s/:$//g" | xargs tmux kill-session -t
+}
+
 ## -------------------------------------
 # fzf fd
 # -------------------------------------
