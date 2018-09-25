@@ -39,6 +39,7 @@ nnoremap .t zt
 nnoremap .m zz
 nnoremap .b zb
 
+nnoremap src :<C-u>source ~/.vimrc<CR>
 nnoremap setp :<C-u>set paste<CR>
 nnoremap tn :tabnew<CR>
 nnoremap tk :tabnext<CR>
@@ -124,10 +125,14 @@ nnoremap ns :<C-u>nohlsearch<CR>
 nnoremap <silent> <C-e> <C-e>j
 "進む 画面半分
 nnoremap <silent> <C-d> <C-d>zz
+"10行進む
+nnoremap <Leader>j 10<C-e>10j
 "進む 画面1ページ分
 nnoremap <silent> <C-f> <C-f>zz
 "戻る 一行
 nnoremap <silent> <C-y> <C-y>k
+"10行戻る
+nnoremap <Leader>k 10<C-y>10k
 "戻る 画面半分
 nnoremap <silent> <C-u> <C-u>zz
 "戻る 画面1ページ分
@@ -135,10 +140,8 @@ nnoremap <silent> <C-b> <C-b>zz
 
 "ノーマルモード＋ビジュアルモード
 noremap <C-j> <Esc>
-noremap <Leader>j <Esc>
 "コマンドラインモード＋インサートモード
 noremap! <C-j> <Esc>
-noremap! <Leader>j <Esc>
 " インサートモード
 inoremap <silent> jj <ESC>:w<CR>:noh<CR>
 
@@ -424,6 +427,7 @@ nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
 nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
 nnoremap <silent> [unite]s :<C-u>Unite session<CR>
 nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
+nnoremap <silent> ta :<C-u>Unite tab<CR>
 "スペースキーとrキーでレジストリを表示
 nnoremap <silent> [unite]r :<C-u>Unite register<CR>
 " nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir  -buffer-name=default -no-quit<CR>
@@ -843,7 +847,7 @@ nmap [easymotion]L <Plug>(easymotion-overwin-line)
 " JK motions: Line motions
 map [easymotion]l <Plug>(easymotion-lineforward)
 map [easymotion]n <Plug>(easymotion-j)
-map [easymotion]k <Plug>(easymotion-k)
+" map [easymotion]k <Plug>(easymotion-k)
 map [easymotion]h <Plug>(easymotion-linebackward)
 
 " Move to word
@@ -868,6 +872,11 @@ vnoremap [nerdcommenter]<space> :call NERDComment(0,"toggle")<CR>
 nnoremap [nerdcommenter]s :call NERDComment(0,"Sexy")<CR>
 vnoremap [nerdcommenter]s :call NERDComment(0,"Sexy")<CR>
 "Plug 'scrooloose/nerdcommenter' end ##################################################
+
+
+" Plug 'scrooloose/nerdtree' start ####################################################
+nnoremap [nerdcommenter]t :NERDTreeToggle<CR>
+" Plug 'scrooloose/nerdtree' end ######################################################
 
 " Plug 'scrooloose/nerdtree' #########################################################
 let g:NERDTreeMapActivateNode ='l'
