@@ -39,6 +39,8 @@ nnoremap .t zt
 nnoremap .m zz
 nnoremap .b zb
 
+nnoremap <silent> uss :<C-u>Uss<CR>
+nnoremap <silent> usos :<C-u>Usos<CR>"カーソル位置から画面移動
 nnoremap src :<C-u>source ~/.vimrc<CR>
 nnoremap setp :<C-u>set paste<CR>
 nnoremap tn :tabnew<CR>
