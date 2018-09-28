@@ -171,6 +171,7 @@ endif
 
 call plug#begin('~/.vim/plugged')
 Plug 'junegunn/vim-easy-align'
+Plug 'junegunn/fzf.vim'
 "Plug 'powerline/fonts'
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neosnippet.vim'
@@ -180,13 +181,13 @@ Plug 'Shougo/neomru.vim'
 Plug 'Shougo/vimfiler.vim'
 "unite-outline brew install ctagsが必要
 Plug 'Shougo/unite-outline'
+Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'kana/vim-fakeclip'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'thinca/vim-quickrun'
 Plug 'osyo-manga/unite-quickfix'
-Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'ctrlpvim/ctrlp.vim'
@@ -199,7 +200,6 @@ Plug 'ivalkeen/vim-ctrlp-tjump'
 Plug 'tpope/vim-fugitive'
 Plug 'soramugi/auto-ctags.vim'
 Plug 'airblade/vim-gitgutter'
-Plug 'junegunn/fzf.vim'
 Plug 'deris/vim-gothrough-jk'
 Plug 'easymotion/vim-easymotion'
 Plug 'elzr/vim-json'
