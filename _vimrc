@@ -39,6 +39,9 @@ nnoremap .t zt
 nnoremap .m zz
 nnoremap .b zb
 
+nnoremap sn :<C-u>set number<CR>
+nnoremap snn :<C-u>set nonumber<CR>
+
 nnoremap <silent> uss :<C-u>Uss<CR>
 nnoremap <silent> usos :<C-u>Usos<CR>"カーソル位置から画面移動
 nnoremap src :<C-u>source ~/.vimrc<CR>
@@ -52,6 +55,8 @@ nnoremap tl :tablast<CR>
 nnoremap mvd :<C-u>cd %:h<CR> :pwd<CR>
 " fullpathでファイル名表示
 nnoremap <C-G> :echo expand('%:p') <CR>
+nnoremap <Leader>pj :echo cfi#format("%s", "")<CR>
+nnoremap <Leader>p :echo expand('%:p') <CR>
 
 nnoremap [buffer]    <Nop>
 nmap     <Leader>b [buffer]
@@ -225,6 +230,7 @@ Plug 'tyru/current-func-info.vim'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'regedarek/ZoomWin'
 Plug 'leafcage/yankround.vim'
+Plug 'ujihisa/unite-colorscheme'
 call plug#end()
 
 function! s:all_files()
@@ -904,3 +910,7 @@ let &statusline .= ' [%{cfi#format("%s", "")}]'
 " Plug 'leafcage/yankround.vim' ######################################################################
 nnoremap <leader>y :<C-u>Unite yankround<CR>
 " Plug 'leafcage/yankround.vim' ######################################################################
+
+" Plug 'ujihisa/unite-colorscheme' ###################################################################
+nnoremap <silent> [unite]clrs    :<C-u>Unite -auto-preview colorscheme <CR>
+" Plug 'ujihisa/unite-colorscheme' ###################################################################
