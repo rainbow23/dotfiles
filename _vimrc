@@ -441,6 +441,7 @@ nnoremap <silent> [unite]r :<C-u>Unite register<CR>
 " nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir  -buffer-name=default -no-quit<CR>
 nnoremap <silent> [unite]v :<C-u>VimFiler -buffer-name=default -split -simple -winwidth=35 -toggle -no-quit<CR>
 nnoremap <silent> [unite]o :<C-u>Uo<CR>
+nnoremap <silent> uo :<C-u>Uo<CR>
 "MattesGroeger/vim-bookmarksを開く
 nnoremap <silent> [unite]kk :<C-u>Unite vim_bookmarks<CR>
 "Unite bookmarkを開く
