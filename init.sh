@@ -63,3 +63,10 @@ fi
 if [ ! -f /usr/local/bin/finder ] ; then
   sudo sh -c "curl https://raw.githubusercontent.com/b4b4r07/cli-finder/master/bin/finder -o /usr/local/bin/finder && chmod +x /usr/local/bin/finder"
 fi
+
+# autojump
+if [ ! -d $HOME/autojump ] ; then
+  git clone git://github.com/wting/autojump.git  ~/autojump
+  cd $HOME/autojump
+  ./install.py
+fi
