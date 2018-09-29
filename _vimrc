@@ -22,7 +22,7 @@ autocmd BufEnter *.zsh set shiftwidth=2
 autocmd InsertLeave * set nopaste
 
 " vimfile or NERDTreeをUniteSessionから開いた場合、空ファイルになるので自動で閉じるようにする
-autocmd BufRead * if getfsize(expand(@%)) == -1 | :q | endif
+" autocmd BufRead * if getfsize(expand(@%)) == -1 | :q | endif
 
 "ヤンクをクリップボードに保存　kana/vim-fakeclipと連動
 set clipboard=unnamed
@@ -205,6 +205,7 @@ Plug 'easymotion/vim-easymotion'
 Plug 'elzr/vim-json'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
+Plug 'jistr/vim-nerdtree-tabs'
 Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
 
@@ -434,6 +435,7 @@ nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
 nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
 nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
 nnoremap <silent> [unite]s :<C-u>Unite session<CR>
+nnoremap <silent> sin :<C-u>Unite session<CR>
 nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
 nnoremap <silent> ta :<C-u>Unite tab<CR>
 "スペースキーとrキーでレジストリを表示
@@ -499,6 +501,7 @@ let g:unite_source_session_default_session_name = 'default'
 
 :command! -nargs=? Uss call s:Unite_session_save(<f-args>)
 :function! s:Unite_session_save(...)
+:NERDTreeTabsClose
 : if a:0 >= 1
 :   let hogearg = a:1
 :   echo "UniteSessionSave ".hogearg
@@ -513,6 +516,7 @@ let g:unite_source_session_default_session_name = 'default'
 "セッションを上書き保存
 command! Usos call s:Unite_session_override_save()
 function! s:Unite_session_override_save()
+   NERDTreeTabsClose
    let filepath = v:this_session
     if filepath  == ''
         let filepath = g:unite_source_session_default_session_name
@@ -884,7 +888,7 @@ vnoremap [nerdcommenter]s :call NERDComment(0,"Sexy")<CR>
 
 
 " Plug 'scrooloose/nerdtree' start ####################################################
-nnoremap [nerdcommenter]t :NERDTreeToggle<CR>
+nnoremap [nerdcommenter]t :NERDTreeTabsToggle<CR>
 " Plug 'scrooloose/nerdtree' end ######################################################
 
 " Plug 'scrooloose/nerdtree' #########################################################
