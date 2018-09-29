@@ -43,7 +43,7 @@ nnoremap sn :<C-u>set number<CR>
 nnoremap snn :<C-u>set nonumber<CR>
 
 nnoremap <silent> uss :<C-u>Uss<CR>
-nnoremap <silent> usos :<C-u>Usos<CR>"カーソル位置から画面移動
+nnoremap <silent> usos :<C-u>Usos<CR>
 nnoremap src :<C-u>source ~/.vimrc<CR>
 nnoremap setp :<C-u>set paste<CR>
 nnoremap tn :tabnew<CR>
