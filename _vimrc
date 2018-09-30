@@ -21,7 +21,7 @@ if has ('pythonx')
   set pyxversion=3
 endif
 if has ('python3')
-   echo 'has python3'
+   " echo 'has python3'
    python3 import neovim
 endif
 if has ('python')
@@ -216,7 +216,8 @@ Plug 'ivalkeen/vim-ctrlp-tjump'
 Plug 'tpope/vim-fugitive'
 Plug 'soramugi/auto-ctags.vim'
 Plug 'airblade/vim-gitgutter'
-Plug 'deris/vim-gothrough-jk'
+" Plug 'deris/vim-gothrough-jk'
+Plug 'rhysd/accelerated-jk'
 Plug 'easymotion/vim-easymotion'
 Plug 'elzr/vim-json'
 Plug 'scrooloose/nerdcommenter'
@@ -828,7 +829,7 @@ let g:clever_f_smart_case = 1
 "rhysd/clever-f.vim ##################################################
 
 "deris/vim-gothrough-jk  ##################################################
-let g:gothrough_jk_go_step = 5
+" let g:gothrough_jk_go_step = 5
 "deris/vim-gothrough-jk  ##################################################
 
 "Plug 'easymotion/vim-easymotion' start ##################################################
@@ -935,3 +936,9 @@ nnoremap <leader>y :<C-u>Unite yankround<CR>
 " Plug 'ujihisa/unite-colorscheme' ###################################################################
 nnoremap <silent> [unite]clrs    :<C-u>Unite -auto-preview colorscheme <CR>
 " Plug 'ujihisa/unite-colorscheme' ###################################################################
+
+" Plug 'rhysd/accelerated-jk'#########################################################################
+let g:accelerated_jk_enable_deceleration=1
+nmap j <Plug>(accelerated_jk_gj)
+nmap k <Plug>(accelerated_jk_gk)
+" Plug 'rhysd/accelerated-jk'#########################################################################
