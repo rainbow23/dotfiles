@@ -2,6 +2,8 @@
 
 alias hsn='hostname'
 
+alias vim='nvim'
+
 ## -------------------------------------
 # docker operation
 # -------------------------------------
