@@ -33,7 +33,11 @@ fi
 if [ -d $HOME/.anyenv/envs/pyenv ] ; then
     export PATH="$HOME/.anyenv/envs/pyenv/bin:$PATH"
     eval "$(pyenv init - zsh)"
-    # eval "$(pyenv virtualenv-init -)"
+fi
+
+# pyenv-virtualenv
+if [ -d $HOME/.anyenv/envs/pyenv/plugins/pyenv-virtualenv ] ; then
+    eval "$(pyenv virtualenv-init -)"
 fi
 
 # easy-oneliner

@@ -28,48 +28,36 @@ fi
 export pyenv_ver=3.6.0
 if [ ! -d $HOME/.anyenv/envs/pyenv ] ; then
   anyenv install pyenv
-  source $HOME/dotfiles/source.sh
-
-  pyenv install "$pyenv_ver"
-  pyenv global "$pyenv_ver"
-  pyenv rehash
-fi
-
-case "${OSTYPE}" in
-darwin*)
-  # Mac
-  pyenv_gnu="~/.anyenv/envs/pyenv/versions/3.6.1/lib/python3.6/config-3.6m-darwin"
-  ;;
-linux*)
-  # Linux
-  pyenv_gnu="~/.anyenv/envs/pyenv/versions/3.6.1/lib/python3.6/config-3.6m-x86_64-linux-gnu"
-  ;;
-esac
-
-pyenv_path="~/.anyenv/envs/pyenv/versions/3.6.1/bin/python3.6"
-
-# /Users/goodscientist1023/.anyenv/envs/pyenv/versions/3.6.1/lib/python3.6/config-3.6m-darwin
-# /home/rainbow/.anyenv/envs/pyenv/versions/3.6.1/lib/python3.6/config-3.6m-x86_64-linux-gnu
-echo "$pyenv_path"
-echo "$pyenv_gnu"
-
-if [ ! -f /usr/local/bin/vim ] ; then
-  if [ ! -d $HOME/vim8src ] ; then
-    ¦git clone https://github.com/vim/vim.git ~/vim8src
+  if [ ! -d $HOME/.anyenv/envs/pyenv/plugins/pyenv-virtualenv ] ; then
+    git clone https://github.com/yyuu/pyenv-virtualenv.git $HOME/.anyenv/envs/pyenv/plugins/pyenv-virtualenv
   fi
-
-  cd $HOME/vim8src && ./configure
-    --enable-fail-if-missing
-    --with-features=huge
-    --disable-selinux
-    --enable-luainterp
-    --enable-perlinterp
-    --enable-python3interp vi_cv_path_python3="$pyenv_path"
-    --with-python3-config-dir="$pyenv_gnu"
-    --enable-cscope
-    --enable-fontset
-    --enable-multibyte
+source $HOME/dotfiles/source.sh
 fi
+
+
+if [ ! -d $HOME/.anyenv/envs/pyenv/versions/2.7.6 ] ; then
+  # CONFIGURE_OPTS="--enable-shared" pyenv install 2.7.6
+  pyenv install 2.7.6
+fi
+
+if [ ! -d $HOME/.anyenv/envs/pyenv/versions/"$pyenv_ver" ] ; then
+  # CONFIGURE_OPTS="--enable-shared" pyenv install "$pyenv_ver"
+  pyenv install "$pyenv_ver"
+fi
+# pyenv install "$pyenv_ver"
+
+pyenv local --unset
+pyenv shell --unset
+pyenv global 2.7.6 "$pyenv_ver"
+pyenv versions
+python --version
+python3 --version
+# pyenv global "$pyenv_ver"
+pyenv rehash
+
+pip3 install --upgrade neovim
+
+# source $HOME/dotfiles/source.sh
 
 # fzf
 if [ ! -d $HOME/.fzf ] ; then
