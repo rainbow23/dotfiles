@@ -909,13 +909,37 @@ vnoremap [nerdcommenter]s :call NERDComment(0,"Sexy")<CR>
 
 
 " Plug 'scrooloose/nerdtree' start ####################################################
-nnoremap [nerdcommenter]t :NERDTreeTabsToggle<CR>
+nnoremap ,t :NERDTreeTabsToggle<CR>
 " Plug 'scrooloose/nerdtree' end ######################################################
 
 " Plug 'scrooloose/nerdtree' #########################################################
+let NERDTreeShowBookmarks=1
 let g:NERDTreeMapActivateNode ='l'
 let g:NERDTreeMapOpenVSplit ='v'
-" Plug 'scrooloose/nerdtree' #########################################################
+
+autocmd VimEnter * call NERDTreeAddKeyMap({
+  \ 'key': 'b',
+  \ 'callback': 'NERDTreeToggleBookmark',
+  \ 'quickhelpText': 'Add/Remove Bookmark for Node.',
+  \ 'scope': 'Node' })
+
+function! NERDTreeToggleBookmark(node)
+  let bookmarkName = a:node.path.getLastPathComponent(1)
+
+  try
+    let bookmark = g:NERDTreeBookmark.BookmarkFor(bookmarkName)
+    if a:node.path.compareTo(bookmark.path) == 0 "If Paths are equal.
+      call bookmark.delete()
+    endif
+  catch /^NERDTree.BookmarkNotFoundError/
+    call a:node.bookmark(bookmarkName)
+  endtry
+  call g:NERDTree.ForCurrentTab().getRoot().refresh()
+
+  call NERDTreeRender()
+  " call a:node.putCursorHece(1, 1)
+endfunction
+" Plug 'sccooloose/nerdtree' #########################################################
 
 "vim-syntastic/syntastic start ####################################################################
 set statusline+=%#warningmsg#
