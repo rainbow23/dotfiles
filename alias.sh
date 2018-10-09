@@ -2,7 +2,7 @@
 
 alias hsn='hostname'
 
-alias vim='nvim'
+# alias vim='nvim'
 
 ## -------------------------------------
 # docker operation
