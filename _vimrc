@@ -15,19 +15,19 @@ syntax on
 filetype on
 set hlsearch
 
-if has ('pythonx')
-   echo 'has pythonx'
-  " :pythonx import neovim
-  set pyxversion=3
-endif
-if has ('python3')
-   " echo 'has python3'
-   python3 import neovim
-endif
-if has ('python')
-   echo 'has python'
-   python import neovim
-endif
+" if has ('pythonx')
+"    echo 'has pythonx'
+"   :pythonx import neovim
+"   set pyxversion=3
+" endif
+" if has ('python3')
+"    " echo 'has python3'
+"    python3 import neovim
+" endif
+" if has ('python')
+"    echo 'has python'
+"    python import neovim
+" endif
 set encoding=utf-8
 
 autocmd BufEnter *.yml set shiftwidth=2
