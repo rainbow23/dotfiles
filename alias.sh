@@ -39,6 +39,17 @@ alias fdr='finder'
 alias tx='tmux'
 alias txl='tmux ls'
 
+
+## -------------------------------------
+# ZSH_HISTORY
+# -------------------------------------
+# コマンド履歴
+HISTFILE=~/.zsh_history
+HISTSIZE=6000000
+SAVEHIST=6000000
+setopt hist_ignore_dups     # ignore duplication command history list
+setopt share_history        # share command history data
+
 # tree
 alias tree="tree -NC" # N: 文字化け対策, C:色をつける
 alias szsh='source ~/.zshrc'
