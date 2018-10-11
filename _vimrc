@@ -537,7 +537,6 @@ let g:unite_source_session_default_session_name = 'default'
 "セッションを上書き保存
 command! Usos call s:Unite_session_override_save()
 function! s:Unite_session_override_save()
-   NERDTreeTabsClose
    let filepath = v:this_session
     if filepath  == ''
         let filepath = g:unite_source_session_default_session_name
@@ -547,18 +546,13 @@ function! s:Unite_session_override_save()
    let inputtext = input("save current session? "."session_name=".filename." y or n ")
       redraw
    if inputtext == 'y'
+      NERDTreeTabsClose
       echo "UniteSessionSave ".filename
       execute 'UniteSessionSave ' .filename
    else
       echo "canceled save current session. session_name=".filename
    endif
-":   let answer = confirm('save current session? '.filename, "&Yes\n&No", 1)
-":   if answer == 1
-":      echo "UniteSessionSave ".filename
-":      execute 'UniteSessionSave ' .filename
-":    endif
-": end
-:endfunction
+endfunction
 
 "unite.vimを開いている間のキーマッピング
 autocmd FileType unite call s:unite_my_settings()
