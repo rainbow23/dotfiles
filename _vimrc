@@ -124,7 +124,23 @@ noremap [panel]o <C-w>= <C-g><CR>
 
 " Plug 'regedarek/ZoomWin' ###########################################################################
 " 選択したパネルの最大化
-nnoremap [panel]wo :ZoomWin<CR>
+" nnoremap <silent> [panel]wo :<C-u>ZoomWin<CR>
+nnoremap [panel]wo :<C-u>ZoomWin<CR>
+
+set stl=Normal
+fun! ZWStatline(state)
+  if a:state
+    " パネル最大化の時に呼ばれる処理を追加できる、Unite windowを開くと上手くできないので保留中
+    set stl=ZoomWin
+  else
+    set stl=Normal
+  endif
+endfun
+
+if !exists("g:ZoomWin_funcref")
+  let g:ZoomWin_funcref= function("ZWStatline")
+endif
+
 if has('nvim')
 " removed 'key', 'oft', 'sn', 'tx' options which do not work with nvim
 let g:zoomwin_localoptlist = ["ai","ar","bh","bin","bl","bomb","bt","cfu","ci","cin","cink","cino","cinw","cms","com","cpt","diff","efm","eol","ep","et","fenc","fex","ff","flp","fo","ft","gp","imi","ims","inde","inex","indk","inf","isk","kmp","lisp","mps","ml","ma","mod","nf","ofu","pi","qe","ro","sw","si","sts","spc","spf","spl","sua","swf","smc","syn","ts","tw","udf","wfh","wfw","wm"]
