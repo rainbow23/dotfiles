@@ -120,6 +120,7 @@ nnoremap [panel]R <C-w>R <C-g><CR>
 " 現在カーソルがあるウィンドウと一つ前のウィンドウを入れ替える
 nnoremap [panel]x <C-w>x <C-g><CR>
 noremap [panel]o <C-w>= <C-g><CR>
+" panel size end  #################################
 
 " Plug 'regedarek/ZoomWin' ###########################################################################
 " 選択したパネルの最大化
@@ -130,7 +131,6 @@ let g:zoomwin_localoptlist = ["ai","ar","bh","bin","bl","bomb","bt","cfu","ci","
 endif
 " Plug 'regedarek/ZoomWin' ###########################################################################
 
-" panel size end  #################################
 
 nnoremap <C-H> :noh <CR>
 " 削除でヤンクしない
@@ -142,6 +142,7 @@ nnoremap diw "_diw
 
 nnoremap ; :
 nnoremap : ;
+nnoremap 88 *
 
 "改行後INSERT MODEにしない
 nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
@@ -456,7 +457,7 @@ nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
 nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
 nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
 nnoremap <silent> [unite]s :<C-u>Unite session<CR>
-nnoremap <silent> sin :<C-u>Unite session<CR>
+nnoremap <silent> us :<C-u>Unite session<CR>
 nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
 nnoremap <silent> ta :<C-u>Unite tab<CR>
 "スペースキーとrキーでレジストリを表示
