@@ -589,16 +589,11 @@ endfunction"}}}
 "unite end #####################################################################
 
 "unite out-line start ##########################################################
-:command! -nargs=? Uo call s:Unite_outline(<f-args>)
-:function! s:Unite_outline(...)
-: if a:0 >= 1
-:   let hogearg = a:1
-:   execute 'Unite -winheight=' . a:1.' outline'
-: else
-:   echo "Unite outline"
-:   execute "Unite -winheight=10 outline"
-: end
-:endfunction
+" :command! -nargs=? Uo call s:Unite_outline(<f-args>)
+command! Uo call s:Unite_outline()
+function! s:Unite_outline(...)
+   execute "Unite -auto-resize outline"
+endfunction
 "unite out-line end   ##########################################################
 
 "vim-multiple-cursors start ####################################################
