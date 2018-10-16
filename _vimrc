@@ -124,7 +124,23 @@ noremap [panel]o <C-w>= <C-g><CR>
 
 " Plug 'regedarek/ZoomWin' ###########################################################################
 " 選択したパネルの最大化
-nnoremap [panel]wo :ZoomWin<CR>
+" nnoremap <silent> [panel]wo :<C-u>ZoomWin<CR>
+nnoremap [panel]wo :<C-u>ZoomWin<CR>
+
+set stl=Normal
+fun! ZWStatline(state)
+  if a:state
+    " パネル最大化の時に呼ばれる処理を追加できる、Unite windowを開くと上手くできないので保留中
+    set stl=ZoomWin
+  else
+    set stl=Normal
+  endif
+endfun
+
+if !exists("g:ZoomWin_funcref")
+  let g:ZoomWin_funcref= function("ZWStatline")
+endif
+
 if has('nvim')
 " removed 'key', 'oft', 'sn', 'tx' options which do not work with nvim
 let g:zoomwin_localoptlist = ["ai","ar","bh","bin","bl","bomb","bt","cfu","ci","cin","cink","cino","cinw","cms","com","cpt","diff","efm","eol","ep","et","fenc","fex","ff","flp","fo","ft","gp","imi","ims","inde","inex","indk","inf","isk","kmp","lisp","mps","ml","ma","mod","nf","ofu","pi","qe","ro","sw","si","sts","spc","spf","spl","sua","swf","smc","syn","ts","tw","udf","wfh","wfw","wm"]
@@ -455,21 +471,23 @@ nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
 
 "全体に適応 start  ###########
 nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
-nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
-nnoremap <silent> [unite]s :<C-u>Unite session<CR>
-nnoremap <silent> us :<C-u>Unite session<CR>
-nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
-nnoremap <silent> ta :<C-u>Unite tab<CR>
+nnoremap <silent> [unite]b :<C-u>Unite -auto-resize buffer<CR>
+nnoremap <silent> [unite]s :<C-u>Unite -auto-resize session<CR>
+nnoremap <silent> us :<C-u>Unite -auto-resize session<CR>
+nnoremap <silent> [unite]t :<C-u>Unite -auto-resize tab<CR>
+nnoremap <silent> ta :<C-u>Unite -auto-resize tab<CR>
+nnoremap <silent> ut :<C-u>Unite -auto-resize tab<CR>
 "スペースキーとrキーでレジストリを表示
 nnoremap <silent> [unite]r :<C-u>Unite register<CR>
-" nnoremap <silent> [unite]v :<C-u>VimFilerBufferDir  -buffer-name=default -no-quit<CR>
 nnoremap <silent> [unite]v :<C-u>VimFiler -buffer-name=default -split -simple -winwidth=35 -toggle -no-quit<CR>
-nnoremap <silent> [unite]o :<C-u>Uo<CR>
-nnoremap <silent> uo :<C-u>Uo<CR>
+nnoremap <silent> uo :<C-u>Unite -auto-resize outline<CR>
+nnoremap <silent> uov :<C-u>Unite -vertical -winwidth=50 outline<CR>
+nnoremap <silent> uv :<C-u>Unite -auto-resize output:version<CR>
+
 "MattesGroeger/vim-bookmarksを開く
-nnoremap <silent> [unite]kk :<C-u>Unite vim_bookmarks<CR>
+nnoremap <silent> [unite]kk :<C-u>Unite -auto-resize vim_bookmarks<CR>
 "Unite bookmarkを開く
-nnoremap <silent> [unite]k  :<C-u>Unite bookmark<CR>
+nnoremap <silent> [unite]k  :<C-u>Unite -auto-resize bookmark<CR>
 "Uniteのbookmarkに追加 ~/.unite/bookmark/default に格納
 nnoremap <silent> [unite]ab :<C-u>UniteBookmarkAdd<CR>
 " grep検索
@@ -587,14 +605,6 @@ set number
     inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
 endfunction"}}}
 "unite end #####################################################################
-
-"unite out-line start ##########################################################
-" :command! -nargs=? Uo call s:Unite_outline(<f-args>)
-command! Uo call s:Unite_outline()
-function! s:Unite_outline(...)
-   execute "Unite -auto-resize outline"
-endfunction
-"unite out-line end   ##########################################################
 
 "vim-multiple-cursors start ####################################################
 "prefix keyの設定
