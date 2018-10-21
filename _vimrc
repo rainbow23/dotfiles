@@ -59,7 +59,8 @@ nnoremap sn :<C-u>set number<CR>
 nnoremap snn :<C-u>set nonumber<CR>
 
 nnoremap <silent> uss :<C-u>Uss<CR>
-nnoremap <silent> usos :<C-u>Usos<CR>
+" nnoremap <silent> usos :<C-u>Usos<CR>
+nnoremap <silent> usos :call <SID>Unite_session_override_save()<CR>
 nnoremap src :<C-u>source ~/.vimrc<CR>
 nnoremap setp :<C-u>set paste<CR>
 nnoremap tn :tabnew<CR>
@@ -129,12 +130,27 @@ noremap [panel]o <C-w>= <C-g><CR>
 " Plug 'regedarek/ZoomWin' ###########################################################################
 " 選択したパネルの最大化
 " nnoremap <silent> [panel]wo :<C-u>ZoomWin<CR>
-nnoremap [panel]wo :<C-u>ZoomWin<CR>
+" nnoremap <silent> [panel]wo :<C-u>Mzw<CR>
+nnoremap <silent> [panel]wo :call <SID>MyZoomWin()<CR>
 
 set stl=Normal
+let g:zoomWinActive = 0
+
+command! Mzw call s:MyZoomWin()
+fun! s:MyZoomWin()
+    if g:zoomWinActive == 1
+      :TagbarClose
+      let g:zoomWinActive = 0
+    endif
+
+    :ZoomWin
+endfun
+
+" ZoomWin()の後に呼ばれる
 fun! ZWStatline(state)
   if a:state
-    " パネル最大化の時に呼ばれる処理を追加できる、Unite windowを開くと上手くできないので保留中
+    let g:zoomWinActive = 1
+    :TagbarOpen
     set stl=ZoomWin
   else
     set stl=Normal
@@ -363,6 +379,8 @@ nmap ga <Plug>(EasyAlign)
 
 "vim-airline start ##################################################################
 let g:airline#extensions#tabline#enabled = 1
+" タブに表示する名前（fnamemodifyの第二引数）
+let g:airline#extensions#tabline#fnamemod = ':t'
 let g:airline_powerline_fonts = 1
 let g:airline_theme='badwolf'
 let g:airline#extensions#syntastic#enabled = 1
@@ -546,6 +564,7 @@ let g:unite_source_session_default_session_name = 'default'
 :command! -nargs=? Uss call s:Unite_session_save(<f-args>)
 :function! s:Unite_session_save(...)
 :NERDTreeTabsClose
+:TagbarClose
 : if a:0 >= 1
 :   let hogearg = a:1
 :   echo "UniteSessionSave ".hogearg
@@ -570,6 +589,7 @@ function! s:Unite_session_override_save()
       redraw
    if inputtext == 'y'
       NERDTreeTabsClose
+      TagbarClose
       echo "UniteSessionSave ".filename
       execute 'UniteSessionSave ' .filename
    else
@@ -741,7 +761,6 @@ set statusline=%{anzu#search_status()}
 nnoremap [tagbar]    <Nop>
 nmap     <Leader>t [tagbar]
 nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
-
 "ivalkeen/vim-ctrlp-tjump start  ###################################################################
 nnoremap [tagbar]p :CtrlPtjump<cr>
 vnoremap [tagbar]p :CtrlPtjumpVisual<cr>
