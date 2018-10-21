@@ -50,12 +50,12 @@ pyenv local --unset
 pyenv shell --unset
 pyenv global 2.7.6 "$pyenv_ver"
 pyenv versions
-python --version
-python3 --version
-# pyenv global "$pyenv_ver"
+# python --version
+# python3 --version
+pyenv global "$pyenv_ver"
 pyenv rehash
 
-pip3 install --upgrade neovim
+# pip3 install --upgrade neovim
 
 # source $HOME/dotfiles/source.sh
 
