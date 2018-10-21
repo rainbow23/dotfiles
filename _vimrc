@@ -133,7 +133,7 @@ noremap [panel]o <C-w>= <C-g><CR>
 " nnoremap <silent> [panel]wo :<C-u>Mzw<CR>
 nnoremap <silent> [panel]wo :call <SID>MyZoomWin()<CR>
 
-set stl=Normal
+" set stl=Normal
 let g:zoomWinActive = 0
 
 command! Mzw call s:MyZoomWin()
@@ -151,9 +151,9 @@ fun! ZWStatline(state)
   if a:state
     let g:zoomWinActive = 1
     :TagbarOpen
-    set stl=ZoomWin
+    " set stl=ZoomWin
   else
-    set stl=Normal
+    " set stl=Normal
   endif
 endfun
 
