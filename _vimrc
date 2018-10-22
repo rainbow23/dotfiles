@@ -6,6 +6,7 @@ set autoindent
 set shiftwidth=4
 set tabstop=4
 set noswapfile
+set ignorecase
 "set tags=./tags;
 " 開いたファイルにワーキングディレクトリを移動する
 if 1 == exists("+autochdir")
@@ -129,20 +130,17 @@ noremap [panel]o <C-w>= <C-g><CR>
 
 " Plug 'regedarek/ZoomWin' ###########################################################################
 " 選択したパネルの最大化
-" nnoremap <silent> [panel]wo :<C-u>ZoomWin<CR>
-" nnoremap <silent> [panel]wo :<C-u>Mzw<CR>
-nnoremap <silent> [panel]wo :call <SID>MyZoomWin()<CR>
+" nnoremap <silent> [panel]wo :call <SID>MyZoomWin()<CR>
+nnoremap <silent> [panel]wo :<C-u>ZoomWin<CR>
 
 set stl=Normal
 let g:zoomWinActive = 0
 
-command! Mzw call s:MyZoomWin()
 fun! s:MyZoomWin()
     if g:zoomWinActive == 1
-      :TagbarClose
+      " :TagbarClose
       let g:zoomWinActive = 0
     endif
-
     :ZoomWin
 endfun
 
@@ -150,7 +148,8 @@ endfun
 fun! ZWStatline(state)
   if a:state
     let g:zoomWinActive = 1
-    :TagbarOpen
+    " Unite session loadでレイアウトが崩れる場合があるので今はtagbarを開かない
+    " :TagbarOpen
     set stl=ZoomWin
   else
     set stl=Normal
@@ -160,6 +159,7 @@ endfun
 if !exists("g:ZoomWin_funcref")
   let g:ZoomWin_funcref= function("ZWStatline")
 endif
+" Plug 'regedarek/ZoomWin' ###########################################################################
 
 if has('nvim')
 " removed 'key', 'oft', 'sn', 'tx' options which do not work with nvim
