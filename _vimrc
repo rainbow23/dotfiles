@@ -239,6 +239,7 @@ Plug 'Shougo/vimfiler.vim'
 "unite-outline brew install ctagsが必要
 Plug 'Shougo/unite-outline'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+Plug 'Shougo/deol.nvim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'kana/vim-fakeclip'
@@ -993,3 +994,7 @@ let g:accelerated_jk_enable_deceleration=1
 nmap j <Plug>(accelerated_jk_gj)
 nmap k <Plug>(accelerated_jk_gk)
 " Plug 'rhysd/accelerated-jk'#########################################################################
+
+" Plug 'Shougo/deol.nvim'#############################################################################
+nnoremap dl :<C-u>Deol<CR>
+" Plug 'Shougo/deol.nvim'#############################################################################
