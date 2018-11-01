@@ -100,3 +100,6 @@ if [ ! -d $HOME/zsh-syntax-highlighting ] ; then
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/zsh-syntax-highlighting
   source $HOME/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
+
+# vimPlug install
+vim +PlugInstall +qall
