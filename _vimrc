@@ -466,14 +466,14 @@ let g:unite_source_history_yank_enable =1
 let g:unite_enable_ignore_case = 1
 let g:unite_enable_smart_case = 1
 
-"  \ 'split' : 1,
-" \ 'quit' : 1,
-call unite#custom#profile('default', 'context', {
-  \ 'split' : 1,
-  \ 'start_insert': 0,
-  \ 'vertical_preview': 1,
- \ 'toggle' : 1,
-  \ })
+if (glob('~/.vim/plugged/unite.vim'))
+    call unite#custom#profile('default', 'context', {
+     \ 'split' : 1,
+     \ 'start_insert': 0,
+     \ 'vertical_preview': 1,
+     \ 'toggle' : 1,
+     \ })
+endif
 
 "prefix keyの設定
 nnoremap [unite]    <Nop>
