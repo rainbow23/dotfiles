@@ -59,6 +59,18 @@ ln -sfn $HOME/dotfiles/_vimrc $HOME/.config/nvim/init.vim
 
 # source $HOME/dotfiles/source.sh
 
+# tmux
+if [ ! -d $HOME/.tmux ]; then
+  git clone https://github.com/tmux/tmux.git ~/.tmux
+  cd $HOME/.tmux
+  # checkout latest tag
+  git checkout $(git tag | sort -V | tail -n 1)
+  sh autogen.sh
+  ./configure
+  make -j4
+  sudo make install
+fi
+
 # fzf
 if [ ! -d $HOME/.fzf ] ; then
   git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
@@ -78,10 +90,9 @@ else
 fi
 
 # enhancd
-# if [ ! -d $HOME/enhancd ] ; then
-#   git clone https://github.com/rainbow23/enhancd.git ~/enhancd
-#   source $HOME/enhancd/init.sh
-# fi
+if [ ! -d $HOME/enhancd ] ; then
+  git clone https://github.com/rainbow23/enhancd.git ~/enhancd
+fi
 
 # cli-finder
 if [ ! -f /usr/local/bin/finder ] ; then
@@ -98,5 +109,4 @@ fi
 # zsh-syntax-highlighting
 if [ ! -d $HOME/zsh-syntax-highlighting ] ; then
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/zsh-syntax-highlighting
-  source $HOME/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
