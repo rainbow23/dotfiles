@@ -40,10 +40,12 @@ readline-devel \
 sqlite \
 sqlite-devel \
 openssl-devel \
-# tmux \
+libevent-devel \
 git \
 zsh \
 tree; yum clean all
+
+RUN yum -y install the_silver_searcher
 
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}/
@@ -54,17 +56,15 @@ RUN git clone https://github.com/tmux-plugins/tpm /home/${USERNAME}/.tmux/plugin
 
 ADD . /home/${USERNAME}/dotfiles
 
-# RUN sudo -A ${USERPASSWORD} chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dotfiles
+# COPY $HOME/.ssh /home/${USERNAME}/.ssh
+
 RUN echo ${USERPASSWORD} | sudo -S chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dotfiles
 RUN /home/rainbow23/dotfiles/install_vim.sh
 RUN /home/${USERNAME}/dotfiles/init.sh
-    # && source /home/${USERNAME}/.zshrc
 
-    # && source /home/${USERNAME}/.zshrc
-    # && sudo -u ${USERNAME} -i /home/${USERNAME}/dotfiles/install_vim.sh 
-    # && sudo -u ${USERNAME} -i /home/${USERNAME}/dotfiles/init.sh
-    # && source /home/${USERNAME}/.zshrc
+RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-RUN vim +PlugInstall +qall 1>/dev/null
+RUN vim +slient +PlugInstall +qall
 
 CMD ["zsh"]

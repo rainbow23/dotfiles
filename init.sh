@@ -60,9 +60,9 @@ ln -sfn $HOME/dotfiles/_vimrc $HOME/.config/nvim/init.vim
 # source $HOME/dotfiles/source.sh
 
 # tmux
-if [ ! -d $HOME/.tmux ]; then
-  git clone https://github.com/tmux/tmux.git ~/.tmux
-  cd $HOME/.tmux
+if [ ! -d $HOME/tmux ]; then
+  git clone https://github.com/tmux/tmux.git ~/tmux
+  cd $HOME/tmux
   # checkout latest tag
   git checkout $(git tag | sort -V | tail -n 1)
   sh autogen.sh
