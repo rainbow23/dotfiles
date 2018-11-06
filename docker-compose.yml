@@ -1,0 +1,8 @@
+version: '3'
+services:
+  dotfiles:
+    build: .
+    image: dotfiles-image
+    container_name: rainbow23-dotfiles
+    volumes:
+      - ${PWD}:/home/rainbow23/dotfiles
