@@ -13,6 +13,7 @@ if 1 == exists("+autochdir")
     set autochdir
 endif
 syntax on
+colorscheme peachpuff
 filetype on
 set hlsearch
 
@@ -60,7 +61,6 @@ nnoremap sn :<C-u>set number<CR>
 nnoremap snn :<C-u>set nonumber<CR>
 
 nnoremap <silent> uss :<C-u>Uss<CR>
-" nnoremap <silent> usos :<C-u>Usos<CR>
 nnoremap <silent> usos :call <SID>Unite_session_override_save()<CR>
 nnoremap src :<C-u>source ~/.vimrc<CR>
 nnoremap setp :<C-u>set paste<CR>
@@ -467,14 +467,14 @@ let g:unite_source_history_yank_enable =1
 let g:unite_enable_ignore_case = 1
 let g:unite_enable_smart_case = 1
 
-"  \ 'split' : 1,
-" \ 'quit' : 1,
-call unite#custom#profile('default', 'context', {
-  \ 'split' : 1,
-  \ 'start_insert': 0,
-  \ 'vertical_preview': 1,
- \ 'toggle' : 1,
-  \ })
+if (glob('~/.vim/plugged/unite.vim'))
+    call unite#custom#profile('default', 'context', {
+     \ 'split' : 1,
+     \ 'start_insert': 0,
+     \ 'vertical_preview': 1,
+     \ 'toggle' : 1,
+     \ })
+endif
 
 "prefix keyの設定
 nnoremap [unite]    <Nop>
@@ -562,23 +562,23 @@ endfunction
 "セッションを保存 start   ##
 let g:unite_source_session_default_session_name = 'default'
 
-:command! -nargs=? Uss call s:Unite_session_save(<f-args>)
-:function! s:Unite_session_save(...)
-:NERDTreeTabsClose
-:TagbarClose
-: if a:0 >= 1
-:   let hogearg = a:1
-:   echo "UniteSessionSave ".hogearg
-:   execute 'UniteSessionSave ' . a:1
-: else
-:   echo "UniteSessionSave ".g:unite_source_session_default_session_name
-:   execute 'UniteSessionSave '.g:unite_source_session_default_session_name
-: end
-:endfunction
+command! -nargs=? Uss call s:Unite_session_save(<f-args>)
+function! s:Unite_session_save(...)
+    NERDTreeTabsClose
+    TagbarClose
+    if a:0 >= 1
+        let hogearg = a:1
+        echo "UniteSessionSave ".hogearg
+        execute 'UniteSessionSave ' . a:1
+    else
+        echo "UniteSessionSave ".g:unite_source_session_default_session_name
+        execute 'UniteSessionSave '.g:unite_source_session_default_session_name
+    end
+    NERDTreeTabsOpen
+endfunction
 "セッションを保存 enc    ##
 
 "セッションを上書き保存
-command! Usos call s:Unite_session_override_save()
 function! s:Unite_session_override_save()
    let filepath = v:this_session
     if filepath  == ''
@@ -593,6 +593,7 @@ function! s:Unite_session_override_save()
       TagbarClose
       echo "UniteSessionSave ".filename
       execute 'UniteSessionSave ' .filename
+      NERDTreeTabsOpen
    else
       echo "canceled save current session. session_name=".filename
    endif
