@@ -13,6 +13,7 @@ if 1 == exists("+autochdir")
     set autochdir
 endif
 syntax on
+colorscheme peachpuff
 filetype on
 set hlsearch
 
