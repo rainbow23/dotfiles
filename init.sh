@@ -8,6 +8,7 @@ ln -sfn $HOME/dotfiles/_zshrc ~/.zshrc
 ln -sfn $HOME/dotfiles/_tmux.conf ~/.tmux.conf
 ln -sfn $HOME/dotfiles/_vimrc $HOME/.config/nvim/init.vim
 
+git config --global color.ui true
 # if [ ! -d ~/.anyenv ] ; then
 #   git clone https://github.com/riywo/anyenv ~/.anyenv
 #   export PATH="$HOME/.anyenv/bin:$PATH"
@@ -109,4 +110,10 @@ fi
 # zsh-syntax-highlighting
 if [ ! -d $HOME/zsh-syntax-highlighting ] ; then
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/zsh-syntax-highlighting
+fi
+
+if [ ! -f /usr/local/bin/ag ] ; then
+  git clone https://github.com/ggreer/the_silver_searcher.git ~/the_silver_searcher
+  cd ~/the_silver_searcher && ./build.sh
+  sudo make install
 fi

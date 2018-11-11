@@ -43,9 +43,8 @@ openssl-devel \
 libevent-devel \
 git \
 zsh \
+xz xz-devel \
 tree; yum clean all
-
-RUN yum -y install the_silver_searcher
 
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}/
