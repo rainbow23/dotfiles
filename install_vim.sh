@@ -22,37 +22,25 @@ pyenv_path="$HOME/.anyenv/envs/pyenv/versions/3.6.0/bin/python3.6"
 # echo "$pyenv_gnu"
 
 # if [ ! -f /usr/local/bin/vim ] ; then
-  if [ ! -d $HOME/vim8src ] ; then
-    git clone --depth 1 https://github.com/vim/vim.git ~/vim8src
+if [ ! -d $HOME/vim8src ] ; then
+  git clone --depth 1 https://github.com/vim/vim.git $HOME/vim8src
 
-    cd $HOME/vim8src && ./configure\
-      --enable-fail-if-missing\
-      --with-features=huge\
-      --disable-selinux\
-      --enable-luainterp\
-      --enable-perlinterp\
-      --enable-python3interp vi_cv_path_python3="$pyenv_path"\
-      --with-python3-config-dir="$pyenv_gnu"\
-      --enable-cscope\
-      --enable-fontset\
-      --enable-multibyte
+  cd $HOME/vim8src && ./configure\
+    --enable-fail-if-missing\
+    --with-features=huge\
+    --disable-selinux\
+    --enable-luainterp\
+    --enable-perlinterp\
+    --enable-cscope\
+    --enable-fontset\
+    --enable-multibyte
 
-    # LDFLAGS="-Wl,-rpath=${HOME}/.pyenv/versions/2.7.6/lib:${HOME}/.pyenv/versions/3.6.0/lib"
-    # LDFLAGS="-Wl,-rpath=$HOME/.anyenv/envs/pyenv/versions/2.7.6/lib:$HOME/.anyenv/envs/pyenv/versions/3.6.0/lib"
-    # cd $HOME/vim8src && ./configure \
-    #   --enable-fail-if-missing \
-    #   --with-features=huge \
-    #   --disable-selinux \
-    #   --enable-luainterp \
-    #   --enable-perlinterp \
-    #   --enable-pythoninterp=dynamic \
-    #   --enable-python3interp=dynamic \
-    #   vi_cv_path_python3="$pyenv_path" \
-    #   --with-python3-config-dir="$pyenv_gnu" \
-    #   --enable-cscope \
-    #   --enable-fontset \
-    #   --enable-multibyte
+  sudo make && sudo make install
+fi
 
-    sudo make && sudo make install
-  fi
+# install neovim CentOS7 / RHEL7
+# https://github.com/neovim/neovim/wiki/Installing-Neovim
 
+sudo yum -y install epel-release
+sudo curl -o /etc/yum.repos.d/dperson-neovim-epel-7.repo https://copr.fedorainfracloud.org/coprs/dperson/neovim/repo/epel-7/dperson-neovim-epel-7.repo 
+sudo yum -y install neovim
