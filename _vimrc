@@ -508,6 +508,10 @@ nnoremap <silent> uov :<C-u>Unite -vertical -winwidth=50 outline<CR>
 nnoremap <silent> uv :<C-u>Unite -auto-resize output:version<CR>
 
 "MattesGroeger/vim-bookmarksを開く
+highlight BookmarkLine ctermbg=238 ctermfg=none
+highlight BookmarkAnnotationLine ctermbg=238 ctermfg=none
+let g:bookmark_highlight_lines = 1
+
 nnoremap <silent> [unite]kk :<C-u>Unite -auto-resize vim_bookmarks<CR>
 "Unite bookmarkを開く
 nnoremap <silent> [unite]k  :<C-u>Unite -auto-resize bookmark<CR>
