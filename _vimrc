@@ -7,6 +7,7 @@ set shiftwidth=4
 set tabstop=4
 set noswapfile
 set ignorecase
+set noshowmode
 "set tags=./tags;
 " 開いたファイルにワーキングディレクトリを移動する
 if 1 == exists("+autochdir")
@@ -17,26 +18,12 @@ colorscheme peachpuff
 filetype on
 set hlsearch
 
-" if has ('pythonx')
-"    echo 'has pythonx'
-"   :pythonx import neovim
-"   set pyxversion=3
-" endif
-" if has ('python3')
-"    " echo 'has python3'
-"    python3 import neovim
-" endif
-" if has ('python')
-"    echo 'has python'
-"    python import neovim
-" endif
 set encoding=utf-8
 
 autocmd BufEnter *.yml set shiftwidth=2
 autocmd BufEnter *.sh  set shiftwidth=2
 autocmd BufEnter *.zsh set shiftwidth=2
 autocmd BufEnter *.vimrc set shiftwidth=2
-
 autocmd InsertLeave * set nopaste
 
 " vimfile or NERDTreeをUniteSessionから開いた場合、空ファイルになるので自動で閉じるようにする
@@ -231,8 +218,6 @@ Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/fzf.vim'
 "Plug 'powerline/fonts'
 Plug 'Shougo/unite.vim'
-Plug 'Shougo/neosnippet.vim'
-Plug 'Shougo/neosnippet-snippets'
 Plug 'rainbow23/unite-session'
 Plug 'Shougo/neomru.vim'
 Plug 'Shougo/vimfiler.vim'
@@ -268,19 +253,24 @@ Plug 'jistr/vim-nerdtree-tabs'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
-
-if ((has('nvim')  || has('timers')) && has('python3')) && system('pip3 show neovim') !=# ''
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    if !has('nvim')
-        Plug 'Shougo/deoplete.nvim'
-        Plug 'roxma/vim-hug-neovim-rpc'
-        Plug 'roxma/nvim-yarp'
-    endif
-    elseif has('lua')
-        " Plug 'Shougo/neocomplete.vim'
-        Plug 'Shougo/neocomplcache.vim'
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
 endif
+"exmodeから確認  call deoplete#enable()
+let g:python3_host_prog = expand('/usr/bin/python3.6')
 
+if has('pythonx')
+    set pyxversion=3
+endif
+if has('python3')
+:python3 import neovim
+endif
+Plug 'Shougo/neosnippet.vim'
+Plug 'Shougo/neosnippet-snippets'
 Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'fatih/vim-go'

@@ -1,42 +1,36 @@
 #!/bin/sh
-
-printenv "$pyenv_ver"
-
-case "${OSTYPE}" in
-darwin*)
-  # Mac
-  pyenv_gnu="$HOME/.anyenv/envs/pyenv/versions/3.6.0/lib/python3.6/config-3.6m-darwin"
-  ;;
-linux*)
-  # Linux
-  pyenv_gnu="$HOME/.anyenv/envs/pyenv/versions/3.6.0/lib/python3.6/config-3.6m-x86_64-linux-gnu"
-  ;;
-esac
-
-pyenv_path="$HOME/.anyenv/envs/pyenv/versions/3.6.0/bin/python3.6"
-
-# /Users/goodscientist1023/.anyenv/envs/pyenv/versions/3.6.1/lib/python3.6/config-3.6m-darwin
-# /home/rainbow/.anyenv/envs/pyenv/versions/3.6.1/lib/python3.6/config-3.6m-x86_64-linux-gnu
-
-# echo "$pyenv_path"
-# echo "$pyenv_gnu"
-
-# if [ ! -f /usr/local/bin/vim ] ; then
 if [ ! -d $HOME/vim8src ] ; then
   git clone --depth 1 https://github.com/vim/vim.git $HOME/vim8src
+fi
 
+if [ -f /usr/bin/python3.6 ] ; then
+echo 'has python 3.6 *************************************************'
   cd $HOME/vim8src && ./configure\
     --enable-fail-if-missing\
     --with-features=huge\
     --disable-selinux\
+    --enable-python3interp vi_cv_path_python3=/usr/bin/python3.6 \
+    --with-python3-config-dir=/usr/lib64/python3.6/config-3.6m-x86_64-linux-gnu\
     --enable-luainterp\
     --enable-perlinterp\
     --enable-cscope\
     --enable-fontset\
     --enable-multibyte
-
-  sudo make && sudo make install
+else
+  cd $HOME/vim8src && ./configure\
+    --enable-fail-if-missing\
+    --with-features=huge\
+    --disable-selinux\
+    # --enable-python3interp\
+    # --with-python3-config-dir=/usr/lib64/python3.6/config-3.6m-x86_64-linux-gn\u
+    --enable-luainterp\
+    --enable-perlinterp\
+    --enable-cscope\
+    --enable-fontset\
+    --enable-multibyte
 fi
+
+sudo make && sudo make install
 
 # install neovim CentOS7 / RHEL7
 # https://github.com/neovim/neovim/wiki/Installing-Neovim
