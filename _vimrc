@@ -261,7 +261,11 @@ else
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
 "exmodeから確認  call deoplete#enable()
-let g:python3_host_prog = expand('/usr/bin/python3.6')
+if has("mac")
+
+elseif has("unix")
+    let g:python3_host_prog = expand('/usr/bin/python3.6')
+endif
 
 if has('pythonx')
     set pyxversion=3
@@ -383,22 +387,24 @@ set t_Co=256 "vim-air-line-themeを反映させる
 "vim-airline end  #####################################################################
 
 "neosnippets start #################################################################
-imap <C-l>     <plug>(neosnippet_expand_or_jump)
-smap <C-l>     <plug>(neosnippet_expand_or_jump)
-xmap <C-l>     <plug>(neosnippet_expand_target)
-let g:neosnippet#snippets_directory='~/.vim/plugged/neosnippet-snippets/neosnippets'
-map <C-l>     <Plug>(neosnippet_expand_or_jump)
-"SuperTab like snippets behavior.
-" imap  <expr><TAB>
-"      \ pumvisible() ? "\<C-n>" :
-"      \ neosnippet#expandable_or_jumpable() ?
-"      \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+" Plugin key-mappings.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+imap <C-l>     <Plug>(neosnippet_expand_or_jump)
+smap <C-l>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-l>     <Plug>(neosnippet_expand_target)
 
-" smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-"     \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+" SuperTab like snippets behavior.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+"imap <expr><TAB>
+" \ pumvisible() ? "\<C-n>" :
+" \ neosnippet#expandable_or_jumpable() ?
+" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
+" For conceal markers.
 if has('conceal')
- set conceallevel=2 concealcursor=i
+  set conceallevel=2 concealcursor=niv
 endif
 "neosnippets end ###################################################################
 
