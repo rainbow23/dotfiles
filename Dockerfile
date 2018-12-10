@@ -66,7 +66,7 @@ ADD . /home/${USERNAME}/dotfiles
 # COPY $HOME/.ssh /home/${USERNAME}/.ssh
 
 RUN echo ${USERPASSWORD} | sudo -S chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dotfiles
-RUN /home/rainbow23/dotfiles/install_vim.sh
+RUN echo ${USERPASSWORD} | sudo -S /home/rainbow23/dotfiles/install_vim.sh
 RUN /home/${USERNAME}/dotfiles/init.sh
 
 RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
