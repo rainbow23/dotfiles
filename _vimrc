@@ -286,6 +286,7 @@ Plug 'jlanzarotta/bufexplorer'
 Plug 'regedarek/ZoomWin'
 Plug 'leafcage/yankround.vim'
 Plug 'ujihisa/unite-colorscheme'
+Plug 'christoomey/vim-tmux-navigator'
 call plug#end()
 
 function! s:all_files()
