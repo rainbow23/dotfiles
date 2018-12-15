@@ -595,7 +595,6 @@ function! s:Unite_session_override_save()
       TagbarClose
       echo "UniteSessionSave ".filename
       execute 'UniteSessionSave ' .filename
-      NERDTreeTabsOpen
    else
       echo "canceled save current session. session_name=".filename
    endif
