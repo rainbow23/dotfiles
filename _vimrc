@@ -26,7 +26,6 @@ autocmd BufEnter *.zsh set shiftwidth=2
 autocmd BufEnter *.vimrc set shiftwidth=2
 autocmd InsertLeave * set nopaste
 
-" vimfile or NERDTreeをUniteSessionから開いた場合、空ファイルになるので自動で閉じるようにする
 " autocmd BufRead * if getfsize(expand(@%)) == -1 | :q | endif
 
 "ヤンクをクリップボードに保存　kana/vim-fakeclipと連動
@@ -86,11 +85,9 @@ nnoremap [panel]hhhh <C-w>1\| <C-g><CR>
 nnoremap [panel]ll  :vertical resize +10<CR>
 nnoremap [panel]lll :vertical resize +40<CR>
 " 横に最大化
-nnoremap [panel]llll <C-w>\| <C-g><CR>
 nnoremap [panel]jj  :resize +10<CR>
 nnoremap [panel]jjj :resize +20<CR>
 " 縦に最大化
-nnoremap [panel]jjjj <C-w>_ <C-g><CR>
 nnoremap [panel]kk  :resize -10<CR>
 nnoremap [panel]kkk :resize -20<CR>
 " 縦に最小化
@@ -113,6 +110,16 @@ nnoremap [panel]R <C-w>R <C-g><CR>
 " 現在カーソルがあるウィンドウと一つ前のウィンドウを入れ替える
 nnoremap [panel]x <C-w>x <C-g><CR>
 noremap [panel]o <C-w>= <C-g><CR>
+
+
+" let g:tmux_navigator_no_mappings = 1
+" nnoremap <silent> [panel]h :TmuxNavigateLeft<cr>
+" nnoremap <silent> [panel]j :TmuxNavigateDown<cr>
+" nnoremap <silent> [panel]k :TmuxNavigateUp<cr>
+" nnoremap <silent> [panel]l :TmuxNavigateRight<cr>
+" nnoremap <silent> [panel]p :TmuxNavigatePrevious<cr>
+
+
 " panel size end  #################################
 
 " Plug 'regedarek/ZoomWin' ###########################################################################
@@ -316,12 +323,12 @@ nmap <leader><tab> <plug>(fzf-maps-n)
 xmap <leader><tab> <plug>(fzf-maps-x)
 omap <leader><tab> <plug>(fzf-maps-o)
 " Insert mode completion
-imap <c-x><c-k> <plug>(fzf-complete-word)
+" imap <c-x><c-k> <plug>(fzf-complete-word)
 imap <c-x><c-f> <plug>(fzf-complete-path)
 imap <c-x><c-j> <plug>(fzf-complete-file-ag)
 imap <c-x><c-l> <plug>(fzf-complete-line)
 " Advanced customization using autoload functions
-inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
+" inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
 
 nnoremap [fzf]m :<C-u>FZFMru<CR>
 nnoremap [fzf]f :<C-u>Files<CR>
@@ -505,7 +512,7 @@ nnoremap <silent> uo :<C-u>Unite -auto-resize outline<CR>
 nnoremap <silent> uov :<C-u>Unite -vertical -winwidth=50 outline<CR>
 nnoremap <silent> uv :<C-u>Unite -auto-resize output:version<CR>
 
-"MattesGroeger/vim-bookmarksを開く
+"MattesGroeger/vim-bookmarks ***********************************************
 highlight BookmarkLine ctermbg=238 ctermfg=none
 highlight BookmarkAnnotationLine ctermbg=238 ctermfg=none
 let g:bookmark_highlight_lines = 1
@@ -999,4 +1006,5 @@ nmap k <Plug>(accelerated_jk_gk)
 
 " Plug 'Shougo/deol.nvim'#############################################################################
 nnoremap dl :<C-u>Deol<CR>
+tnoremap <ESC>   <C-\><C-n>
 " Plug 'Shougo/deol.nvim'#############################################################################

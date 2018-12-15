@@ -161,6 +161,9 @@ ftpane() {
     tmux select-window -t $target_window
   fi
 }
+# In tmux.conf
+# bind-key 0 run "tmux split-window -l 12 'bash -ci ftpane'"
+
 
 # j() {
 #     if [[ "$#" -ne 0 ]]; then
