@@ -15,7 +15,11 @@ ftags() {
 gcb() {
   local brh cbrh
   IFS=$'\n'
-  brh=$(git branch | fzf +m | sed -e 's/ //g' -e 's/*//g')
+  brh=$(git branch --all \
+      | fzf +m \
+      | sed -e 's/ //g' \
+            -e 's/*//g' \
+            -e 's/remotes\/origin\///g')
   git checkout "$brh"
 }
 
