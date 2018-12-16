@@ -37,21 +37,15 @@ get_os_distribution() {
 
 ostype=$(get_os_distribution)
 
-if [ $ostype eq 'redhat' ] ||
-   [ $ostype eq 'amazonlinux' ] ; then
+if [ $ostype = 'redhat' ] ||
+   [ $ostype = 'amazonlinux' ] ; then
 
   sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
   sudo yum -y install python36u  python36u-devel python36u-pip
+  sudo python3.6 -m pip install --upgrade pip
   python3.6 -m pip install neovim
-  python3.6 -m pip install --upgrade pip
   python3.6 -m pip install --user pynvim
   python3.6 -m pip install --upgrade pynvim
-
-  # install neovim CentOS7 / RHEL7
-  # https://github.com/neovim/neovim/wiki/Installing-Neovim
-  # sudo yum -y install epel-release
-  # sudo curl -o /etc/yum.repos.d/dperson-neovim-epel-7.repo https://copr.fedorainfracloud.org/coprs/dperson/neovim/repo/epel-7/dperson-neovim-epel-7.repo
-  # sudo yum -y install neovim
 fi
 
 if [ -f /usr/bin/python3.6 ] ; then
