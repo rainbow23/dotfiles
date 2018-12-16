@@ -3,6 +3,57 @@ if [ ! -d $HOME/vim8src ] ; then
   git clone --depth 1 https://github.com/vim/vim.git $HOME/vim8src
 fi
 
+# Get Linux distribution name
+get_os_distribution() {
+    if   [ -e /etc/debian_version ] ||
+         [ -e /etc/debian_release ]; then
+        # Check Ubuntu or Debian
+        if [ -e /etc/lsb-release ]; then
+            # Ubuntu
+            distri_name="ubuntu"
+        else
+            # Debian
+            distri_name="debian"
+        fi
+    elif [ -e /etc/redhat-release ]; then
+        # Red Hat Enterprise Linux
+        distri_name="redhat"
+    elif [ -e /etc/system-release-cpe ]; then
+        distri_name="amazonlinux"
+    elif [ -e /etc/arch-release ]; then
+        # Arch Linux
+        distri_name="arch"
+    elif [ echo ${OSTYPE} | grep darwin ]; then
+        # Mac
+        distri_name="darwin"
+    else
+        # Other
+        echo "unkown distribution"
+        distri_name="unkown"
+    fi
+
+    echo ${distri_name}
+}
+
+ostype=$(get_os_distribution)
+
+if [ $ostype eq 'redhat' ] ||
+   [ $ostype eq 'amazonlinux' ] ; then
+
+  sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
+  sudo yum -y install python36u  python36u-devel python36u-pip
+  python3.6 -m pip install neovim
+  python3.6 -m pip install --upgrade pip
+  python3.6 -m pip install --user pynvim
+  python3.6 -m pip install --upgrade pynvim
+
+  # install neovim CentOS7 / RHEL7
+  # https://github.com/neovim/neovim/wiki/Installing-Neovim
+  # sudo yum -y install epel-release
+  # sudo curl -o /etc/yum.repos.d/dperson-neovim-epel-7.repo https://copr.fedorainfracloud.org/coprs/dperson/neovim/repo/epel-7/dperson-neovim-epel-7.repo
+  # sudo yum -y install neovim
+fi
+
 if [ -f /usr/bin/python3.6 ] ; then
 echo 'has python 3.6 *************************************************'
   cd $HOME/vim8src && ./configure\
@@ -31,10 +82,3 @@ else
 fi
 
 sudo make && sudo make install
-
-# install neovim CentOS7 / RHEL7
-# https://github.com/neovim/neovim/wiki/Installing-Neovim
-
-sudo yum -y install epel-release
-sudo curl -o /etc/yum.repos.d/dperson-neovim-epel-7.repo https://copr.fedorainfracloud.org/coprs/dperson/neovim/repo/epel-7/dperson-neovim-epel-7.repo 
-sudo yum -y install neovim

@@ -9,56 +9,6 @@ ln -sfn $HOME/dotfiles/_tmux.conf ~/.tmux.conf
 ln -sfn $HOME/dotfiles/_vimrc $HOME/.config/nvim/init.vim
 
 git config --global color.ui true
-# if [ ! -d ~/.anyenv ] ; then
-#   git clone https://github.com/riywo/anyenv ~/.anyenv
-#   export PATH="$HOME/.anyenv/bin:$PATH"
-#   eval "$(anyenv init -)"
-#   source $HOME/dotfiles/source.sh
-# fi
-
-# export goenv_ver=1.8.3
-# if [ ! -d $HOME/.anyenv/envs/goenv ] ; then
-#   anyenv install goenv
-#   source $HOME/dotfiles/source.sh
-
-#   goenv install "$goenv_ver"
-#   goenv global "$goenv_ver"
-#   goenv rehash
-# fi
-
-# export pyenv_ver=3.6.0
-# if [ ! -d $HOME/.anyenv/envs/pyenv ] ; then
-#   anyenv install pyenv
-#   if [ ! -d $HOME/.anyenv/envs/pyenv/plugins/pyenv-virtualenv ] ; then
-#     git clone https://github.com/yyuu/pyenv-virtualenv.git $HOME/.anyenv/envs/pyenv/plugins/pyenv-virtualenv
-#   fi
-# source $HOME/dotfiles/source.sh
-# fi
-
-
-# if [ ! -d $HOME/.anyenv/envs/pyenv/versions/2.7.6 ] ; then
-#   # CONFIGURE_OPTS="--enable-shared" pyenv install 2.7.6
-#   pyenv install 2.7.6
-# fi
-
-# if [ ! -d $HOME/.anyenv/envs/pyenv/versions/"$pyenv_ver" ] ; then
-#   # CONFIGURE_OPTS="--enable-shared" pyenv install "$pyenv_ver"
-#   pyenv install "$pyenv_ver"
-# fi
-# # pyenv install "$pyenv_ver"
-
-# pyenv local --unset
-# pyenv shell --unset
-# pyenv global 2.7.6 "$pyenv_ver"
-# pyenv versions
-# # python --version
-# # python3 --version
-# pyenv global "$pyenv_ver"
-# pyenv rehash
-
-# pip3 install --upgrade neovim
-
-# source $HOME/dotfiles/source.sh
 
 # tmux
 if [ ! -d $HOME/tmux ]; then
@@ -128,5 +78,6 @@ if [ ! -f $HOME/.chrome_bookmarks_with_fzf.rb ] ; then
   curl -L https://gist.githubusercontent.com/rainbow23/73236d896399ca7ee68b8b3900ae39e0/raw/e25f1b1512d813b9475cd2470b1440f3efaa19e5/b.rb -o $HOME/.chrome_bookmarks_with_fzf.rb \
   && chmod 755 $HOME/.chrome_bookmarks_with_fzf.rb
 fi
+
 # vimPlug install
 vim +PlugInstall +qall
