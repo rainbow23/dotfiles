@@ -38,7 +38,7 @@ alias fdr='finder'
 # -------------------------------------
 alias tx='tmux'
 alias txl='tmux ls'
-
+alias t="tmuximum"
 
 ## -------------------------------------
 # ZSH_HISTORY

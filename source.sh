@@ -54,3 +54,7 @@ fi
 if [ -d $HOME/zsh-syntax-highlighting ] ; then
   source $HOME/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
+
+if [ -z $TMUX ]; then
+    tmuximum
+fi
