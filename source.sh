@@ -58,3 +58,7 @@ fi
 if [ -z $TMUX ]; then
     tmuximum
 fi
+
+if [ ! -f $HOME/.chrome_bookmarks_with_fzf.rb ] ; then
+    source $HOME/.chrome_bookmarks_with_fzf.rb
+fi

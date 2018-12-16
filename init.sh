@@ -122,5 +122,11 @@ if [ ! -d $HOME/tmuximum ] ; then
   curl -L raw.github.com/arks22/tmuximum/master/install.bash | bash
 fi
 
+# b - browse Chrome bookmarks with fzf
+# https://gist.github.com/junegunn/15859538658e449b886f
+if [ ! -f $HOME/.chrome_bookmarks_with_fzf.rb ] ; then
+  curl -L https://gist.githubusercontent.com/rainbow23/73236d896399ca7ee68b8b3900ae39e0/raw/e25f1b1512d813b9475cd2470b1440f3efaa19e5/b.rb -o $HOME/.chrome_bookmarks_with_fzf.rb \
+  && chmod 755 $HOME/.chrome_bookmarks_with_fzf.rb
+fi
 # vimPlug install
 vim +PlugInstall +qall

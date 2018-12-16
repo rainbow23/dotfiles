@@ -40,6 +40,7 @@ alias tx='tmux'
 alias txl='tmux ls'
 alias t="tmuximum"
 
+alias b="$HOME/.chrome_bookmarks_with_fzf.rb"
 ## -------------------------------------
 # ZSH_HISTORY
 # -------------------------------------
