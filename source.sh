@@ -62,3 +62,7 @@ fi
 if [ ! -f $HOME/.chrome_bookmarks_with_fzf.rb ] ; then
     source $HOME/.chrome_bookmarks_with_fzf.rb
 fi
+
+if [ ! -f $HOME/diff-so-fancy ] ; then
+    source $HOME/diff-so-fancy
+fi

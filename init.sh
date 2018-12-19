@@ -79,5 +79,10 @@ if [ ! -f $HOME/.chrome_bookmarks_with_fzf.rb ] ; then
   && chmod 755 $HOME/.chrome_bookmarks_with_fzf.rb
 fi
 
+if [ ! -f $HOME/diff-so-fancy ] ; then
+  curl -L https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -o $HOME/diff-so-fancy \
+  && chmod 755 $HOME/diff-so-fancy
+fi
+
 # vimPlug install
 vim +PlugInstall +qall
