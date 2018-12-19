@@ -31,6 +31,7 @@ alias gpl='git pull'
 alias gb='git branch'
 alias gba='git branch --all'
 alias gbr='git branch --remotes'
+alias gv='git branch -vv'
 alias fdr='finder'
 
 ## -------------------------------------
