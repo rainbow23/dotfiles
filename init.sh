@@ -74,14 +74,14 @@ fi
 
 # b - browse Chrome bookmarks with fzf
 # https://gist.github.com/junegunn/15859538658e449b886f
-if [ ! -f $HOME/.chrome_bookmarks_with_fzf.rb ] ; then
-  curl -L https://gist.githubusercontent.com/rainbow23/73236d896399ca7ee68b8b3900ae39e0/raw/e25f1b1512d813b9475cd2470b1440f3efaa19e5/b.rb -o $HOME/.chrome_bookmarks_with_fzf.rb \
-  && chmod 755 $HOME/.chrome_bookmarks_with_fzf.rb
+if [ ! -f /usr/local/bin/.chrome_bookmarks_with_fzf.rb ] ; then
+  curl -L https://gist.githubusercontent.com/rainbow23/73236d896399ca7ee68b8b3900ae39e0/raw/e25f1b1512d813b9475cd2470b1440f3efaa19e5/b.rb -o /usr/local/bin/.chrome_bookmarks_with_fzf.rb \
+  && chmod 755 /usr/local/bin/.chrome_bookmarks_with_fzf.rb
 fi
 
-if [ ! -f $HOME/diff-so-fancy ] ; then
-  curl -L https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -o $HOME/diff-so-fancy \
-  && chmod 755 $HOME/diff-so-fancy
+if [ ! -f /usr/local/bin/diff-so-fancy ] ; then
+  curl -L https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -o /usr/local/bin/diff-so-fancy \
+  && chmod +x /usr/local/bin/diff-so-fancy
 fi
 
 # vimPlug install

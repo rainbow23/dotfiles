@@ -59,10 +59,16 @@ if [ -z $TMUX ]; then
     tmuximum
 fi
 
-if [ ! -f $HOME/.chrome_bookmarks_with_fzf.rb ] ; then
-    source $HOME/.chrome_bookmarks_with_fzf.rb
-fi
-
-if [ ! -f $HOME/diff-so-fancy ] ; then
-    source $HOME/diff-so-fancy
+if [ -f /usr/local/bin/diff-so-fancy ] ; then
+  git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+  git config --global color.diff-highlight.oldNormal    "red bold"
+  git config --global color.diff-highlight.oldHighlight "red bold 52"
+  git config --global color.diff-highlight.newNormal    "green bold"
+  git config --global color.diff-highlight.newHighlight "green bold 22"
+  git config --global color.diff.meta       "yellow"
+  git config --global color.diff.frag       "magenta bold"
+  git config --global color.diff.commit     "yellow bold"
+  git config --global color.diff.old        "red bold"
+  git config --global color.diff.new        "green bold"
+  git config --global color.diff.whitespace "red reverse"
 fi
