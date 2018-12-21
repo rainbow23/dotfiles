@@ -62,7 +62,6 @@ RUN git clone https://github.com/tmux-plugins/tpm /home/${USERNAME}/.tmux/plugin
     && chmod 755 /home/${USERNAME}/.tmux/plugins/tpm
 
 ADD . /home/${USERNAME}/dotfiles
-
 # COPY $HOME/.ssh /home/${USERNAME}/.ssh
 
 RUN echo ${USERPASSWORD} | sudo -S chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dotfiles

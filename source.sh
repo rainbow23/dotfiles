@@ -1,4 +1,31 @@
 #!/bin/sh
+source ~/.zplug/init.zsh
+
+zplug "mollifier/anyframe", at:4c23cb60
+
+# Install zsh-gomi with fzf
+# zplug "junegunn/fzf-bin", \
+#     as:command, \
+#     from:gh-r, \
+#     rename-to:"fzf", \
+#     frozen:1
+
+# diff-so-fancy/third_party/build_fatpack/diff-so-fancy
+zplug "so-fancy/diff-so-fancy/master/third_party/build_fatpack", \
+    from:gist, \
+    use:diff-so-fancy, \
+    as:command
+
+# zplug "b4b4r07/zsh-gomi", if:"which fzf"
+zplug "b4b4r07/zsh-gomi", \
+    as:command, \
+    use:bin/gomi, \
+    on:junegunn/fzf-bin
+
+  # curl -L https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -o $HOME/diff-so-fancy \
+  # && chmod 755 $HOME/diff-so-fancy
+
+
 
 # autojump
 [[ -s $HOME/.autojump/etc/profile.d/autojump.sh ]] && source $HOME/.autojump/etc/profile.d/autojump.sh

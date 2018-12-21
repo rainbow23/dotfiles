@@ -22,6 +22,10 @@ if [ ! -d $HOME/tmux ]; then
   sudo make install
 fi
 
+if [ ! -d $HOME/.zplug ] ; then
+curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+fi
+
 # fzf
 if [ ! -d $HOME/.fzf ] ; then
   git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
