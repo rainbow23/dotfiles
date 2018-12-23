@@ -69,7 +69,7 @@ ADD ./id_rsa /home/${USERNAME}/.ssh/id_rsa
 
 RUN echo ${USERPASSWORD} | sudo -S chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dotfiles
 RUN echo ${USERPASSWORD} | sudo -S /home/rainbow23/dotfiles/install_vim.sh
-RUN echo ${USERPASSWORD} | /home/${USERNAME}/dotfiles/init.sh
+RUN echo ${USERPASSWORD} | /home/rainbow23/dotfiles/init.sh
 
 RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim

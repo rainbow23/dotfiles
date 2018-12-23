@@ -8,7 +8,19 @@ ln -sfn $HOME/dotfiles/_zshrc $HOME/.zshrc
 ln -sfn $HOME/dotfiles/_tmux.conf $HOME/.tmux.conf
 ln -sfn $HOME/dotfiles/_vimrc $HOME/.config/nvim/init.vim
 
+# git
 git config --global color.ui true
+git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+git config --global color.diff-highlight.oldNormal    "red bold"
+git config --global color.diff-highlight.oldHighlight "red bold 52"
+git config --global color.diff-highlight.newNormal    "green bold"
+git config --global color.diff-highlight.newHighlight "green bold 22"
+git config --global color.diff.meta       "yellow"
+git config --global color.diff.frag       "magenta bold"
+git config --global color.diff.commit     "yellow bold"
+git config --global color.diff.old        "red bold"
+git config --global color.diff.new        "green bold"
+git config --global color.diff.whitespace "red reverse"
 
 #go
 if [ ! -d /usr/local/go/bin ]; then
@@ -22,15 +34,11 @@ if [ ! -d $HOME/go ]; then
   mkdir -p $HOME/go/bin
 fi
 
-export PATH=$PATH:/usr/local/go/bin
-export GOPATH=$HOME/go
-export GOBIN=$GOPATH/bin
-
-GHQ=$HOME/ghq
-if [ ! -d $GHQ ]; then
-  git clone https://github.com/motemen/ghq $GHQ
-  cd $GHQ && make install
-fi
+# GHQ=$HOME/ghq
+# if [ ! -d $GHQ ]; then
+#   git clone https://github.com/motemen/ghq $GHQ
+#   cd $GHQ && make install
+# fi
 
 # tmux
 if [ ! -d $HOME/tmux ]; then
