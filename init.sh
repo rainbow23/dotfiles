@@ -84,5 +84,10 @@ if [ ! -f /usr/local/bin/diff-so-fancy ] ; then
   && chmod +x /usr/local/bin/diff-so-fancy"
 fi
 
+if [ ! -d $HOME/.zsh-gomi ] ; then
+  git clone --depth 1 https://github.com/b4b4r07/zsh-gomi.git $HOME/.zsh-gomi
+  sudo cp $HOME/.zsh-gomi/bin/gomi /usr/local/bin/gomi
+fi
+
 # vimPlug install
 vim +PlugInstall +qall
