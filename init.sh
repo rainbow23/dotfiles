@@ -10,6 +10,14 @@ ln -sfn $HOME/dotfiles/_vimrc $HOME/.config/nvim/init.vim
 
 git config --global color.ui true
 
+#go
+if [ ! -d /usr/local/go/bin ]; then
+  cd /usr/local/src
+  sudo wget https://storage.googleapis.com/golang/go1.11.4.linux-amd64.tar.gz
+  sudo tar -C /usr/local -xzf go1.11.4.linux-amd64.tar.gz
+  cat 'export PATH=$PATH:/usr/local/go/bin' > $HOME/.profile
+fi
+
 # tmux
 if [ ! -d $HOME/tmux ]; then
   git clone --depth 1 https://github.com/tmux/tmux.git $HOME/tmux
