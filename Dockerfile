@@ -8,9 +8,14 @@ RUN echo "root: ${USERPASSWORD}" |chpasswd
 
 # ユーザを作成
 RUN useradd ${USERNAME}
+RUN usermod -aG wheel ${USERNAME}
 RUN echo "${USERNAME}:${USERPASSWORD}" |chpasswd
 RUN echo "${USERNAME}    ALL=(ALL)       ALL" >> /etc/sudoers
 RUN echo "root    ALL=(ALL)       ALL" >> /etc/sudoers
+
+# nopassword with user
+RUN echo "# %wheel   ALL=(ALL)    ALL/" >> /etc/sudoers
+RUN echo "%wheel   ALL=(ALL)    NOPASSWD: ALL" >> /etc/sudoers
 
 # system update
 RUN yum -y update && yum clean all
@@ -65,14 +70,11 @@ RUN git clone https://github.com/tmux-plugins/tpm /home/${USERNAME}/.tmux/plugin
 ADD . /home/${USERNAME}/dotfiles
 ADD ./id_rsa /home/${USERNAME}/.ssh/id_rsa
 
-# COPY $HOME/.ssh /home/${USERNAME}/.ssh
-
-RUN echo ${USERPASSWORD} | sudo -S chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dotfiles
-RUN echo ${USERPASSWORD} | sudo -S /home/rainbow23/dotfiles/install_vim.sh
-RUN echo ${USERPASSWORD} | /home/rainbow23/dotfiles/init.sh
-
 RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+RUN echo ${USERPASSWORD} | sudo -S chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dotfiles
+RUN echo ${USERPASSWORD} | sudo -S /home/rainbow23/dotfiles/install_vim.sh
+RUN /home/rainbow23/dotfiles/init.sh
 
 RUN vim +slient +PlugInstall +qall
 
