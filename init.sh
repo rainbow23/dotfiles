@@ -8,9 +8,28 @@ ln -sfn $HOME/dotfiles/_zshrc ~/.zshrc
 ln -sfn $HOME/dotfiles/_tmux.conf ~/.tmux.conf
 ln -sfn $HOME/dotfiles/_vimrc $HOME/.config/nvim/init.vim
 
+# git
+#go
+if [ ! -d /usr/local/go/bin ]; then
+  cd /usr/local/src
+  sudo wget https://storage.googleapis.com/golang/go1.11.4.linux-amd64.tar.gz
+  sudo tar -C /usr/local -xzf go1.11.4.linux-amd64.tar.gz
+  # cat 'export PATH=$PATH:/usr/local/go/bin' > $HOME/.profile
+fi
+
+if [ ! -d $HOME/go ]; then
+  mkdir -p $HOME/go/bin
+fi
+
+# GHQ=$HOME/ghq
+# if [ ! -d $GHQ ]; then
+#   git clone https://github.com/motemen/ghq $GHQ
+#   cd $GHQ && make install
+# fi
+
 # tmux
 if [ ! -d $HOME/tmux ]; then
-  git clone https://github.com/tmux/tmux.git ~/tmux
+  git clone --depth 1 https://github.com/tmux/tmux.git $HOME/tmux
   cd $HOME/tmux
   # checkout latest tag
   git checkout $(git tag | sort -V | tail -n 1)

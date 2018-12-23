@@ -17,6 +17,18 @@ git config --global color.diff.whitespace "red reverse"
 autoload -U compinit && compinit -u
 
 ## -------------------------------------
+# go
+# -------------------------------------
+export GOPATH=$HOME/go
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:$GOBIN
+
+if [ ! -f ghq ]; then
+  go get github.com/motemen/ghq
+fi
+
+## -------------------------------------
 # fzf
 # -------------------------------------
 if [ -d $HOME/.fzf ] ; then
@@ -60,6 +72,17 @@ zplug "motemen/ghq", \
     as:command, \
     hook-build:"make install"
 
+source $COMPLETIONS/docker-fzf-completion/docker-fzf.zsh
+export FZF_COMPLETION_TRIGGER="," # default: '**'
+autoload -U compinit
+compinit
+
+# zplug check returns true if the given repository exists
+if zplug check b4b4r07/enhancd; then
+    # setting if enhancd is available
+    export ENHANCD_FILTER=fzf-tmux
+fi
+
 # zplug check returns true if all packages are installed
 # Therefore, when it returns false, run zplug install
 if ! zplug check --verbose; then
@@ -68,9 +91,3 @@ fi
 
 # source plugins and add commands to the PATH
 zplug load --verbose
-
-# zplug check returns true if the given repository exists
-if zplug check b4b4r07/enhancd; then
-    # setting if enhancd is available
-    export ENHANCD_FILTER=fzf-tmux
-fi
