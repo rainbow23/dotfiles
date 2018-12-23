@@ -44,6 +44,7 @@ libevent-devel \
 git \
 zsh \
 xz xz-devel \
+wget \
 tree; yum clean all
 
 # sudo なしが駄目なら下で実行
@@ -62,12 +63,13 @@ RUN git clone https://github.com/tmux-plugins/tpm /home/${USERNAME}/.tmux/plugin
     && chmod 755 /home/${USERNAME}/.tmux/plugins/tpm
 
 ADD . /home/${USERNAME}/dotfiles
+ADD ./id_rsa /home/${USERNAME}/.ssh/id_rsa
 
 # COPY $HOME/.ssh /home/${USERNAME}/.ssh
 
 RUN echo ${USERPASSWORD} | sudo -S chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dotfiles
 RUN echo ${USERPASSWORD} | sudo -S /home/rainbow23/dotfiles/install_vim.sh
-RUN /home/${USERNAME}/dotfiles/init.sh
+RUN echo ${USERPASSWORD} | /home/${USERNAME}/dotfiles/init.sh
 
 RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim

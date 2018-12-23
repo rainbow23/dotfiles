@@ -15,7 +15,21 @@ if [ ! -d /usr/local/go/bin ]; then
   cd /usr/local/src
   sudo wget https://storage.googleapis.com/golang/go1.11.4.linux-amd64.tar.gz
   sudo tar -C /usr/local -xzf go1.11.4.linux-amd64.tar.gz
-  cat 'export PATH=$PATH:/usr/local/go/bin' > $HOME/.profile
+  # cat 'export PATH=$PATH:/usr/local/go/bin' > $HOME/.profile
+fi
+
+if [ ! -d $HOME/go ]; then
+  mkdir -p $HOME/go/bin
+fi
+
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=$HOME/go
+export GOBIN=$GOPATH/bin
+
+GHQ=$HOME/ghq
+if [ ! -d $GHQ ]; then
+  git clone https://github.com/motemen/ghq $GHQ
+  cd $GHQ && make install
 fi
 
 # tmux
@@ -70,14 +84,14 @@ if [ ! -d $HOME/zsh-syntax-highlighting ] ; then
   git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/zsh-syntax-highlighting
 fi
 
+SILVER_SEARCHER=$HOME/the_silver_searcher
 if [ ! -f /usr/local/bin/ag ] ; then
-  git clone --depth 1 https://github.com/ggreer/the_silver_searcher.git $HOME/the_silver_searcher
-  cd ~/the_silver_searcher && ./build.sh
-  sudo make install
-fi
+  if [ ! -d $SILVER_SEARCHER ]; then
+    git clone --depth 1 https://github.com/ggreer/the_silver_searcher.git $HOME/the_silver_searcher
+  fi
 
-if [ ! -d $HOME/tmuximum ] ; then
-  curl -L raw.github.com/arks22/tmuximum/master/install.bash | bash
+  cd $SILVER_SEARCHER && ./build.sh
+  sudo make install
 fi
 
 # b - browse Chrome bookmarks with fzf
@@ -92,9 +106,24 @@ if [ ! -f /usr/local/bin/diff-so-fancy ] ; then
   && chmod +x /usr/local/bin/diff-so-fancy"
 fi
 
-if [ ! -d $HOME/.zsh-gomi ] ; then
-  git clone --depth 1 https://github.com/b4b4r07/zsh-gomi.git $HOME/.zsh-gomi
-  sudo cp $HOME/.zsh-gomi/bin/gomi /usr/local/bin/gomi
+GOMI=$HOME/.zsh-gomi
+if [ ! -d $GOMI ] ; then
+  git clone --depth 1 https://github.com/b4b4r07/zsh-gomi.git $GOMI
+fi
+
+ZSH_COMPLETIONS=$HOME/.zsh-completions
+if [ ! -d $ZSH_COMPLETIONS ] ; then
+  mkdir -p $ZSH_COMPLETIONS
+  git clone --depth 1 git://github.com/zsh-users/zsh-completions.git $ZSH_COMPLETIONS
+fi
+
+COMPLETIONS=$HOME/.zsh/completions
+if [ ! -d $COMPLETIONS ] ; then
+  mkdir -p $COMPLETIONS
+fi
+
+if [ ! -d $COMPLETIONS/docker-fzf-completion ]; then
+  git clone --depth 1 https://github.com/kwhrtsk/docker-fzf-completion.git $COMPLETIONS/docker-fzf-completion
 fi
 
 # vimPlug install

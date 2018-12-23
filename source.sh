@@ -1,9 +1,5 @@
 #!/bin/sh
 
-export PATH=$PATH:/usr/local/go/bin
-export GOPATH=$HOME/go
-export GOBIN=$GOPATH/bin
-
 # autojump
 [[ -s $HOME/.autojump/etc/profile.d/autojump.sh ]] && source $HOME/.autojump/etc/profile.d/autojump.sh
 
@@ -21,28 +17,28 @@ if [ -d $HOME/.fzf ] ; then
 fi
 
 # anyenv
-if [ -d $HOME/.anyenv ] ; then
-    export PATH="$HOME/.anyenv/bin:$PATH"
-    eval "$(anyenv init - zsh)"
-fi
+# if [ -d $HOME/.anyenv ] ; then
+#     export PATH="$HOME/.anyenv/bin:$PATH"
+#     eval "$(anyenv init - zsh)"
+# fi
 
 # goenv
-if [ -d $HOME/.anyenv/envs/goenv ] ; then
-    export GOPATH=$HOME/go
-    export GOBIN=$GOPATH/bin
-    eval "$(goenv init - zsh)"
-fi
+# if [ -d $HOME/.anyenv/envs/goenv ] ; then
+#     export GOPATH=$HOME/go
+#     export GOBIN=$GOPATH/bin
+#     eval "$(goenv init - zsh)"
+# fi
 
 # pyenv
-if [ -d $HOME/.anyenv/envs/pyenv ] ; then
-    export PATH="$HOME/.anyenv/envs/pyenv/bin:$PATH"
-    eval "$(pyenv init - zsh)"
-fi
+# if [ -d $HOME/.anyenv/envs/pyenv ] ; then
+#     export PATH="$HOME/.anyenv/envs/pyenv/bin:$PATH"
+#     eval "$(pyenv init - zsh)"
+# fi
 
 # pyenv-virtualenv
-if [ -d $HOME/.anyenv/envs/pyenv/plugins/pyenv-virtualenv ] ; then
-    eval "$(pyenv virtualenv-init -)"
-fi
+# if [ -d $HOME/.anyenv/envs/pyenv/plugins/pyenv-virtualenv ] ; then
+#     eval "$(pyenv virtualenv-init -)"
+# fi
 
 # easy-oneliner
 if [ -d $HOME/.easy-oneliner ] ; then
@@ -59,9 +55,10 @@ if [ -d $HOME/zsh-syntax-highlighting ] ; then
   source $HOME/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
-# if [ -z $TMUX ]; then
-    # tmuximum
-# fi
+GOMI=$HOME/.zsh-gomi
+if [ -d $GOMI ] ; then
+    source $GOMI/gomi.zsh
+fi
 
 if [ -f /usr/local/bin/diff-so-fancy ] ; then
   git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
@@ -76,3 +73,16 @@ if [ -f /usr/local/bin/diff-so-fancy ] ; then
   git config --global color.diff.new        "green bold"
   git config --global color.diff.whitespace "red reverse"
 fi
+
+# zsh-completions
+COMPLETIONS=$HOME/.zsh/completions
+if [ -e $COMPLETIONS ]; then
+  fpath=($COMPLETIONS $fpath)
+fi
+
+source $COMPLETIONS/docker-fzf-completion/docker-fzf.zsh
+
+export FZF_COMPLETION_TRIGGER="," # default: '**'
+
+autoload -U compinit
+compinit
