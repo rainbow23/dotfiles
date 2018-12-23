@@ -55,9 +55,9 @@ if [ -d $HOME/zsh-syntax-highlighting ] ; then
   source $HOME/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
-if [ -z $TMUX ]; then
-    tmuximum
-fi
+# if [ -z $TMUX ]; then
+    # tmuximum
+# fi
 
 if [ -f /usr/local/bin/diff-so-fancy ] ; then
   git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
