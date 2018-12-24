@@ -38,15 +38,15 @@ get_os_distribution() {
 ostype=$(get_os_distribution)
 echo "ostype $ostype *************************************************"
 
-if [ ! -f /usr/bin/python3.7 ]; then
+if [ ! -f /usr/bin/python3.6 ]; then
   if [ $ostype = 'redhat' ] ||
      [ $ostype = 'amazonlinux' ]; then
     sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
     sudo yum -y install python36u  python36u-devel python36u-pip
-    sudo python3.7 -m pip install --upgrade pip
-    python3.7 -m pip install neovim
-    python3.7 -m pip install --user pynvim
-    python3.7 -m pip install --upgrade pynvim
+    sudo python3.6 -m pip install --upgrade pip
+    python3.6 -m pip install neovim
+    python3.6 -m pip install --user pynvim
+    python3.6 -m pip install --upgrade pynvim
   fi
 elif [ ! -f /usr/local/bin/python3.7 ]; then
   if [ $ostype = 'darwin' ]; then
@@ -64,8 +64,8 @@ if [ $ostype = 'redhat' ] ||
     --enable-fail-if-missing\
     --with-features=huge\
     --disable-selinux\
-    --enable-python3interp vi_cv_path_python3=/usr/bin/python3.7 \
-    --with-python3-config-dir=/usr/lib64/python3.7/config-3.7m-x86_64-linux-gnu\
+    --enable-python3interp vi_cv_path_python3=/usr/bin/python3.6 \
+    --with-python3-config-dir=/usr/lib64/python3.6/config-3.6m-x86_64-linux-gnu\
     --enable-luainterp\
     --enable-perlinterp\
     --enable-cscope\
