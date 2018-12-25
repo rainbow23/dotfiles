@@ -1,18 +1,19 @@
 #!/bin/sh
 source ~/.zplug/init.zsh
 
+# Grab binaries from GitHub Releases
+# and rename with the "rename-to:" tag
+zplug "junegunn/fzf-bin", \
+    from:gh-r, \
+    as:command, \
+    rename-to:fzf
+    use:"*darwin*amd64*"
+
 zplug "mollifier/anyframe", at:4c23cb60
 
-# Install zsh-gomi with fzf
-# zplug "junegunn/fzf-bin", \
-#     as:command, \
-#     from:gh-r, \
-#     rename-to:"fzf", \
-#     frozen:1
+zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
 
-# diff-so-fancy/third_party/build_fatpack/diff-so-fancy
-zplug "so-fancy/diff-so-fancy/master/third_party/build_fatpack", \
-    from:gist, \
+zplug "so-fancy/diff-so-fancy", \
     use:diff-so-fancy, \
     as:command
 
@@ -20,73 +21,35 @@ zplug "so-fancy/diff-so-fancy/master/third_party/build_fatpack", \
 zplug "b4b4r07/zsh-gomi", \
     as:command, \
     use:bin/gomi, \
-    on:junegunn/fzf-bin
+    on:junegunn/fzf
 
-  # curl -L https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -o $HOME/diff-so-fancy \
-  # && chmod 755 $HOME/diff-so-fancy
+zplug "nnao45/zsh-kubectl-completion"
+zplug "b4b4r07/enhancd", use:init.sh
+zplug "wting/autojump", use:install.py
 
+zplug "rainbow23/easy-oneliner", use:easy-oneliner.zsh, if:"which fzf"
 
-
-# autojump
-[[ -s $HOME/.autojump/etc/profile.d/autojump.sh ]] && source $HOME/.autojump/etc/profile.d/autojump.sh
-
+zplug "b4b4r07/cli-finder", use:cli-finder.zsh, if:"which fzf"
 ## -------------------------------------
 # fzf
 # -------------------------------------
-if [ -d $HOME/.fzf ] ; then
-  if [  -n "$ZSH_NAME" ] ; then
-      # echo 'running zsh';
-      [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh;
-  else
-      # echo 'running bash';
-      [ -f ~/.fzf.bash ] && source ~/.fzf.bash;
-  fi
-fi
+# if [ -d $HOME/.fzf ] ; then
+#   if [  -n "$ZSH_NAME" ] ; then
+#       # echo 'running zsh';
+#       [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh;
+#   else
+#       # echo 'running bash';
+#       [ -f ~/.fzf.bash ] && source ~/.fzf.bash;
+#   fi
+# fi
 
-# anyenv
-if [ -d $HOME/.anyenv ] ; then
-    export PATH="$HOME/.anyenv/bin:$PATH"
-    eval "$(anyenv init - zsh)"
-fi
+# Set the priority when loading
+# e.g., zsh-syntax-highlighting must be loaded
+# after executing compinit command and sourcing other plugins
+# (If the defer tag is given 2 or above, run after compinit command)
+zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
-# goenv
-if [ -d $HOME/.anyenv/envs/goenv ] ; then
-    export GOPATH=$HOME/go
-    export GOBIN=$GOPATH/bin
-    eval "$(goenv init - zsh)"
-fi
 
-# pyenv
-if [ -d $HOME/.anyenv/envs/pyenv ] ; then
-    export PATH="$HOME/.anyenv/envs/pyenv/bin:$PATH"
-    eval "$(pyenv init - zsh)"
-fi
-
-# pyenv-virtualenv
-if [ -d $HOME/.anyenv/envs/pyenv/plugins/pyenv-virtualenv ] ; then
-    eval "$(pyenv virtualenv-init -)"
-fi
-
-# easy-oneliner
-if [ -d $HOME/.easy-oneliner ] ; then
-  source $HOME/.easy-oneliner/easy-oneliner.zsh
-fi
-
-# enhancd
-if [ -d $HOME/enhancd ] ; then
-   source $HOME/enhancd/init.sh
-fi
-
-# zsh-syntax-highlighting
-if [ -d $HOME/zsh-syntax-highlighting ] ; then
-  source $HOME/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
-
-if [ -z $TMUX ]; then
-    tmuximum
-fi
-
-if [ -f /usr/local/bin/diff-so-fancy ] ; then
   git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
   git config --global color.diff-highlight.oldNormal    "red bold"
   git config --global color.diff-highlight.oldHighlight "red bold 52"
@@ -98,4 +61,3 @@ if [ -f /usr/local/bin/diff-so-fancy ] ; then
   git config --global color.diff.old        "red bold"
   git config --global color.diff.new        "green bold"
   git config --global color.diff.whitespace "red reverse"
-fi
