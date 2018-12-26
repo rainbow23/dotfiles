@@ -50,7 +50,8 @@ zplug "zsh-users/zsh-syntax-highlighting", defer:2
 zplug "junegunn/15859538658e449b886f", \
     from:gist, \
     as:command, \
-    use:b.rb
+    use:b.rb, \
+    rename-to:chrome_bookmarks_with_fzf.rb
 
 zplug "b4b4r07/79ee61f7c140c63d2786", \
     from:gist, \
@@ -62,5 +63,6 @@ zplug "b4b4r07/79ee61f7c140c63d2786", \
 if ! zplug check; then
     zplug install
 fi
+
 # source plugins and add commands to the PATH
 zplug load
