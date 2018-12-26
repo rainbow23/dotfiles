@@ -46,18 +46,16 @@ zplug "wting/autojump", \
     hook-build:"./install.py"
 zplug "rainbow23/easy-oneliner", use:easy-oneliner.zsh, if:"which fzf"
 zplug "b4b4r07/cli-finder", use:cli-finder.zsh, if:"which fzf"
-
 # Set the priority when loading
 # e.g., zsh-syntax-highlighting must be loaded
 # after executing compinit command and sourcing other plugins
 # (If the defer tag is given 2 or above, run after compinit command)
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
-zplug "junegunn/15859538658e449b886f", \
+zplug "rainbow23/73236d896399ca7ee68b8b3900ae39e0", \
     from:gist, \
     as:command, \
     use:b.rb, \
     rename-to:chrome_bookmarks_with_fzf.rb
-
 zplug "b4b4r07/79ee61f7c140c63d2786", \
     from:gist, \
     as:command, \
@@ -65,9 +63,9 @@ zplug "b4b4r07/79ee61f7c140c63d2786", \
 
 # zplug check returns true if all packages are installed
 # Therefore, when it returns false, run zplug install
-if ! zplug check; then
+if ! zplug check --verbose; then
     zplug install
 fi
 
 # source plugins and add commands to the PATH
-zplug load
+zplug load --verbose
