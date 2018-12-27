@@ -41,9 +41,9 @@ zplug "b4b4r07/zsh-gomi", \
     on:junegunn/fzf
 zplug "nnao45/zsh-kubectl-completion"
 zplug "b4b4r07/enhancd", use:init.sh
-zplug "wting/autojump", \
-    as:command, \
-    hook-build:"./install.py"
+# zplug "wting/autojump", \
+#     as:command, \
+#     hook-build:"./install.py"
 zplug "rainbow23/easy-oneliner", use:easy-oneliner.zsh, if:"which fzf"
 zplug "b4b4r07/cli-finder", use:cli-finder.zsh, if:"which fzf"
 # Set the priority when loading
