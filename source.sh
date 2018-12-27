@@ -31,6 +31,13 @@ if [ -d $HOME/.fzf ] ; then
 fi
 
 zplug "mollifier/anyframe", at:4c23cb60
+# Grab binaries from GitHub Releases
+# and rename with the "rename-to:" tag
+zplug "junegunn/fzf-bin", \
+    from:gh-r, \
+    as:command, \
+    rename-to:fzf, \
+    use:"*darwin*amd64*"
 zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
 zplug "so-fancy/diff-so-fancy", \
     use:diff-so-fancy, \
@@ -60,6 +67,9 @@ zplug "b4b4r07/79ee61f7c140c63d2786", \
     from:gist, \
     as:command, \
     use:get_last_pane_path.sh
+zplug "motemen/ghq", \
+    as:command, \
+    hook-build:"make install"
 
 # zplug check returns true if all packages are installed
 # Therefore, when it returns false, run zplug install
@@ -69,3 +79,9 @@ fi
 
 # source plugins and add commands to the PATH
 zplug load --verbose
+
+# zplug check returns true if the given repository exists
+if zplug check b4b4r07/enhancd; then
+    # setting if enhancd is available
+    export ENHANCD_FILTER=fzf-tmux
+fi
