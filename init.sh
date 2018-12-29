@@ -8,7 +8,6 @@ ln -sfn $HOME/dotfiles/_zshrc ~/.zshrc
 ln -sfn $HOME/dotfiles/_tmux.conf ~/.tmux.conf
 ln -sfn $HOME/dotfiles/_vimrc $HOME/.config/nvim/init.vim
 
-# git
 #go
 if [ ! -d /usr/local/go/bin ]; then
   cd /usr/local/src
