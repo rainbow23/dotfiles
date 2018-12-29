@@ -14,7 +14,6 @@ git config --global color.diff.old        "red bold"
 git config --global color.diff.new        "green bold"
 git config --global color.diff.whitespace "red reverse"
 
-[[ -s $HOME/.autojump/etc/profile.d/autojump.sh ]] && source $HOME/.autojump/etc/profile.d/autojump.sh
 autoload -U compinit && compinit -u
 
 ## -------------------------------------
@@ -31,13 +30,6 @@ if [ -d $HOME/.fzf ] ; then
 fi
 
 zplug "mollifier/anyframe", at:4c23cb60
-# Grab binaries from GitHub Releases
-# and rename with the "rename-to:" tag
-zplug "junegunn/fzf-bin", \
-    from:gh-r, \
-    as:command, \
-    rename-to:fzf, \
-    use:"*darwin*amd64*"
 zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
 zplug "so-fancy/diff-so-fancy", \
     use:diff-so-fancy, \
@@ -48,9 +40,6 @@ zplug "b4b4r07/zsh-gomi", \
     on:junegunn/fzf
 zplug "nnao45/zsh-kubectl-completion"
 zplug "b4b4r07/enhancd", use:init.sh
-zplug "wting/autojump", \
-    as:command, \
-    hook-build:"./install.py"
 zplug "rainbow23/easy-oneliner", use:easy-oneliner.zsh, if:"which fzf"
 zplug "b4b4r07/cli-finder", use:cli-finder.zsh, if:"which fzf"
 # Set the priority when loading

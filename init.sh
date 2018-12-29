@@ -36,9 +36,5 @@ if [ ! -f /usr/local/bin/ag ] ; then
   sudo make install
 fi
 
-if [ ! -d $HOME/tmuximum ] ; then
-  curl -L raw.github.com/arks22/tmuximum/master/install.bash | bash
-fi
-
 # vimPlug install
 vim +PlugInstall +qall
