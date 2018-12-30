@@ -50,6 +50,8 @@ git \
 zsh \
 xz xz-devel \
 wget \
+docker \
+docker-compose \
 tree; yum clean all
 
 # sudo なしが駄目なら下で実行
