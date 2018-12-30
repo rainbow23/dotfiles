@@ -83,6 +83,16 @@ do_enter() {
 zle -N do_enter
 bindkey '^m' do_enter
 
+# fdg - ghq
+fdg() {
+  local selected
+  selected=$(ghq list | fzf)
+
+  if [ "x$selected" != "x" ]; then
+    cd $(ghq root)/$selected
+  fi
+}
+
 fkill() {
   local pid
   pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
