@@ -14,8 +14,19 @@ git config --global color.diff.old        "red bold"
 git config --global color.diff.new        "green bold"
 git config --global color.diff.whitespace "red reverse"
 
-[[ -s $HOME/.autojump/etc/profile.d/autojump.sh ]] && source $HOME/.autojump/etc/profile.d/autojump.sh
 autoload -U compinit && compinit -u
+
+## -------------------------------------
+# go
+# -------------------------------------
+export GOPATH=$HOME/go
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:$GOBIN
+
+if [ ! -f ghq ]; then
+  go get github.com/motemen/ghq
+fi
 
 ## -------------------------------------
 # fzf
@@ -41,9 +52,6 @@ zplug "b4b4r07/zsh-gomi", \
     on:junegunn/fzf
 zplug "nnao45/zsh-kubectl-completion"
 zplug "b4b4r07/enhancd", use:init.sh
-# zplug "wting/autojump", \
-#     as:command, \
-#     hook-build:"./install.py"
 zplug "rainbow23/easy-oneliner", use:easy-oneliner.zsh, if:"which fzf"
 zplug "b4b4r07/cli-finder", use:cli-finder.zsh, if:"which fzf"
 # Set the priority when loading
@@ -60,6 +68,20 @@ zplug "b4b4r07/79ee61f7c140c63d2786", \
     from:gist, \
     as:command, \
     use:get_last_pane_path.sh
+# zplug "motemen/ghq", \
+#     as:command, \
+#     hook-build:"make install"
+
+source $COMPLETIONS/docker-fzf-completion/docker-fzf.zsh
+export FZF_COMPLETION_TRIGGER="," # default: '**'
+autoload -U compinit
+compinit
+
+# zplug check returns true if the given repository exists
+if zplug check b4b4r07/enhancd; then
+    # setting if enhancd is available
+    export ENHANCD_FILTER=fzf-tmux
+fi
 
 # zplug check returns true if all packages are installed
 # Therefore, when it returns false, run zplug install

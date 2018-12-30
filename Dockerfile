@@ -44,6 +44,7 @@ libevent-devel \
 git \
 zsh \
 xz xz-devel \
+wget \
 tree; yum clean all
 
 # sudo なしが駄目なら下で実行
