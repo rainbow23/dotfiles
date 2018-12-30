@@ -1,7 +1,7 @@
 #!/bin/sh
 
 alias hsn='hostname'
-
+alias ez='exec zsh -l'
 # alias vim='nvim'
 
 ## -------------------------------------

@@ -2,10 +2,10 @@
 
 mkdir -p -m 744 $HOME/.config/nvim
 #update symbolic link
-ln -sfn $HOME/dotfiles/_vimrc ~/.vimrc
-ln -sfn $HOME/dotfiles/_bashrc ~/.bashrc
-ln -sfn $HOME/dotfiles/_zshrc ~/.zshrc
-ln -sfn $HOME/dotfiles/_tmux.conf ~/.tmux.conf
+ln -sfn $HOME/dotfiles/_vimrc $HOME/.vimrc
+ln -sfn $HOME/dotfiles/_bashrc $HOME/.bashrc
+ln -sfn $HOME/dotfiles/_zshrc $HOME/.zshrc
+ln -sfn $HOME/dotfiles/_tmux.conf $HOME/.tmux.conf
 ln -sfn $HOME/dotfiles/_vimrc $HOME/.config/nvim/init.vim
 
 #go
@@ -48,9 +48,13 @@ if [ ! -d $HOME/.zplug ] ; then
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 fi
 
+SILVER_SEARCHER=$HOME/the_silver_searcher
 if [ ! -f /usr/local/bin/ag ] ; then
-  git clone https://github.com/ggreer/the_silver_searcher.git ~/the_silver_searcher
-  cd ~/the_silver_searcher && ./build.sh
+  if [ ! -d $SILVER_SEARCHER ]; then
+    git clone --depth 1 https://github.com/ggreer/the_silver_searcher.git $HOME/the_silver_searcher
+  fi
+
+  cd $SILVER_SEARCHER && ./build.sh
   sudo make install
 fi
 

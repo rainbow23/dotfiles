@@ -83,6 +83,16 @@ do_enter() {
 zle -N do_enter
 bindkey '^m' do_enter
 
+fkill() {
+  local pid
+  pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+
+  if [ "x$pid" != "x" ]
+  then
+    echo $pid | xargs kill -${1:-9}
+  fi
+}
+
 ## -------------------------------------
 # fzf tmux
 # -------------------------------------
