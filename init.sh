@@ -58,5 +58,20 @@ if [ ! -f /usr/local/bin/ag ] ; then
   sudo make install
 fi
 
+ZSH_COMPLETIONS=$HOME/.zsh-completions
+if [ ! -d $ZSH_COMPLETIONS ] ; then
+  mkdir -p $ZSH_COMPLETIONS
+  git clone --depth 1 git://github.com/zsh-users/zsh-completions.git $ZSH_COMPLETIONS
+fi
+
+COMPLETIONS=$HOME/.zsh/completions
+if [ ! -d $COMPLETIONS ] ; then
+  mkdir -p $COMPLETIONS
+fi
+
+if [ ! -d $COMPLETIONS/docker-fzf-completion ]; then
+  git clone --depth 1 https://github.com/kwhrtsk/docker-fzf-completion.git $COMPLETIONS/docker-fzf-completion
+fi
+
 # vimPlug install
 vim +PlugInstall +qall

@@ -72,10 +72,14 @@ zplug "b4b4r07/79ee61f7c140c63d2786", \
 #     as:command, \
 #     hook-build:"make install"
 
+# zsh-completions
+COMPLETIONS=$HOME/.zsh/completions
+if [ -e $COMPLETIONS ]; then
+  fpath=($COMPLETIONS $fpath)
+fi
 source $COMPLETIONS/docker-fzf-completion/docker-fzf.zsh
+
 export FZF_COMPLETION_TRIGGER="," # default: '**'
-autoload -U compinit
-compinit
 
 # zplug check returns true if the given repository exists
 if zplug check b4b4r07/enhancd; then
