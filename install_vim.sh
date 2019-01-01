@@ -38,21 +38,24 @@ get_os_distribution() {
 ostype=$(get_os_distribution)
 echo "ostype $ostype *************************************************"
 
-if [ ! -f /usr/local/bin/python3.6 ]; then
-    ./install_python.sh
+if [ ! -f /usr/local/bin/python3.5 ]; then
+    sudo ./install_python.sh
   if [ $ostype = 'redhat' ] ||
      [ $ostype = 'amazonlinux' ]; then
     sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
-    sudo yum -y install python36u  python36u-devel python36u-pip
+    # sudo yum -y install python36u  python36u-devel python36u-pip
   fi
   # if [ $ostype = 'darwin' ]; then
     # brew install python3.7
   # fi
     sudo pip install --upgrade pip
-    sudo python3.6 -m pip install --upgrade pip
-    sudo python3.6 -m pip install neovim
-    sudo python3.6 -m pip install --user pynvim
-    sudo python3.6 -m pip install --upgrade pynvim
+    sudo python3.5 -m pip install --upgrade pip
+    sudo python3.5 -m pip install neovim
+    sudo python3.5 -m pip install --user pynvim
+    sudo python3.5 -m pip install --upgrade pynvim
+
+    pip install --user neovim
+    pip3 install neovim
 fi
 
 
@@ -62,9 +65,9 @@ fi
     --enable-fail-if-missing\
     --with-features=huge\
     --disable-selinux\
-    --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.6 \
+    --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.5 \
     # --with-python3-config-dir=/usr/lib64/python3.6/config-3.6m-x86_64-linux-gnu\
-    --with-python3-config-dir=/usr/local/Python36/lib/python3.6/config-3.6m-x86_64-linux-gnu \
+    --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m-x86_64-linux-gnu \
     --enable-luainterp\
     --enable-perlinterp\
     --enable-cscope\
