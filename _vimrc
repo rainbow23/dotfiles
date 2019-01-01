@@ -272,7 +272,7 @@ endif
 if has("mac")
 
 elseif has("unix")
-    let g:python3_host_prog = expand('/usr/bin/python3.6')
+    let g:python3_host_prog = expand('/usr/local/bin/python3.5')
 endif
 
 if has('pythonx')
