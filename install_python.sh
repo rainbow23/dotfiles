@@ -9,6 +9,7 @@ sudo ./configure --prefix=/usr/local/Python35
 sudo make
 # sudo make test
 sudo make install
+sudo chown -R ${USERNAME}:${USERNAME} /usr/local/Python35
 sudo ln -s /usr/local/Python35/bin/python3.5 /usr/local/bin/python3.5
 sudo ln -s /usr/local/Python35/bin/pip3.5 /usr/local/bin/pip3
 

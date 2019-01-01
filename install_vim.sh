@@ -48,14 +48,16 @@ if [ ! -f /usr/local/bin/python3.5 ]; then
   # if [ $ostype = 'darwin' ]; then
     # brew install python3.7
   # fi
-    sudo pip install --upgrade pip
-    sudo python3.5 -m pip install --upgrade pip
-    sudo python3.5 -m pip install neovim
-    sudo python3.5 -m pip install --user pynvim
-    sudo python3.5 -m pip install --upgrade pynvim
+    # sudo pip install --upgrade pip
+    # sudo python3.5 -m pip install --upgrade pip
+    # sudo python3.5 -m pip install neovim
+    # sudo python3.5 -m pip install --user pynvim
+    # sudo python3.5 -m pip install --upgrade pynvim
+    # pip install --user neovim
 
-    pip install --user neovim
+    pip3 install --upgrade pip
     pip3 install neovim
+    pip3 install pynvim
 fi
 
 
@@ -66,8 +68,8 @@ fi
     --with-features=huge\
     --disable-selinux\
     --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.5 \
-    # --with-python3-config-dir=/usr/lib64/python3.6/config-3.6m-x86_64-linux-gnu\
-    --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m-x86_64-linux-gnu \
+    # --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m-x86_64-linux-gnu \
+    --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m \
     --enable-luainterp\
     --enable-perlinterp\
     --enable-cscope\
