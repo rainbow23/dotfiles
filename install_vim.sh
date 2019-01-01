@@ -38,6 +38,11 @@ get_os_distribution() {
 ostype=$(get_os_distribution)
 echo "ostype $ostype *************************************************"
 
+# error対応
+# undefined symbol: PyByteArray_Type
+# https://github.com/vim/vim/issues/3629
+export LDFLAGS="-rdynamic"
+
 if [ ! -f /usr/local/bin/python3.5 ]; then
     sudo ./install_python.sh
   if [ $ostype = 'redhat' ] ||
