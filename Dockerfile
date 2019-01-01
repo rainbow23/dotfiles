@@ -53,12 +53,12 @@ wget \
 tree; yum clean all
 
 # sudo なしが駄目なら下で実行
-RUN yum -y install https://centos7.iuscommunity.org/ius-release.rpm
-RUN yum -y install python36u  python36u-devel python36u-pip
-RUN python3.6 -m pip install neovim
-RUN python3.6 -m pip install --upgrade pip
-RUN python3.6 -m pip install --user pynvim
-RUN python3.6 -m pip install --upgrade pynvim
+# RUN yum -y install https://centos7.iuscommunity.org/ius-release.rpm
+# RUN yum -y install python36u  python36u-devel python36u-pip
+# RUN python3.6 -m pip install neovim
+# RUN python3.6 -m pip install --upgrade pip
+# RUN python3.6 -m pip install --user pynvim
+# RUN python3.6 -m pip install --upgrade pynvim
 
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}/
@@ -73,7 +73,7 @@ ADD ./id_rsa /home/${USERNAME}/.ssh/id_rsa
 RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 RUN echo ${USERPASSWORD} | sudo -S chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dotfiles
-RUN echo ${USERPASSWORD} | sudo -S /home/rainbow23/dotfiles/install_vim.sh
+RUN /home/rainbow23/dotfiles/install_vim.sh
 RUN /home/rainbow23/dotfiles/init.sh
 
 RUN vim +slient +PlugInstall +qall
