@@ -62,6 +62,14 @@ fsh() {
                 --bind "ctrl-y:execute:$_gitLogLineToHash | xclip"
 }
 
+gsd() {
+  local out
+  IFS=$'\n'
+  out=($(git status --short | fzf-tmux --multi | awk '{print $2}')) 
+  git diff $out
+}
+
+
 do_enter() {
     if [[ -n $BUFFER ]]; then
         zle accept-line
@@ -82,6 +90,16 @@ do_enter() {
 }
 zle -N do_enter
 bindkey '^m' do_enter
+
+# fdg - ghq
+fdg() {
+  local selected
+  selected=$(ghq list | fzf)
+
+  if [ "x$selected" != "x" ]; then
+    cd $(ghq root)/$selected
+  fi
+}
 
 fkill() {
   local pid
