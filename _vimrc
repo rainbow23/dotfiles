@@ -242,6 +242,7 @@ Plug 'rhysd/clever-f.vim'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'ivalkeen/vim-ctrlp-tjump'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
 Plug 'soramugi/auto-ctags.vim'
 Plug 'airblade/vim-gitgutter'
 " Plug 'deris/vim-gothrough-jk'
@@ -300,7 +301,7 @@ endfunction
 
 "FZF start ####################################################################
 if has("mac")
-    set rtp+=/usr/local/opt/fzf
+    set rtp+=~/.fzf
 elseif has("unix")
     set rtp+=~/.fzf
 endif
@@ -769,6 +770,7 @@ nnoremap [fugitive]l  :<C-u>Glog<CR>
 nnoremap [fugitive]b :<C-u>Gblame<CR>
 nnoremap [fugitive]rd :<C-u>Gread<CR>
 nnoremap [fugitive]g :<C-u>Ggrep
+nnoremap [fugitive]w :<C-u>Gbrowse<CR>
 
 "tpope/vim-fugitive end      ###################################################################
 
