@@ -58,6 +58,11 @@ nnoremap tl :tablast<CR>
 nnoremap tmk :tabmove +1<CR>
 nnoremap tmj :tabmove -1<CR>
 
+" 次の行からインサードモードで始める
+nnoremap nl $li<CR>
+inoremap nl <ESC>$li<CR>
+
+
 " 現在開いているファイルにワーキングディレクトリを移動する
 nnoremap mvd :<C-u>cd %:h<CR> :pwd<CR>
 " fullpathでファイル名表示
