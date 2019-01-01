@@ -300,7 +300,7 @@ endfunction
 
 "FZF start ####################################################################
 if has("mac")
-    set rtp+=/usr/local/opt/fzf
+    set rtp+=~/.fzf
 elseif has("unix")
     set rtp+=~/.fzf
 endif
