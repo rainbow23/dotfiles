@@ -392,9 +392,9 @@ set t_Co=256 "vim-air-line-themeを反映させる
 "neosnippets start #################################################################
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
+imap <C-o>     <Plug>(neosnippet_expand_or_jump)
+smap <C-o>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-o>     <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
@@ -423,13 +423,18 @@ noremap! <C-j> <Esc>
 " <CR>: close popup.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
 inoremap <silent> <C-j> <C-r>=<SID>my_cj_function()<CR>
+inoremap <silent> <C-k> <C-r>=<SID>my_ck_function()<CR>
 
 function! s:my_cr_function()
     return pumvisible() ? deoplete#mappings#close_popup() : "\n"
 endfunction
 
 function! s:my_cj_function()
-    return pumvisible() ? deoplete#mappings#close_popup() : ""
+    return pumvisible() ? "\<C-n>" : ""
+endfunction
+
+function! s:my_ck_function()
+    return pumvisible() ? "\<C-p>" : ""
 endfunction
 
 inoremap <silent><expr> <TAB>
