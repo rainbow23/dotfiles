@@ -59,8 +59,8 @@ nnoremap tmk :tabmove +1<CR>
 nnoremap tmj :tabmove -1<CR>
 
 " 次の行からインサードモードで始める
-nnoremap nl $li<CR>
-inoremap nl <ESC>$li<CR>
+nnoremap nl $a<CR>
+inoremap nl <ESC>$a<CR>
 
 
 " 現在開いているファイルにワーキングディレクトリを移動する
