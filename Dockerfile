@@ -50,6 +50,8 @@ git \
 zsh \
 xz xz-devel \
 wget \
+docker \
+docker-compose \
 tree; yum clean all
 
 # sudo なしが駄目なら下で実行
@@ -67,8 +69,9 @@ RUN git clone https://github.com/tmux-plugins/tpm /home/${USERNAME}/.tmux/plugin
     && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.tmux/plugins/tpm \
     && chmod 755 /home/${USERNAME}/.tmux/plugins/tpm
 
-ADD . /home/${USERNAME}/dotfiles
 ADD ./id_rsa /home/${USERNAME}/.ssh/id_rsa
+ADD . /home/${USERNAME}/dotfiles
+RUN sudo chown -R rainbow23:wheel dotfiles
 
 RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim

@@ -1,6 +1,5 @@
 set backspace=indent,eol,start
 set number
-set showmatch
 set matchtime=1
 set autoindent
 set shiftwidth=4
@@ -196,13 +195,8 @@ nnoremap <silent> <C-u> <C-u>zz
 "戻る 画面1ページ分
 nnoremap <silent> <C-b> <C-b>zz
 
-"ノーマルモード＋ビジュアルモード
-noremap <C-j> <Esc>
-"コマンドラインモード＋インサートモード
-noremap! <C-j> <Esc>
 " インサートモード
-inoremap <silent> jj <ESC>:w<CR>:noh<CR>
-
+inoremap <silent> jj <ESC>l
 
 "set termguicolors nvim用
 "set nohlsearch
@@ -421,12 +415,21 @@ endif
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 
+"ノーマルモード＋ビジュアルモード
+noremap <C-j> <Esc>
+"コマンドラインモード＋インサートモード
+noremap! <C-j> <Esc>
+
 " <CR>: close popup.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-inoremap <silent> <C-j> <C-r>=<SID>my_cr_function()<CR>
+inoremap <silent> <C-j> <C-r>=<SID>my_cj_function()<CR>
 
 function! s:my_cr_function()
     return pumvisible() ? deoplete#mappings#close_popup() : "\n"
+endfunction
+
+function! s:my_cj_function()
+    return pumvisible() ? deoplete#mappings#close_popup() : ""
 endfunction
 
 inoremap <silent><expr> <TAB>
