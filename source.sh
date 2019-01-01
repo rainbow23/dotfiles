@@ -94,4 +94,4 @@ if ! zplug check --verbose; then
 fi
 
 # source plugins and add commands to the PATH
-zplug load --verbose
+zplug load
