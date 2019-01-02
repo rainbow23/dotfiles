@@ -398,8 +398,15 @@ set t_Co=256 "vim-air-line-themeを反映させる
 "neosnippets start #################################################################
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-imap <C-o>     <Plug>(neosnippet_expand_or_jump)
-smap <C-o>     <Plug>(neosnippet_expand_or_jump)
+" work with neosnippet and deoplete
+imap <expr><C-o>
+\ pumvisible() ? neosnippet#expandable_or_jumpable() ?
+\    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
+\    "\<Plug>(neosnippet_expand_or_jump)"
+smap <expr><C-o>
+\ pumvisible() ? neosnippet#expandable_or_jumpable() ?
+\    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
+\    "\<Plug>(neosnippet_expand_or_jump)"
 xmap <C-o>     <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
