@@ -36,22 +36,30 @@ get_os_distribution() {
 }
 
 ostype=$(get_os_distribution)
-echo "ostype $ostype *************************************************"
 
-# error対応
-# undefined symbol: PyByteArray_Type
-# https://github.com/vim/vim/issues/3629
-export LDFLAGS="-rdynamic"
+if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
+  echo ""
+  echo "install ostype $ostype *************************************************"
+  echo ""
 
-if [ ! -f /usr/local/bin/python3.5 ]; then
+  # error対応
+  # undefined symbol: PyByteArray_Type
+  # https://github.com/vim/vim/issues/3629
+  export LDFLAGS="-rdynamic"
+
+  if [ ! -f /usr/local/bin/python3.5 ]; then
+    echo "install python3.5 *************************************************"
     sudo ./install_python.sh
-  if [ $ostype = 'redhat' ] ||
-     [ $ostype = 'amazonlinux' ]; then
-    sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
+    # sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
     # sudo yum -y install python36u  python36u-devel python36u-pip
   fi
-  # if [ $ostype = 'darwin' ]; then
-    # brew install python3.7
+
+elif [ $ostype = 'darwin' ]; then
+  echo ""
+  echo "install ostype $ostype *************************************************"
+  echo ""
+
+  brew install python3.7
   # fi
     # sudo pip install --upgrade pip
     # sudo python3.5 -m pip install --upgrade pip
@@ -60,38 +68,51 @@ if [ ! -f /usr/local/bin/python3.5 ]; then
     # sudo python3.5 -m pip install --upgrade pynvim
     # pip install --user neovim
 fi
+
 pip3 install --upgrade pip
 pip3 install neovim
 pip3 install --user neovim
 pip3 install pynvim
 
-# if [ $ostype = 'redhat' ] ||
-#    [ $ostype = 'amazonlinux' ]; then
+if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
+  echo ""
+  echo "configure ostype $ostype *************************************************"
+  echo ""
+
   cd $HOME/vim8src && ./configure\
     --enable-fail-if-missing\
     --with-features=huge\
     --disable-selinux\
-    --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.5 \
-    # --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m-x86_64-linux-gnu \
-    --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m \
+    --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.5\
+    # --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m-x86_64-linux-gnu\
+    --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m\
     --enable-luainterp\
     --enable-perlinterp\
     --enable-cscope\
     --enable-fontset\
     --enable-multibyte
-# elif [ $ostype = 'darwin' ]; then
-#   cd $HOME/vim8src && ./configure\
-#     --enable-fail-if-missing\
-#     --with-features=huge\
-#     --disable-selinux\
-#     --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.7 \
-#     --enable-luainterp\
-#     --enable-perlinterp\
-#     --enable-cscope\
-#     --enable-fontset\
-#     --enable-multibyte
-# fi
+elif [ $ostype = 'darwin' ]; then
+  echo ""
+  echo "configure ostype $ostype *************************************************"
+  echo ""
+
+# `brew --prefix` >> /usr/local
+  cd $HOME/vim8src && ./configure\
+    --prefix=`brew --prefix`\
+    --enable-fail-if-missing\
+    --with-features=huge\
+    --disable-selinux\
+    --enable-python3interp=yes\
+    # --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.7\
+    --with-python3-command=python3\
+    # --with-python3-config-dir=/usr/local/Cellar/python3/3.7.2/Frameworks/Python.framework/Versions/3.7/lib/python3.7/config-3.7m-darwin\ #deprecated
+    --enable-luainterp\
+    --enable-perlinterp\
+    --enable-cscope\
+    --enable-fontset\
+    --enable-multibyte
+fi
 
 sudo make && sudo make install
-
 sudo rm -rf $HOME/vim8src
+alias vim='/usr/local/bin/vim'
