@@ -75,7 +75,7 @@ gsts() {
   local stash key stashfullpath
   stash=$(git stash list | fzf --ansi +m --exit-0 \
         --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
-        --expect=enter --expect=ctrl-d)
+        --expect=enter --expect=ctrl-d --expect=ctrl-a)
 
   key=$(head -1 <<< "$stash")
   stashfullpath=$(head -2 <<< $stash | tail -1)
