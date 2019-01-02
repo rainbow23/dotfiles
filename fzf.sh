@@ -70,6 +70,35 @@ gsd() {
   git diff $out
 }
 
+gsts() {
+  IFS=$'\n'
+  local stash key stashfullpath
+  stash=$(git stash list | fzf --ansi +m --exit-0 \
+        --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
+        --expect=enter --expect=ctrl-d)
+
+  key=$(head -1 <<< "$stash")
+  stashfullpath=$(head -2 <<< $stash | tail -1)
+  file=$(head -2 <<< $stash | awk '{print $1}' | sed -e 's/://g' | tail -1)
+  # echo $stash
+  # echo "$file"
+  # echo $key
+
+  if [ -n "$file" ]; then
+      if [ "$key" = ctrl-d ] ; then
+        echo "git stash show $stashfullpath"
+        git stash show $file
+      elif [ "$key" = enter ] ; then
+        echo "git stash show $stashfullpath"
+        git stash show $file
+        echo "git stash show -p $stashfullpath"
+        git stash show -p $file
+      elif [ "$key" = ctrl-a ] ; then
+        echo "git stash apply $stashfullpath"
+        git stash apply $file
+      fi
+  fi
+}
 
 do_enter() {
     if [[ -n $BUFFER ]]; then
