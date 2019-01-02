@@ -37,13 +37,13 @@ get_os_distribution() {
 
 ostype=$(get_os_distribution)
 
-if [ ! -f /usr/local/bin/python3.5 ]; then
-  if [ $ostype = 'redhat' ] ||
-     [ $ostype = 'amazonlinux' ]; then
-    echo ""
-    echo "install ostype $ostype *************************************************"
-    echo ""
+if [ $ostype = 'redhat' ] ||
+   [ $ostype = 'amazonlinux' ]; then
+  echo ""
+  echo "install ostype $ostype *************************************************"
+  echo ""
 
+  if [ ! -f /usr/local/bin/python3.5 ]; then
     sudo ./install_python.sh
 
     # error対応
@@ -51,11 +51,12 @@ if [ ! -f /usr/local/bin/python3.5 ]; then
     # https://github.com/vim/vim/issues/3629
     export LDFLAGS="-rdynamic"
 
-    sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
+    # sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
     # sudo yum -y install python36u  python36u-devel python36u-pip
   fi
-  # if [ $ostype = 'darwin' ]; then
-    # brew install python3.7
+
+elif [ $ostype = 'darwin' ]; then
+  brew install python3.7
   # fi
     # sudo pip install --upgrade pip
     # sudo python3.5 -m pip install --upgrade pip
@@ -91,11 +92,6 @@ elif [ $ostype = 'darwin' ]; then
   echo ""
   echo "configure ostype $ostype *************************************************"
   echo ""
-# ./configure --prefix=`brew --prefix` --enable-multibyte --with-features=huge --enable-fontset --enable-cscope --disable-selinux --disable-gui
-
-# ./configure --prefix=/usr/local --enable-rubyinterp --enable-python3interp --disable-gpm --enable-gui=no --enable-multibyte --with-python3-config-dir=/usr/local/Cellar/python3/3.2/Frameworks/Python.framework/Versions/3.2/lib/python3.2/config-3.2m
-
-# /usr/local/Cellar/python3/3.7.2/Frameworks/Python.framework/Versions/3.7/lib/python3.7/config-3.7m-darwin
 
 # `brew --prefix` >> /usr/local
   cd $HOME/vim8src && ./configure\
