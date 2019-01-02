@@ -84,7 +84,7 @@ if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
     --with-features=huge\
     --disable-selinux\
     --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.5\
-    # --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m-x86_64-linux-gnu \
+    # --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m-x86_64-linux-gnu\
     --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m\
     --enable-luainterp\
     --enable-perlinterp\
@@ -98,14 +98,14 @@ elif [ $ostype = 'darwin' ]; then
 
 # `brew --prefix` >> /usr/local
   cd $HOME/vim8src && ./configure\
-    --prefix=`brew --prefix` \
+    --prefix=`brew --prefix`\
     --enable-fail-if-missing\
     --with-features=huge\
     --disable-selinux\
-    --enable-python3interp=yes \
-    # --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.7 \
-    --with-python3-command=python3 \
-    # --with-python3-config-dir=/usr/local/Cellar/python3/3.7.2/Frameworks/Python.framework/Versions/3.7/lib/python3.7/config-3.7m-darwin \ #deprecated
+    --enable-python3interp=yes\
+    # --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.7\
+    --with-python3-command=python3\
+    # --with-python3-config-dir=/usr/local/Cellar/python3/3.7.2/Frameworks/Python.framework/Versions/3.7/lib/python3.7/config-3.7m-darwin\ #deprecated
     --enable-luainterp\
     --enable-perlinterp\
     --enable-cscope\
