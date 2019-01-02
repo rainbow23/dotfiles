@@ -11,11 +11,11 @@ sudo make
 sudo make install
 sudo chown -R ${USERNAME}:${USERNAME} /usr/local/Python35
 
-if [-f /usr/local/bin/python3.5 ]; then
+if [ -f /usr/local/bin/python3.5 ]; then
     sudo rm -rf /usr/local/bin/python3.5
 fi
 
-if [-f /usr/local/bin/pip3 ]; then
+if [ -f /usr/local/bin/pip3 ]; then
     sudo rm -rf /usr/local/bin/pip3
 fi
 
