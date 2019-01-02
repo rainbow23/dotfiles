@@ -37,25 +37,28 @@ get_os_distribution() {
 
 ostype=$(get_os_distribution)
 
-if [ $ostype = 'redhat' ] ||
-   [ $ostype = 'amazonlinux' ]; then
+if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
   echo ""
   echo "install ostype $ostype *************************************************"
   echo ""
 
+  # error対応
+  # undefined symbol: PyByteArray_Type
+  # https://github.com/vim/vim/issues/3629
+  export LDFLAGS="-rdynamic"
+
   if [ ! -f /usr/local/bin/python3.5 ]; then
+    echo "install python3.5 *************************************************"
     sudo ./install_python.sh
-
-    # error対応
-    # undefined symbol: PyByteArray_Type
-    # https://github.com/vim/vim/issues/3629
-    export LDFLAGS="-rdynamic"
-
     # sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
     # sudo yum -y install python36u  python36u-devel python36u-pip
   fi
 
 elif [ $ostype = 'darwin' ]; then
+  echo ""
+  echo "install ostype $ostype *************************************************"
+  echo ""
+
   brew install python3.7
   # fi
     # sudo pip install --upgrade pip
@@ -71,18 +74,18 @@ pip3 install neovim
 pip3 install --user neovim
 pip3 install pynvim
 
-if [ $ostype = 'redhat' ] ||
-   [ $ostype = 'amazonlinux' ]; then
+if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
   echo ""
   echo "configure ostype $ostype *************************************************"
   echo ""
+
   cd $HOME/vim8src && ./configure\
     --enable-fail-if-missing\
     --with-features=huge\
     --disable-selinux\
-    --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.5 \
+    --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.5\
     # --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m-x86_64-linux-gnu \
-    --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m \
+    --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m\
     --enable-luainterp\
     --enable-perlinterp\
     --enable-cscope\
