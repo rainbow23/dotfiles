@@ -43,7 +43,7 @@ gsh() {
       --bind "q:execute()+abort" \
       --bind "ctrl-m:execute:
                 (grep -o '[a-f0-9]\{7\}' | head -1 |
-                xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+                xargs -I % sh -c 'git show --color=always % | diff-so-fancy' | less -R) << 'FZF-EOF'
                 {}
 FZF-EOF"
 }
@@ -59,7 +59,8 @@ fsh() {
             --ansi --preview="$_viewGitLogLine" \
                 --header "enter to view, alt-y to copy hash" \
                 --bind "enter:execute:$_viewGitLogLine   | less -R" \
-                --bind "ctrl-y:execute:$_gitLogLineToHash | xclip"
+                --bind "ctrl-y:execute:$_gitLogLineToHash | xclip" \
+                --bind "q:execute()+abort"
 }
 
 gsd() {
