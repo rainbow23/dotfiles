@@ -398,7 +398,7 @@ set t_Co=256 "vim-air-line-themeを反映させる
 "neosnippets start #################################################################
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-" work with neosnippet and deoplete
+" use together neosnippet and deoplete
 imap <expr><C-o>
 \ pumvisible() ? neosnippet#expandable_or_jumpable() ?
 \    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
