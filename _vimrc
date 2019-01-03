@@ -281,7 +281,8 @@ if has('python3')
 :python3 import neovim
 endif
 Plug 'Shougo/neosnippet.vim'
-Plug 'Shougo/neosnippet-snippets'
+" Plug 'Shougo/neosnippet-snippets'
+Plug 'honza/vim-snippets'
 Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
@@ -396,6 +397,16 @@ set t_Co=256 "vim-air-line-themeを反映させる
 "vim-airline end  #####################################################################
 
 "neosnippets start #################################################################
+" which disables all runtime snippets
+let g:neosnippet#disable_runtime_snippets = {
+\   '_' : 1,
+\ }
+"kEnable snipMate compatibility feature.
+let g:neosnippet#enable_snipmate_compatibility = 1
+" Tell Neosnippet about the other snippets
+let g:neosnippet#snippets_directory='~/.vim/plugged/vim-snippets/snippets/'
+" ~/.vim/bundle/vim-snippets/snippets'
+
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 " use together neosnippet and deoplete
