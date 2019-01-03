@@ -281,7 +281,7 @@ if has('python3')
 :python3 import neovim
 endif
 Plug 'Shougo/neosnippet.vim'
-" Plug 'Shougo/neosnippet-snippets'
+Plug 'Shougo/neosnippet-snippets'
 Plug 'honza/vim-snippets'
 Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
@@ -398,10 +398,10 @@ set t_Co=256 "vim-air-line-themeを反映させる
 
 "neosnippets start #################################################################
 " which disables all runtime snippets
-let g:neosnippet#disable_runtime_snippets = {
-\   '_' : 1,
-\ }
-"kEnable snipMate compatibility feature.
+" let g:neosnippet#disable_runtime_snippets = {
+" \   '_' : 1,
+" \ }
+" Enable snipMate compatibility feature.
 let g:neosnippet#enable_snipmate_compatibility = 1
 " Tell Neosnippet about the other snippets
 let g:neosnippet#snippets_directory='~/.vim/plugged/vim-snippets/snippets/'
