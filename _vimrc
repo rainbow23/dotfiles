@@ -433,22 +433,28 @@ noremap <C-j> <Esc>
 "コマンドラインモード＋インサートモード
 noremap! <C-j> <Esc>
 
+inoremap <silent> <expr> <CR>  pumvisible() ? deoplete#mappings#close_popup() : "\n"
+inoremap <silent> <expr> <C-j> pumvisible() ? "\<C-n>" : ""
+inoremap <silent> <expr> <C-k> pumvisible() ? "\<C-p>" : ""
+
 " <CR>: close popup.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-inoremap <silent> <C-j> <C-r>=<SID>my_cj_function()<CR>
-inoremap <silent> <C-k> <C-r>=<SID>my_ck_function()<CR>
+" <C-r>=  used to insert the result of an expression at the cursor
+" https://stackoverflow.com/questions/10862457/what-does-c-r-means-in-vim/10863134
+" inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+" inoremap <silent> <C-j> <C-r>=<SID>my_cj_function()<CR>
+" inoremap <silent> <C-k> <C-r>=<SID>my_ck_function()<CR>
 
-function! s:my_cr_function()
-    return pumvisible() ? deoplete#mappings#close_popup() : "\n"
-endfunction
+" function! s:my_cr_function()
+"     return pumvisible() ? deoplete#mappings#close_popup() : "\n"
+" endfunction
 
-function! s:my_cj_function()
-    return pumvisible() ? "\<C-n>" : ""
-endfunction
+" function! s:my_cj_function()
+"     return pumvisible() ? "\<C-n>" : ""
+" endfunction
 
-function! s:my_ck_function()
-    return pumvisible() ? "\<C-p>" : ""
-endfunction
+" function! s:my_ck_function()
+"     return pumvisible() ? "\<C-p>" : ""
+" endfunction
 
 inoremap <silent><expr> <TAB>
 \ pumvisible() ? "\<C-n>" :
