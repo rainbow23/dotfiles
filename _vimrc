@@ -184,7 +184,7 @@ nnoremap ; :
 nnoremap : ;
 " Count number of matches of a pattern
 " http://vim.wikia.com/wiki/Count_number_of_matches_of_a_pattern
-nnoremap ** *<C-O>:%s///gn<CR>
+nnoremap 88 *<C-O>:%s///gn<CR>
 
 "改行後INSERT MODEにしない
 nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
@@ -249,7 +249,7 @@ Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'cohama/lexima.vim'
-" Plug 'rainbow23/vim-anzu'
+Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
 Plug 'MattesGroeger/vim-bookmarks'
@@ -304,6 +304,8 @@ Plug 'leafcage/yankround.vim'
 Plug 'ujihisa/unite-colorscheme'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'tpope/vim-surround'
+" 対応する括弧
+Plug 'itchyny/vim-parenmatch'
 call plug#end()
 
 function! s:all_files()
@@ -1069,3 +1071,7 @@ tnoremap <ESC>   <C-\><C-n>
 nnoremap <silent> gor :<C-u>:GoRun<CR>
 nnoremap <silent> gob :<C-u>:GoBuild<CR>
 " Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } #################################################
+
+" Plug 'itchyny/vim-parenmatch' ######################################################################
+let g:loaded_matchparen = 1
+" Plug 'itchyny/vim-parenmatch' ######################################################################
