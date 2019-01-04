@@ -306,6 +306,7 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'tpope/vim-surround'
 " 対応する括弧
 Plug 'itchyny/vim-parenmatch'
+Plug 'itchyny/vim-cursorword'
 call plug#end()
 
 function! s:all_files()
