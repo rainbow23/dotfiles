@@ -1,5 +1,7 @@
 #!/bin/sh
 
+sudo chsh $USER -s /bin/zsh
+
 mkdir -p -m 744 $HOME/.config/nvim
 #update symbolic link
 ln -sfn $HOME/dotfiles/_vimrc $HOME/.vimrc
