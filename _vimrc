@@ -16,6 +16,11 @@ syntax on
 colorscheme peachpuff
 filetype on
 set hlsearch
+hi Search ctermbg=LightRed
+hi Search ctermfg=DarkBlue
+" visual mode hightlight color
+hi Visual ctermbg=LightRed
+hi Visual ctermfg=DarkBlue
 
 set encoding=utf-8
 
@@ -61,7 +66,8 @@ nnoremap tmj :tabmove -1<CR>
 " 次の行からインサードモードで始める
 nnoremap nl $a<CR>
 inoremap nl <ESC>$a<CR>
-
+" move cursor to end position
+inoremap edp <ESC>$a
 
 " 現在開いているファイルにワーキングディレクトリを移動する
 nnoremap mvd :<C-u>cd %:h<CR> :pwd<CR>
@@ -240,7 +246,7 @@ Plug 'osyo-manga/unite-quickfix'
 Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'ctrlpvim/ctrlp.vim'
-"Plug 'cohama/lexima.vim'
+Plug 'cohama/lexima.vim'
 Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
