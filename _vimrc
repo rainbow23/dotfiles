@@ -16,7 +16,7 @@ syntax on
 colorscheme peachpuff
 filetype on
 set hlsearch
-hi Search ctermbg=LightRed
+hi Search ctermbg=Red
 hi Search ctermfg=DarkBlue
 " visual mode hightlight color
 hi Visual ctermbg=LightRed
@@ -182,7 +182,9 @@ nnoremap diw "_diw
 
 nnoremap ; :
 nnoremap : ;
-nnoremap 88 *
+" Count number of matches of a pattern
+" http://vim.wikia.com/wiki/Count_number_of_matches_of_a_pattern
+nnoremap ** *<C-O>:%s///gn<CR>
 
 "改行後INSERT MODEにしない
 nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
@@ -247,7 +249,7 @@ Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'cohama/lexima.vim'
-Plug 'rainbow23/vim-anzu'
+" Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
 Plug 'MattesGroeger/vim-bookmarks'
