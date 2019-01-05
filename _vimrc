@@ -285,6 +285,7 @@ Plug 'Shougo/neosnippet-snippets'
 Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'mdempsky/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'Shougo/neco-syntax'
 Plug 'machakann/vim-sandwich'
 Plug 'ntpeters/vim-better-whitespace'
