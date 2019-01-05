@@ -22,11 +22,7 @@ if [ ! -d $HOME/go ]; then
   mkdir -p $HOME/go/bin
 fi
 
-# GHQ=$HOME/ghq
-# if [ ! -d $GHQ ]; then
-#   git clone https://github.com/motemen/ghq $GHQ
-#   cd $GHQ && make install
-# fi
+go get -u github.com/mdempsky/gocode
 
 # tmux
 if [ ! -d $HOME/tmux ]; then
