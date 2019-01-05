@@ -642,7 +642,6 @@ function! s:Unite_session_save(...)
         echo "UniteSessionSave ".g:unite_source_session_default_session_name
         execute 'UniteSessionSave '.g:unite_source_session_default_session_name
     end
-    NERDTreeTabsOpen
 endfunction
 "セッションを保存 enc    ##
 
