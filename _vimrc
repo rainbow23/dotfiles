@@ -1,6 +1,5 @@
 set backspace=indent,eol,start
 set number
-set showmatch
 set matchtime=1
 set autoindent
 set shiftwidth=4
@@ -17,6 +16,11 @@ syntax on
 colorscheme peachpuff
 filetype on
 set hlsearch
+hi Search ctermbg=Red
+hi Search ctermfg=DarkBlue
+" visual mode hightlight color
+hi Visual ctermbg=LightRed
+hi Visual ctermfg=DarkBlue
 
 set encoding=utf-8
 
@@ -58,6 +62,12 @@ nnoremap tl :tablast<CR>
 
 nnoremap tmk :tabmove +1<CR>
 nnoremap tmj :tabmove -1<CR>
+
+" 次の行からインサードモードで始める
+nnoremap nl $a<CR>
+inoremap nl <ESC>$a<CR>
+" move cursor to end position
+inoremap edp <ESC>$a
 
 " 現在開いているファイルにワーキングディレクトリを移動する
 nnoremap mvd :<C-u>cd %:h<CR> :pwd<CR>
@@ -172,7 +182,9 @@ nnoremap diw "_diw
 
 nnoremap ; :
 nnoremap : ;
-nnoremap 88 *
+" Count number of matches of a pattern
+" http://vim.wikia.com/wiki/Count_number_of_matches_of_a_pattern
+nnoremap 88 *<C-O>:%s///gn<CR>
 
 "改行後INSERT MODEにしない
 nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
@@ -196,13 +208,8 @@ nnoremap <silent> <C-u> <C-u>zz
 "戻る 画面1ページ分
 nnoremap <silent> <C-b> <C-b>zz
 
-"ノーマルモード＋ビジュアルモード
-noremap <C-j> <Esc>
-"コマンドラインモード＋インサートモード
-noremap! <C-j> <Esc>
 " インサートモード
-inoremap <silent> jj <ESC>:w<CR>:noh<CR>
-
+inoremap <silent> jj <ESC>l
 
 "set termguicolors nvim用
 "set nohlsearch
@@ -241,13 +248,14 @@ Plug 'osyo-manga/unite-quickfix'
 Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'ctrlpvim/ctrlp.vim'
-"Plug 'cohama/lexima.vim'
+Plug 'cohama/lexima.vim'
 Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'ivalkeen/vim-ctrlp-tjump'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
 Plug 'soramugi/auto-ctags.vim'
 Plug 'airblade/vim-gitgutter'
 " Plug 'deris/vim-gothrough-jk'
@@ -271,7 +279,7 @@ endif
 if has("mac")
 
 elseif has("unix")
-    let g:python3_host_prog = expand('/usr/bin/python3.6')
+    let g:python3_host_prog = expand('/usr/local/bin/python3.5')
 endif
 
 if has('pythonx')
@@ -282,9 +290,11 @@ if has('python3')
 endif
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
+Plug 'honza/vim-snippets'
 Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
-Plug 'fatih/vim-go'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'mdempsky/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'Shougo/neco-syntax'
 Plug 'machakann/vim-sandwich'
 Plug 'ntpeters/vim-better-whitespace'
@@ -294,6 +304,10 @@ Plug 'regedarek/ZoomWin'
 Plug 'leafcage/yankround.vim'
 Plug 'ujihisa/unite-colorscheme'
 Plug 'christoomey/vim-tmux-navigator'
+Plug 'tpope/vim-surround'
+" 対応する括弧
+Plug 'itchyny/vim-parenmatch'
+Plug 'itchyny/vim-cursorword'
 call plug#end()
 
 function! s:all_files()
@@ -305,7 +319,7 @@ endfunction
 
 "FZF start ####################################################################
 if has("mac")
-    set rtp+=/usr/local/opt/fzf
+    set rtp+=~/.fzf
 elseif has("unix")
     set rtp+=~/.fzf
 endif
@@ -395,11 +409,28 @@ set t_Co=256 "vim-air-line-themeを反映させる
 "vim-airline end  #####################################################################
 
 "neosnippets start #################################################################
+" which disables all runtime snippets
+" let g:neosnippet#disable_runtime_snippets = {
+" \   '_' : 1,
+" \ }
+" Enable snipMate compatibility feature.
+let g:neosnippet#enable_snipmate_compatibility = 1
+" Tell Neosnippet about the other snippets
+let g:neosnippet#snippets_directory='~/.vim/plugged/vim-snippets/snippets/'
+" ~/.vim/bundle/vim-snippets/snippets'
+
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-imap <C-l>     <Plug>(neosnippet_expand_or_jump)
-smap <C-l>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-l>     <Plug>(neosnippet_expand_target)
+" use together neosnippet and deoplete
+imap <expr><C-o>
+\ pumvisible() ? neosnippet#expandable_or_jumpable() ?
+\    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
+\    "\<Plug>(neosnippet_expand_or_jump)"
+smap <expr><C-o>
+\ pumvisible() ? neosnippet#expandable_or_jumpable() ?
+\    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
+\    "\<Plug>(neosnippet_expand_or_jump)"
+xmap <C-o>     <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
@@ -420,12 +451,33 @@ endif
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 
-" <CR>: close popup.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+"ノーマルモード＋ビジュアルモード
+noremap <C-j> <Esc>
+"コマンドラインモード＋インサートモード
+noremap! <C-j> <Esc>
 
-function! s:my_cr_function()
-    return pumvisible() ? deoplete#mappings#close_popup() : "\n"
-endfunction
+inoremap <silent> <expr> <CR>  pumvisible() ? deoplete#mappings#close_popup() : "\n"
+inoremap <silent> <expr> <C-j> pumvisible() ? "\<C-n>" : ""
+inoremap <silent> <expr> <C-k> pumvisible() ? "\<C-p>" : ""
+
+" <CR>: close popup.
+" <C-r>=  used to insert the result of an expression at the cursor
+" https://stackoverflow.com/questions/10862457/what-does-c-r-means-in-vim/10863134
+" inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+" inoremap <silent> <C-j> <C-r>=<SID>my_cj_function()<CR>
+" inoremap <silent> <C-k> <C-r>=<SID>my_ck_function()<CR>
+
+" function! s:my_cr_function()
+"     return pumvisible() ? deoplete#mappings#close_popup() : "\n"
+" endfunction
+
+" function! s:my_cj_function()
+"     return pumvisible() ? "\<C-n>" : ""
+" endfunction
+
+" function! s:my_ck_function()
+"     return pumvisible() ? "\<C-p>" : ""
+" endfunction
 
 inoremap <silent><expr> <TAB>
 \ pumvisible() ? "\<C-n>" :
@@ -759,6 +811,7 @@ nnoremap [fugitive]l  :<C-u>Glog<CR>
 nnoremap [fugitive]b :<C-u>Gblame<CR>
 nnoremap [fugitive]rd :<C-u>Gread<CR>
 nnoremap [fugitive]g :<C-u>Ggrep
+nnoremap [fugitive]w :<C-u>Gbrowse<CR>
 
 "tpope/vim-fugitive end      ###################################################################
 
@@ -1015,3 +1068,12 @@ nmap k <Plug>(accelerated_jk_gk)
 nnoremap dl :<C-u>Deol<CR>
 tnoremap <ESC>   <C-\><C-n>
 " Plug 'Shougo/deol.nvim'#############################################################################
+
+" Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } #################################################
+nnoremap <silent> gor :<C-u>:GoRun<CR>
+nnoremap <silent> gob :<C-u>:GoBuild<CR>
+" Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } #################################################
+
+" Plug 'itchyny/vim-parenmatch' ######################################################################
+let g:loaded_matchparen = 1
+" Plug 'itchyny/vim-parenmatch' ######################################################################

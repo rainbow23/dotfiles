@@ -1,7 +1,7 @@
 #!/bin/sh
 
 alias hsn='hostname'
-
+alias ez='exec zsh -l'
 # alias vim='nvim'
 
 ## -------------------------------------
@@ -40,8 +40,7 @@ alias fdr='finder'
 alias tx='tmux'
 alias txl='tmux ls'
 alias t="tmuximum"
-
-alias b="$HOME/.chrome_bookmarks_with_fzf.rb"
+alias b="chrome_bookmarks_with_fzf.rb"
 ## -------------------------------------
 # ZSH_HISTORY
 # -------------------------------------

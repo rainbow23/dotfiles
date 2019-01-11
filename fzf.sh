@@ -43,14 +43,14 @@ gsh() {
       --bind "q:execute()+abort" \
       --bind "ctrl-m:execute:
                 (grep -o '[a-f0-9]\{7\}' | head -1 |
-                xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+                xargs -I % sh -c 'git show --color=always % | diff-so-fancy' | less -R) << 'FZF-EOF'
                 {}
 FZF-EOF"
 }
 
 alias glNoGraph='git log --graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
 _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
-_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | ~/diff-so-fancy'"
+_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | diff-so-fancy'"
 
 # fshow_preview - git commit browser with previews
 fsh() {
@@ -59,7 +59,45 @@ fsh() {
             --ansi --preview="$_viewGitLogLine" \
                 --header "enter to view, alt-y to copy hash" \
                 --bind "enter:execute:$_viewGitLogLine   | less -R" \
-                --bind "ctrl-y:execute:$_gitLogLineToHash | xclip"
+                --bind "ctrl-y:execute:$_gitLogLineToHash | xclip" \
+                --bind "q:execute()+abort"
+}
+
+gsd() {
+  local out
+  IFS=$'\n'
+  out=($(git status --short | fzf-tmux --multi | awk '{print $2}')) 
+  git diff $out
+}
+
+gsts() {
+  IFS=$'\n'
+  local stash key stashfullpath
+  stash=$(git stash list | fzf --ansi +m --exit-0 \
+        --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
+        --expect=enter --expect=ctrl-d --expect=ctrl-a)
+
+  key=$(head -1 <<< "$stash")
+  stashfullpath=$(head -2 <<< $stash | tail -1)
+  file=$(head -2 <<< $stash | awk '{print $1}' | sed -e 's/://g' | tail -1)
+  # echo $stash
+  # echo "$file"
+  # echo $key
+
+  if [ -n "$file" ]; then
+      if [ "$key" = ctrl-d ] ; then
+        echo "git stash show $stashfullpath"
+        git stash show $file
+      elif [ "$key" = enter ] ; then
+        echo "git stash show $stashfullpath"
+        git stash show $file
+        echo "git stash show -p $stashfullpath"
+        git stash show -p $file
+      elif [ "$key" = ctrl-a ] ; then
+        echo "git stash apply $stashfullpath"
+        git stash apply $file
+      fi
+  fi
 }
 
 do_enter() {
@@ -82,6 +120,26 @@ do_enter() {
 }
 zle -N do_enter
 bindkey '^m' do_enter
+
+# fdg - ghq
+fdg() {
+  local selected
+  selected=$(ghq list | fzf)
+
+  if [ "x$selected" != "x" ]; then
+    cd $(ghq root)/$selected
+  fi
+}
+
+fkill() {
+  local pid
+  pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+
+  if [ "x$pid" != "x" ]
+  then
+    echo $pid | xargs kill -${1:-9}
+  fi
+}
 
 ## -------------------------------------
 # fzf tmux
