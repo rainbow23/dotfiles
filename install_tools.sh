@@ -1,18 +1,4 @@
 #!/bin/sh
-sudo chsh $USER -s /bin/zsh
-INSTALL_DIR=$HOME/dotfiles
-mkdir -p $INSTALL_DIR && cd $INSTALL_DIR
-
-git clone https://github.com/rainbow23/dotfiles.git
-git checkout develop
-
-mkdir -p -m 744 $HOME/.config/nvim
-#update symbolic link
-ln -sfn $HOME/dotfiles/_vimrc $HOME/.vimrc
-ln -sfn $HOME/dotfiles/_bashrc $HOME/.bashrc
-ln -sfn $HOME/dotfiles/_zshrc $HOME/.zshrc
-ln -sfn $HOME/dotfiles/_tmux.conf $HOME/.tmux.conf
-ln -sfn $HOME/dotfiles/_vimrc $HOME/.config/nvim/init.vim
 
 #go
 if [ ! -d /usr/local/go/bin ]; then
@@ -38,6 +24,13 @@ if [ ! -d $HOME/tmux ]; then
   ./configure
   make -j4
   sudo make install
+fi
+
+TMUX_PLUGIN=/home/${USERNAME}/.tmux/plugins/tpm
+if [[ ! -d $TMUX_PLUGIN ]]; then
+  git clone https://github.com/tmux-plugins/tpm $TMUX_PLUGIN \
+  && chown -R ${USERNAME}:${USERNAME} $TMUX_PLUGIN \
+  && chmod 755 $TMUX_PLUGIN
 fi
 
 # fzf

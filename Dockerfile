@@ -54,20 +54,8 @@ docker \
 docker-compose \
 tree; yum clean all
 
-# sudo なしが駄目なら下で実行
-# RUN yum -y install https://centos7.iuscommunity.org/ius-release.rpm
-# RUN yum -y install python36u  python36u-devel python36u-pip
-# RUN python3.6 -m pip install neovim
-# RUN python3.6 -m pip install --upgrade pip
-# RUN python3.6 -m pip install --user pynvim
-# RUN python3.6 -m pip install --upgrade pynvim
-
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}/
-
-RUN git clone https://github.com/tmux-plugins/tpm /home/${USERNAME}/.tmux/plugins/tpm \
-    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.tmux/plugins/tpm \
-    && chmod 755 /home/${USERNAME}/.tmux/plugins/tpm
 
 ADD ./id_rsa /home/${USERNAME}/.ssh/id_rsa
 ADD . /home/${USERNAME}/dotfiles
