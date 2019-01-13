@@ -64,8 +64,6 @@ RUN sudo chown -R rainbow23:wheel dotfiles
 RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 RUN echo ${USERPASSWORD} | sudo -S chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dotfiles
-RUN /home/rainbow23/dotfiles/install_vim.sh
-RUN /home/rainbow23/dotfiles/init.sh
 
 RUN vim +slient +PlugInstall +qall
 
