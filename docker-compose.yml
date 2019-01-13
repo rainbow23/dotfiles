@@ -2,7 +2,7 @@ version: '3'
 services:
   dotfiles:
     build: .
-    image: dotfiles-image
+    image: rainbow23/dotfiles:latest
     container_name: rainbow23-dotfiles
     volumes:
       - ${PWD}:/home/rainbow23/dotfiles
