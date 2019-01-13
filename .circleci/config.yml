@@ -25,8 +25,7 @@ jobs:
       # install
       - run: ./install_python.sh
       - run: ./install_vim.sh
-      - run: yes | ./install_tools.sh
-      - run: /usr/bin/zsh
+      - run: ./install_tools.sh
       - run: ./gitclone_list.sh
 
 
