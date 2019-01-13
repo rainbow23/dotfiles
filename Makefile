@@ -5,24 +5,18 @@ install:
 	@./install_python.sh
 	@./install_vim.sh
 	@./install_tools.sh
+	@/usr/bin/zsh
 	@./gitclone_list.sh
 
 .PHONY: deploy
 deploy:
+	@./symlink.sh
 	@make install
-	# @source $HOME/.zshrc
-	# @./gitclone_list.sh
 
-.PHONY: build
-build:
+.PHONY: testbuild
+testbuild:
 	docker-compose build
 
-.PHONY: run
-run:
-	docker-compose run dotfiles
-
-.PHONY: test
-test:
-	@make run
-
-
+.PHONY: testrun
+testrun:
+	docker-compose run test
