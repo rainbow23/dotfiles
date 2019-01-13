@@ -5,7 +5,6 @@ install:
 	@./install_python.sh
 	@./install_vim.sh
 	@./install_tools.sh
-	@zsh
 	@./gitclone_list.sh
 
 .PHONY: deploy

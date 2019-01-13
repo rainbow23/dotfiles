@@ -6,7 +6,7 @@ services:
   #   container_name: rainbow23-dotfiles
   test:
     build: .
-    image: rainbow23/test_dotfiles:latest
+    image: test_dotfiles:latest
     container_name: rainbow23-dotfiles-test
     volumes:
       - ${PWD}:/home/rainbow23/dotfiles

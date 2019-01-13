@@ -14,6 +14,10 @@ fi
 
 /usr/local/go/bin/go get -u github.com/mdempsky/gocode
 
+if [ ! -e ghq ]; then
+  /usr/local/go/bin/go get github.com/motemen/ghq
+fi
+
 # tmux
 if [ ! -d $HOME/tmux ]; then
   git clone --depth 1 https://github.com/tmux/tmux.git $HOME/tmux
@@ -65,6 +69,3 @@ fi
 if [ ! -d $COMPLETIONS/docker-fzf-completion ]; then
   git clone --depth 1 https://github.com/kwhrtsk/docker-fzf-completion.git $COMPLETIONS/docker-fzf-completion
 fi
-
-# vimPlug install
-# vim +PlugInstall +qall

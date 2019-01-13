@@ -9,7 +9,6 @@ if [ ! -d $HOME/vim8src ]; then
 fi
 
 ostype=$($HOME/dotfiles/ostype.sh)
-# ./install_python.sh
 
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
   echo ""
