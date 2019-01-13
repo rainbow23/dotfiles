@@ -24,10 +24,6 @@ export GOBIN=$GOPATH/bin
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$GOBIN
 
-if [ ! -f ghq ]; then
-  go get github.com/motemen/ghq
-fi
-
 ## -------------------------------------
 # fzf
 # -------------------------------------
