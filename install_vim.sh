@@ -1,13 +1,20 @@
 #!/bin/sh
+if [[ ! -e /usr/local/bin/python3.5 ]]; then
+  echo "python3.5がインストールされていません"
+  exit 1
+fi
+
 if [ ! -d $HOME/vim8src ]; then
   git clone --depth 1 https://github.com/vim/vim.git $HOME/vim8src
 fi
 
 ostype=$($HOME/dotfiles/ostype.sh)
-./install_python.sh
+# ./install_python.sh
 
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
-  echo "" && "configure ostype $ostype ****************************************" && echo ""
+  echo ""
+  echo "configure ostype $ostype ****************************************"
+  echo ""
 
   # error対応
   # undefined symbol: PyByteArray_Type
@@ -28,7 +35,9 @@ if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
     --enable-multibyte
 
 elif [ $ostype = 'darwin' ]; then
-  echo "" && "configure ostype $ostype ****************************************" && echo ""
+  echo ""
+  echo "configure ostype $ostype ****************************************"
+  echo ""
   # `brew --prefix` >> /usr/local
   cd $HOME/vim8src && ./configure\
     --prefix=`brew --prefix`\
@@ -47,5 +56,6 @@ elif [ $ostype = 'darwin' ]; then
 fi
 
 sudo make && sudo make install
-sudo rm -rf $HOME/vim8src
+cd $HOME/dotfiles && sudo rm -rf $HOME/vim8src
 alias vim='/usr/local/bin/vim'
+vim +slient +PlugInstall +qall

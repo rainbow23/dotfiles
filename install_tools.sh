@@ -12,7 +12,7 @@ if [ ! -d $HOME/go ]; then
   mkdir -p $HOME/go/bin
 fi
 
-go get -u github.com/mdempsky/gocode
+/usr/local/go/bin/go get -u github.com/mdempsky/gocode
 
 # tmux
 if [ ! -d $HOME/tmux ]; then
@@ -26,11 +26,9 @@ if [ ! -d $HOME/tmux ]; then
   sudo make install
 fi
 
-TMUX_PLUGIN=/home/${USERNAME}/.tmux/plugins/tpm
+TMUX_PLUGIN=$HOME/.tmux/plugins/tpm
 if [[ ! -d $TMUX_PLUGIN ]]; then
-  git clone https://github.com/tmux-plugins/tpm $TMUX_PLUGIN \
-  && chown -R ${USERNAME}:${USERNAME} $TMUX_PLUGIN \
-  && chmod 755 $TMUX_PLUGIN
+  git clone https://github.com/tmux-plugins/tpm $TMUX_PLUGIN
 fi
 
 # fzf
@@ -69,4 +67,4 @@ if [ ! -d $COMPLETIONS/docker-fzf-completion ]; then
 fi
 
 # vimPlug install
-vim +PlugInstall +qall
+# vim +PlugInstall +qall

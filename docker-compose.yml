@@ -1,8 +1,12 @@
 version: '3'
 services:
-  dotfiles:
+  # base:
+  #   build: ./docker/base
+  #   image: rainbow23/base_dotfiles:latest
+  #   container_name: rainbow23-dotfiles
+  test:
     build: .
-    image: rainbow23/dotfiles:latest
-    container_name: rainbow23-dotfiles
+    image: rainbow23/test_dotfiles:latest
+    container_name: rainbow23-dotfiles-test
     volumes:
       - ${PWD}:/home/rainbow23/dotfiles
