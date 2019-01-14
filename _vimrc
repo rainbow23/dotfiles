@@ -21,7 +21,7 @@ hi Search ctermfg=DarkBlue
 " visual mode hightlight color
 hi Visual ctermbg=LightRed
 hi Visual ctermfg=DarkBlue
-hi Comment ctermbg=DarkBlue ctermfg=LightCyan
+hi Comment ctermbg=DarkBlue ctermfg=White
 set encoding=utf-8
 
 autocmd BufEnter *.yml set shiftwidth=2
