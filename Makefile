@@ -1,7 +1,6 @@
 # .PHONY: d.txt
 .PHONY: install
 install:
-	# @sudo ./install_python.sh
 	@./install_python.sh
 	@./install_vim.sh
 	@./install_tools.sh
