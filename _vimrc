@@ -425,11 +425,11 @@ let g:neosnippet#snippets_directory='~/.vim/plugged/vim-snippets/snippets/'
 imap <expr><C-o>
 \ pumvisible() ? neosnippet#expandable_or_jumpable() ?
 \    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
-\    "\<Plug>(neosnippet_expand_or_jump)"
+\    "\<Plug>(neosnippet_expand_or_jump)" "neosnippetの２回目以降で移動する場合に使用する
 smap <expr><C-o>
 \ pumvisible() ? neosnippet#expandable_or_jumpable() ?
 \    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
-\    "\<Plug>(neosnippet_expand_or_jump)"
+\    "\<Plug>(neosnippet_expand_or_jump)" "neosnippetの２回目以降で移動する場合に使用する
 xmap <C-o>     <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
