@@ -69,3 +69,14 @@ fi
 if [ ! -d $COMPLETIONS/docker-fzf-completion ]; then
   git clone --depth 1 https://github.com/kwhrtsk/docker-fzf-completion.git $COMPLETIONS/docker-fzf-completion
 fi
+
+if [[ ! -e /usr/local/bin/ctags ]]; then
+  git clone --depth 1 https://github.com/universal-ctags/ctags.git $HOME/ctags
+  cd $HOME/ctags
+  ./autogen.sh
+  ./configure --enable-iconv  --prefix=/usr/local # defaults to /usr/local
+  make
+  sudo make install # may require extra privileges depending on where to install$ ./autogen.sh
+  cd $HOME/dotfiles
+  rm -rf $HOME/ctags
+fi
