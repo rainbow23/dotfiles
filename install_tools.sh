@@ -38,7 +38,7 @@ fi
 # fzf
 if [ ! -d $HOME/.fzf ] ; then
   git clone --depth 1 https://github.com/junegunn/fzf.git $HOME/.fzf
-  $HOME/.fzf/install
+  yes | $HOME/.fzf/install
 fi
 
 if [ ! -d $HOME/.zplug ] ; then
@@ -58,7 +58,7 @@ fi
 ZSH_COMPLETIONS=$HOME/.zsh-completions
 if [ ! -d $ZSH_COMPLETIONS ] ; then
   mkdir -p $ZSH_COMPLETIONS
-  git clone --depth 1 git://github.com/zsh-users/zsh-completions.git $ZSH_COMPLETIONS
+  git clone --depth 1 https://github.com/zsh-users/zsh-completions.git $ZSH_COMPLETIONS
 fi
 
 COMPLETIONS=$HOME/.zsh/completions

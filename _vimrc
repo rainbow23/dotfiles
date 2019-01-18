@@ -21,7 +21,7 @@ hi Search ctermfg=DarkBlue
 " visual mode hightlight color
 hi Visual ctermbg=LightRed
 hi Visual ctermfg=DarkBlue
-
+hi Comment ctermfg=Cyan
 set encoding=utf-8
 
 autocmd BufEnter *.yml set shiftwidth=2
@@ -425,11 +425,11 @@ let g:neosnippet#snippets_directory='~/.vim/plugged/vim-snippets/snippets/'
 imap <expr><C-o>
 \ pumvisible() ? neosnippet#expandable_or_jumpable() ?
 \    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
-\    "\<Plug>(neosnippet_expand_or_jump)"
+\    "\<Plug>(neosnippet_expand_or_jump)" "neosnippetの２回目以降で移動する場合に使用する
 smap <expr><C-o>
 \ pumvisible() ? neosnippet#expandable_or_jumpable() ?
 \    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
-\    "\<Plug>(neosnippet_expand_or_jump)"
+\    "\<Plug>(neosnippet_expand_or_jump)" "neosnippetの２回目以降で移動する場合に使用する
 xmap <C-o>     <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
@@ -836,9 +836,9 @@ vnoremap [tagbar]p :CtrlPtjumpVisual<cr>
 "ivalkeen/vim-ctrlp-tjump end    ###################################################################
 
 "soramugi/auto-ctags.vim  start  ###################################################################
-let g:auto_ctags = 0
+let g:auto_ctags = 1
 let g:auto_ctags_directory_list = ['.git', '.svn']
-set tags+=.svn/tags
+set tags+=.git/tags
 "soramugi/auto-ctags.vim  end    ###################################################################
 
 "airblade/vim-gitgutter   start  ###################################################################

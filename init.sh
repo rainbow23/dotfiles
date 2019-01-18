@@ -8,5 +8,4 @@ if [[ ! -d $INSTALL_DIR ]]; then
 # git checkout develop
 fi
 
-mkdir -p -m 744 $HOME/.config/nvim
 make deploy
