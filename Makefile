@@ -1,16 +1,15 @@
 # .PHONY: d.txt
 .PHONY: install
 install:
+	@./install_tools.sh
 	@./install_python.sh
 	@./install_vim.sh
-	@./install_tools.sh
 	@/usr/bin/zsh
 	@./gitclone_list.sh
 
 .PHONY: deploy
 deploy:
 	@./symlink.sh
-	@make install
 
 .PHONY: testbuild
 testbuild:

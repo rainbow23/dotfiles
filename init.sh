@@ -8,4 +8,6 @@ if [[ ! -d $INSTALL_DIR ]]; then
 # git checkout develop
 fi
 
+cd $INSTALL_DIR
 make deploy
+make install
