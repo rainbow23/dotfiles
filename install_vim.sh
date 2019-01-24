@@ -58,3 +58,4 @@ sudo make && sudo make install
 cd $HOME/dotfiles && sudo rm -rf $HOME/vim8src
 alias vim='/usr/local/bin/vim'
 vim +slient +PlugInstall +qall
+vim +silent +GoInstallBinaries +qall
