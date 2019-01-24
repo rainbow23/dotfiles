@@ -7,7 +7,7 @@ set tabstop=4
 set noswapfile
 set ignorecase
 set noshowmode
-"set tags=./tags;
+set tags+=.git/refs/tags
 " 開いたファイルにワーキングディレクトリを移動する
 if 1 == exists("+autochdir")
     set autochdir
@@ -256,7 +256,6 @@ Plug 'MattesGroeger/vim-bookmarks'
 Plug 'ivalkeen/vim-ctrlp-tjump'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
-Plug 'soramugi/auto-ctags.vim'
 Plug 'airblade/vim-gitgutter'
 " Plug 'deris/vim-gothrough-jk'
 Plug 'rhysd/accelerated-jk'
@@ -834,12 +833,6 @@ nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
 nnoremap [tagbar]p :CtrlPtjump<cr>
 vnoremap [tagbar]p :CtrlPtjumpVisual<cr>
 "ivalkeen/vim-ctrlp-tjump end    ###################################################################
-
-"soramugi/auto-ctags.vim  start  ###################################################################
-let g:auto_ctags = 1
-let g:auto_ctags_directory_list = ['.git', '.svn']
-set tags+=.git/tags
-"soramugi/auto-ctags.vim  end    ###################################################################
 
 "airblade/vim-gitgutter   start  ###################################################################
 nnoremap [gitgutter]    <Nop>
