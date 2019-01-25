@@ -3,5 +3,5 @@ set -e
 PATH="$HOME/local/bin:/usr/local/bin:$PATH"
 cd "$(dirname "${BASH_SOURCE:-$0}")"; cd ../../
 trap "rm -f .git/tags.$$" EXIT
-ctags --tag-relative -R -f .git/tags.$$ --exclude=.git
+ctags --tag-relative=yes -R -f .git/tags.$$ --exclude=.git
 mv .git/tags.$$ .git/tags
