@@ -80,3 +80,10 @@ if [[ ! -e /usr/local/bin/ctags ]]; then
   cd $HOME/dotfiles
   rm -rf $HOME/ctags
 fi
+
+# ctags
+mkdir -p ~/.git_template/hooks
+
+for file in `\find $HOME/dotfiles/ctags_gitfiles -maxdepth 1 -type f`; do
+    cp $file ~/.git_template/hooks/
+done

@@ -7,7 +7,7 @@ set tabstop=4
 set noswapfile
 set ignorecase
 set noshowmode
-set tags+=.git/refs/tags
+set tags+=.git/tags
 " 開いたファイルにワーキングディレクトリを移動する
 if 1 == exists("+autochdir")
     set autochdir
@@ -812,6 +812,10 @@ nnoremap [fugitive]rd :<C-u>Gread<CR>
 nnoremap [fugitive]g :<C-u>Ggrep
 nnoremap [fugitive]w :<C-u>Gbrowse<CR>
 
+autocmd BufWritePost *
+      \ if exists('b:git_dir') && executable(b:git_dir.'/hooks/ctags') |
+      \   call system('"'.b:git_dir.'/hooks/ctags" &') |
+      \ endif
 "tpope/vim-fugitive end      ###################################################################
 
 "osyo-manga/vim-anzu' start  ###################################################################
