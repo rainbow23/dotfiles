@@ -16,7 +16,7 @@ git config --global color.diff.whitespace "red reverse"
 
 #ctags settings
 git config --global init.templatedir '~/.git_template'
-git config --global alias.ctags '!.git/hooks/ctags'
+git config --global alias.ctags '!~/dotfiles/copy_ctags_files && .git/hooks/ctags'
 
 autoload -U compinit && compinit -u
 
