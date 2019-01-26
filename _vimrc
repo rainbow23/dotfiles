@@ -93,12 +93,6 @@ nnoremap <silent> <Right> :vertical resize +10<CR>
 nnoremap <silent> <Up> :resize +10<CR>
 nnoremap <silent> <Down> :resize -10<CR>
 
-" Quicker window movement
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-h> <C-w>h
-nnoremap <C-l> <C-w>l
-
 nnoremap <C-w> <C-w>w <C-g><CR>
 nnoremap <C-s> :split <C-g><CR>
 nnoremap <C-v> :vsplit <C-g><CR>
