@@ -49,7 +49,7 @@ nnoremap .b zb
 
 nnoremap sn :<C-u>set number<CR>
 nnoremap snn :<C-u>set nonumber<CR>
-
+nnoremap srn :<C-u>setlocal relativenumber!<CR>
 nnoremap <silent> uss :<C-u>Uss<CR>
 nnoremap <silent> usos :call <SID>Unite_session_override_save()<CR>
 nnoremap src :<C-u>source ~/.vimrc<CR>
