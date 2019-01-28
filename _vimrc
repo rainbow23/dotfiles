@@ -96,30 +96,13 @@ nnoremap <silent> <Down> :resize -10<CR>
 nnoremap <C-w> <C-w>w <C-g><CR>
 nnoremap <C-s> :split <C-g><CR>
 nnoremap <C-v> :vsplit <C-g><CR>
-" nnoremap <C-H> <C-w>H <C-g><CR>
-" nnoremap <C-J> <C-w>J <C-g><CR>
-" nnoremap <C-K> <C-w>K <C-g><CR>
-" nnoremap <C-L> <C-w>L <C-g><CR>
-" 上向きにローテーションする
-" nnoremap <C-r> <C-w>r <C-g><CR>
-" 下向きにローテーションする
-" nnoremap <C-R> <C-w>R <C-g><CR>
-" 現在カーソルがあるウィンドウと一つ前のウィンドウを入れ替える
 nnoremap <C-x> <C-w>x <C-g><CR>
 noremap <C-o> <C-w>= <C-g><CR>
-
-" let g:tmux_navigator_no_mappings = 1
-" nnoremap <silent> [panel]h :TmuxNavigateLeft<cr>
-" nnoremap <silent> [panel]j :TmuxNavigateDown<cr>
-" nnoremap <silent> [panel]k :TmuxNavigateUp<cr>
-" nnoremap <silent> [panel]l :TmuxNavigateRight<cr>
-" nnoremap <silent> [panel]p :TmuxNavigatePrevious<cr>
 
 " panel size end  #################################
 
 " Plug 'regedarek/ZoomWin' ###########################################################################
 " 選択したパネルの最大化
-" nnoremap <silent> [panel]wo :call <SID>MyZoomWin()<CR>
 nnoremap <silent> zwo :<C-u>ZoomWin<CR>
 
 set stl=Normal
