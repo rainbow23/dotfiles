@@ -86,61 +86,30 @@ nnoremap [buffer]r :b#<CR>
 nnoremap [buffer]d :bdelete<CR>
 
 " panel size start ################################
-nnoremap noremap [panel]    <Nop>
-nmap     s [panel]
-nnoremap [panel]hh  :vertical resize -10<CR>
-nnoremap [panel]hhh :vertical resize -40<CR>
-" 横に最小化
-nnoremap [panel]hhhh <C-w>1\| <C-g><CR>
-nnoremap [panel]ll  :vertical resize +10<CR>
-nnoremap [panel]lll :vertical resize +40<CR>
-" 横に最大化
-nnoremap [panel]jj  :resize +10<CR>
-nnoremap [panel]jjj :resize +20<CR>
-" 縦に最大化
-nnoremap [panel]kk  :resize -10<CR>
-nnoremap [panel]kkk :resize -20<CR>
-" 縦に最小化
-nnoremap [panel]kkkk <C-w>1_ <C-g><CR>
-nnoremap [panel]l <C-w>l <C-g><CR>
-nnoremap [panel]h <C-w>h <C-g><CR>
-nnoremap [panel]j <C-w>j <C-g><CR>
-nnoremap [panel]k <C-w>k <C-g><CR>
-nnoremap [panel]w <C-w>w <C-g><CR>
-nnoremap [panel]s :split <C-g><CR>
-nnoremap [panel]v :vsplit <C-g><CR>
-nnoremap [panel]H <C-w>H <C-g><CR>
-nnoremap [panel]J <C-w>J <C-g><CR>
-nnoremap [panel]K <C-w>K <C-g><CR>
-nnoremap [panel]L <C-w>L <C-g><CR>
-" 上向きにローテーションする
-nnoremap [panel]r <C-w>r <C-g><CR>
-" 下向きにローテーションする
-nnoremap [panel]R <C-w>R <C-g><CR>
-" 現在カーソルがあるウィンドウと一つ前のウィンドウを入れ替える
-nnoremap [panel]x <C-w>x <C-g><CR>
-noremap [panel]o <C-w>= <C-g><CR>
 
+" resize panes
+nnoremap <silent> <Left> :vertical resize -10<CR>
+nnoremap <silent> <Right> :vertical resize +10<CR>
+nnoremap <silent> <Up> :resize +10<CR>
+nnoremap <silent> <Down> :resize -10<CR>
 
-" let g:tmux_navigator_no_mappings = 1
-" nnoremap <silent> [panel]h :TmuxNavigateLeft<cr>
-" nnoremap <silent> [panel]j :TmuxNavigateDown<cr>
-" nnoremap <silent> [panel]k :TmuxNavigateUp<cr>
-" nnoremap <silent> [panel]l :TmuxNavigateRight<cr>
-" nnoremap <silent> [panel]p :TmuxNavigatePrevious<cr>
-
+nnoremap <C-w> <C-w>w <C-g><CR>
+nnoremap <C-s> :split <C-g><CR>
+nnoremap <C-v> :vsplit <C-g><CR>
+nnoremap <C-x> <C-w>x <C-g><CR>
+noremap <C-o> <C-w>= <C-g><CR>
 
 " panel size end  #################################
 
 " Plug 'regedarek/ZoomWin' ###########################################################################
 " 選択したパネルの最大化
-" nnoremap <silent> [panel]wo :call <SID>MyZoomWin()<CR>
-nnoremap <silent> [panel]wo :<C-u>ZoomWin<CR>
+nnoremap <silent> zwo :<C-u>ZoomWin<CR>
 
 set stl=Normal
 let g:zoomWinActive = 0
 
 fun! s:MyZoomWin()
+
     if g:zoomWinActive == 1
       " :TagbarClose
       let g:zoomWinActive = 0
@@ -171,8 +140,6 @@ let g:zoomwin_localoptlist = ["ai","ar","bh","bin","bl","bomb","bt","cfu","ci","
 endif
 " Plug 'regedarek/ZoomWin' ###########################################################################
 
-
-nnoremap <C-H> :noh <CR>
 " 削除でヤンクしない
 nnoremap x "_x
 nnoremap dd "_dd
