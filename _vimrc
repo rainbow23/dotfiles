@@ -97,7 +97,7 @@ nnoremap <C-w> <C-w>w <C-g><CR>
 nnoremap <C-s> :split <C-g><CR>
 nnoremap <C-v> :vsplit <C-g><CR>
 nnoremap <C-x> <C-w>x <C-g><CR>
-noremap <C-o> <C-w>= <C-g><CR>
+noremap <C-\> <C-w>= <C-g><CR>
 
 " panel size end  #################################
 
