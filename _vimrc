@@ -295,6 +295,9 @@ let g:fzf_action = {
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit' }
 
+" fzfからファイルにジャンプできるようにする
+let g:fzf_buffers_jump = 1
+
 nnoremap [fzf] <Nop>
 nmap <Leader>f [fzf]
 
@@ -310,6 +313,13 @@ imap <c-x><c-l> <plug>(fzf-complete-line)
 " Advanced customization using autoload functions
 " inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
 
+nnoremap [fzf]us :<C-u>MyUniteSessionLoad<CR>
+command! MyUniteSessionLoad  call fzf#run({
+      \ 'source': "ls -l ~/.vim/etc/unite/session | sed '1d' | awk '{print $9}'",
+      \ 'sink': 'UniteSessionLoad',
+      \ 'options': '+m',
+      \ 'right': '40%'})
+
 nnoremap [fzf]m :<C-u>FZFMru<CR>
 nnoremap [fzf]f :<C-u>Files<CR>
 " git ls-files
@@ -321,7 +331,7 @@ nnoremap [fzf]h :<C-u>History<CR>
 " list tabs
 nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]a :<C-u>Ag<CR>
-nnoremap [fzf]l :<C-u>Lines<CR>
+nnoremap [fzf]l :<C-u>BLines<CR>
 nnoremap [fzf]s :<C-u>Search<CR>
 nnoremap [fzf]S :<C-u>SearchFromCurrDir<CR>
 
@@ -770,7 +780,7 @@ let g:ctrlp_user_command = 'ag %s -l'
 
 "tpope/vim-fugitive start   ###################################################################
 nnoremap [fugitive] <Nop>
-nmap     <Leader>fu [fugitive]
+nmap     <Leader>gi [fugitive]
 nnoremap [fugitive]s  :<C-u>Gstatus<CR>
 nnoremap [fugitive]d :<C-u>Gvdiff<CR>
 nnoremap [fugitive]l  :<C-u>Glog<CR>
