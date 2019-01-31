@@ -313,10 +313,15 @@ imap <c-x><c-l> <plug>(fzf-complete-line)
 " Advanced customization using autoload functions
 " inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
 
+function! s:Uss(file)
+    execute 'UniteSessionLoad ' . a:file
+    " echo a:file
+endfunction
+
 nnoremap [fzf]us :<C-u>MyUniteSessionLoad<CR>
 command! MyUniteSessionLoad  call fzf#run({
       \ 'source': "ls -l ~/.vim/etc/unite/session | sed '1d' | awk '{print $9}'",
-      \ 'sink': 'UniteSessionLoad',
+      \ 'sink': function('<sid>Uss'),
       \ 'options': '+m',
       \ 'right': '40%'})
 
