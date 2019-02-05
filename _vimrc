@@ -8,6 +8,7 @@ set noswapfile
 set ignorecase
 set noshowmode
 set tags+=.git/tags
+set pumheight=10
 " 開いたファイルにワーキングディレクトリを移動する
 if 1 == exists("+autochdir")
     set autochdir
@@ -42,6 +43,10 @@ set tabstop=4
 let mapleader = "\<Space>"
 "let mapleader = ","
 
+nnoremap Y y$
+set display=lastline
+nnoremap + <C-a>
+nnoremap - <C-x>
 "カーソル位置から画面移動
 nnoremap .t zt
 nnoremap .m zz
@@ -96,7 +101,7 @@ nnoremap <silent> <Down> :resize -10<CR>
 nnoremap <C-w> <C-w>w <C-g><CR>
 nnoremap <C-s> :split <C-g><CR>
 nnoremap <C-v> :vsplit <C-g><CR>
-nnoremap <C-x> <C-w>x <C-g><CR>
+nnoremap exg <C-w>x <C-g><CR>
 noremap <C-\> <C-w>= <C-g><CR>
 
 " panel size end  #################################
