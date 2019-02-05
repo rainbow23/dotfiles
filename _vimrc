@@ -206,7 +206,6 @@ Plug 'junegunn/fzf.vim'
 Plug 'Shougo/unite.vim'
 Plug 'rainbow23/unite-session'
 Plug 'Shougo/neomru.vim'
-Plug 'Shougo/vimfiler.vim'
 "unite-outline brew install ctagsが必要
 Plug 'Shougo/unite-outline'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
@@ -219,13 +218,11 @@ Plug 'thinca/vim-quickrun'
 Plug 'osyo-manga/unite-quickfix'
 Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'cohama/lexima.vim'
 Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
 Plug 'MattesGroeger/vim-bookmarks'
-Plug 'ivalkeen/vim-ctrlp-tjump'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
 Plug 'airblade/vim-gitgutter'
@@ -280,13 +277,6 @@ Plug 'tpope/vim-surround'
 Plug 'itchyny/vim-parenmatch'
 Plug 'itchyny/vim-cursorword'
 call plug#end()
-
-function! s:all_files()
-  return extend(
-  \ filter(copy(v:oldfiles),
-  \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
-  \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
-endfunction
 
 "FZF start ####################################################################
 if has("mac")
@@ -476,39 +466,6 @@ function! s:check_back_space() abort "{{{
 endfunction"}}}
 " deoplete end #####################################################################
 
-"neocomplcache start ###############################################################
-" highlight Pmenu ctermbg=6
-" highlight PmenuSel ctermbg=3
-" highlight PMenuSbar ctermbg=0
-
-" let g:neocomplcache_enable_at_startup = 1
-" let g:neocomplcache_max_list = 30
-" let g:neocomplcache_auto_completion_start_length = 2
-" let g:neocomplcache_enable_smart_case = 1
-" "" like AutoComplPop
-" let g:neocomplcache_enable_auto_select = 1
-" "" search with camel case like Eclipse
-" let g:neocomplcache_enable_camel_case_completion = 1
-" let g:neocomplcache_enable_underbar_completion = 1
-" "imap <C-k> <Plug>(neocomplcache_snippets_expand)
-" "smap <C-k> <Plug>(neocomplcache_snippets_expand)
-" inoremap <expr><C-g> neocomplcache#undo_completion()
-" "inoremap <expr><C-l> neocomplcache#complete_common_string()
-
-" "" SuperTab like snippets behavior.
-" "imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
-" "" <CR>: close popup and save indent.
-" "inoremap <expr><CR> neocomplcache#smart_close_popup() . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
-" inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
-" "" <TAB>: completion.
-" "inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-" "" <C-h>, <BS>: close popup and delete backword char.
-" inoremap <expr><C-h> neocomplcache#smart_close_popup() . "\<C-h>"
-" inoremap <expr><BS> neocomplcache#smart_close_popup() . "\<C-h>"
-" inoremap <expr><C-y> neocomplcache#close_popup()
-" inoremap <expr><C-e> neocomplcache#cancel_popup()
-"neocomplcache end ############################################################
-
 "unite start ##################################################################
 let g:unite_data_directory = expand('~/.vim/etc/unite')
 "ヒストリー/ヤンク機能を有効化
@@ -552,7 +509,6 @@ nnoremap <silent> ta :<C-u>Unite -auto-resize tab<CR>
 nnoremap <silent> ut :<C-u>Unite -auto-resize tab<CR>
 "スペースキーとrキーでレジストリを表示
 nnoremap <silent> [unite]r :<C-u>Unite register<CR>
-nnoremap <silent> [unite]v :<C-u>VimFiler -buffer-name=default -split -simple -winwidth=35 -toggle -no-quit<CR>
 nnoremap <silent> uo :<C-u>Unite -auto-resize outline<CR>
 nnoremap <silent> uov :<C-u>Unite -vertical -winwidth=50 outline<CR>
 nnoremap <silent> uv :<C-u>Unite -auto-resize output:version<CR>
@@ -581,38 +537,6 @@ if executable('ag')
   let g:unite_source_grep_recursive_opt = ''
 endif
 "全体に適応 end    ##########
-
-"vimfiler ##################
-"vimデフォルトのエクスプローラをvimfilerで置き換える
-let g:vimfiler_as_default_explorer = 1
-"セーフモードを無効にした状態で起動する
-let g:vimfiler_safe_mode_by_default = 0
-
-"autocmd VimEnter * VimFilerExplorer
-" autocmd FileType vimfiler nmap <buffer> <Leader>uv <Plug>(vimfiler_close)
-
-augroup vimrc
-    autocmd FileType vimfiler call s:vimfiler_my_settings()
-augroup END
-
-function! s:vimfiler_my_settings()
-echo 'vimfiler_my_settings'
-let loaded_trailing_whitespace_plugin = 0
-    nmap <buffer> q <Plug>(vimfiler_close)
-    nmap <buffer> Q <Plug>(vimfiler_hide)
-"横に分割して開く
-    nnoremap <silent> <buffer> <expr> <C-s> vimfiler#do_switch_action('split')
-    inoremap <silent> <buffer> <expr> <C-s> vimfiler#do_switch_action('split')
-    nnoremap <silent> <buffer> <expr> <C-h> vimfiler#do_switch_action('split')
-    inoremap <silent> <buffer> <expr> <C-h> vimfiler#do_switch_action('split')
-"縦に分割して開く
-    nnoremap <silent> <buffer> <expr> <C-v> vimfiler#do_switch_action('vsplit')
-    inoremap <silent> <buffer> <expr> <C-v> vimfiler#do_switch_action('vsplit')
-"タブで開く
-    nnoremap <silent> <buffer> <expr> <C-t> vimfiler#do_action('tabopen')
-    nnoremap <silent> <buffer> <expr> <C-t> vimfiler#do_action('tabopen')
-endfunction
-"vimfiler ##################
 
 "セッションを保存 start   ##
 let g:unite_source_session_default_session_name = 'default'
@@ -764,30 +688,6 @@ nnoremap sws :<C-u>StripWhitespace<CR>
 nnoremap ilt :<C-u>IndentLinesToggle<CR>
 "Yggdroot/indentLine end    #########################################
 
-"ctrlp start ###################################################################
-nnoremap [ctrlp]    <Nop>
-nmap     <Leader>c [ctrlp]
-nnoremap [ctrlp]p :<C-u>CtrlP<CR>
-nnoremap [ctrlp]b :<C-u>CtrlPBuffer<CR>
-nnoremap [ctrlp]d :<C-u>CtrlPDir<CR>
-nnoremap [ctrlp]f :<C-u>CtrlP<CR>
-nnoremap [ctrlp]l :<C-u>CtrlPLine<CR>
-nnoremap [ctrlp]m :<C-u>CtrlPMRUFiles<CR>
-nnoremap [ctrlp]k :<C-u>CtrlPBookmark<CR>
-nnoremap [ctrlp]q :<C-u>CtrlPQuickfix<CR>
-nnoremap [ctrlp]s :<C-u>CtrlPMixed<CR>
-nnoremap [ctrlp]t :<C-u>CtrlPTag<CR>
-
-let g:ctrlp_map = '<Nop>'
-" Guess vcs root dir
-let g:ctrlp_working_path_mode = 'ra'
-" Open new file in current window
-let g:ctrlp_open_new_file = 'r'
-let g:ctrlp_extensions = ['tag', 'quickfix', 'dir', 'line', 'mixed']
-let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:18'
-let g:ctrlp_user_command = 'ag %s -l'
-"cnnoremap [ctrlp]trlp end   ###################################################################
-
 "tpope/vim-fugitive start   ###################################################################
 nnoremap [fugitive] <Nop>
 nmap     <Leader>gi [fugitive]
@@ -821,10 +721,6 @@ set statusline=%{anzu#search_status()}
 nnoremap [tagbar]    <Nop>
 nmap     <Leader>t [tagbar]
 nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
-"ivalkeen/vim-ctrlp-tjump start  ###################################################################
-nnoremap [tagbar]p :CtrlPtjump<cr>
-vnoremap [tagbar]p :CtrlPtjumpVisual<cr>
-"ivalkeen/vim-ctrlp-tjump end    ###################################################################
 
 "airblade/vim-gitgutter   start  ###################################################################
 nnoremap [gitgutter]    <Nop>
