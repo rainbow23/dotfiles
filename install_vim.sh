@@ -5,7 +5,9 @@ if [[ ! -e /usr/local/bin/python3.5 ]]; then
 fi
 
 vimpath=$HOME/vim8src
-version=8.1.0707
+
+# fixed fzf clash version https://github.com/vim/vim/issues/3873
+version=8.1.0847
 
 if [ ! -d $vimpath ]; then
   mkdir -p $vimpath && cd $vimpath
