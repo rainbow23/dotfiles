@@ -50,6 +50,7 @@ git \
 zsh \
 xz xz-devel \
 wget \
+unzip \
 docker \
 docker-compose \
 tree; yum clean all
