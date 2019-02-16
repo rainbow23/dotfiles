@@ -8,6 +8,7 @@ gitname=("rainbow23/easy-oneliner.git" \
 "junegunn/fzf.git" \
 "monochromegane/the_platinum_searcher.git" \
 "mg979/vim-bookmarks.git" \
+"junegunn/fzf.vim.git" \
 \  )
 
 # unity project
