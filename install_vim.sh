@@ -4,9 +4,16 @@ if [[ ! -e /usr/local/bin/python3.5 ]]; then
   exit 1
 fi
 
-if [ ! -d $HOME/vim8src ]; then
-  git clone --depth 1 https://github.com/vim/vim.git $HOME/vim8src
+vimpath=$HOME/vim8src
+version=8.1.0707
+
+if [ ! -d $vimpath ]; then
+  mkdir -p $vimpath && cd $vimpath
+  curl -L "https://github.com/vim/vim/archive/v${version}.zip" -o "vim-${version}.zip"
+  unzip -d "$vimpath" "vim-${version}.zip"
 fi
+
+vimpath="$HOME/vim8src/vim-${version}"
 
 ostype=$($HOME/dotfiles/ostype.sh)
 
@@ -20,7 +27,7 @@ if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
   # https://github.com/vim/vim/issues/3629
   export LDFLAGS="-rdynamic"
 
-  cd $HOME/vim8src && ./configure\
+  cd $vimpath && ./configure\
     --enable-fail-if-missing\
     --with-features=huge\
     --disable-selinux\
@@ -38,7 +45,7 @@ elif [ $ostype = 'darwin' ]; then
   echo "configure ostype $ostype ****************************************"
   echo ""
   # `brew --prefix` >> /usr/local
-  cd $HOME/vim8src && ./configure\
+  cd $vimpath && ./configure\
     --prefix=`brew --prefix`\
     --enable-fail-if-missing\
     --with-features=huge\
