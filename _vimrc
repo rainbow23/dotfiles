@@ -520,7 +520,7 @@ highlight BookmarkAnnotationLine ctermbg=238 ctermfg=none
 let g:bookmark_highlight_lines = 1
 let g:bookmark_center = 1
 let g:bookmark_prefer_fzf = 1
-let g:bookmark_fzf_preview_layout = ['right', '50%']
+let g:bookmark_fzf_preview_layout = ['right', '80%']
 " 'mg979/vim-bookmarks' end ******************************************************
 
 nnoremap <silent> [unite]kk :<C-u>Unite -auto-resize vim_bookmarks<CR>
