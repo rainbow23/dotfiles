@@ -1,0 +1,16 @@
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version
+      - image: rainbow23/base_dotfiles:latest
+    working_directory: /home/rainbow23/dotfiles
+    steps:
+      - checkout
+      #deploy
+      - run: ./symlink.sh
+      # install
+      - run: ./install_tools.sh
+      - run: ./install_python.sh
+      - run: ./install_vim.sh
+      - run: ./gitclone_list.sh

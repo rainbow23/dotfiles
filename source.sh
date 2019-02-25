@@ -14,6 +14,10 @@ git config --global color.diff.old        "red bold"
 git config --global color.diff.new        "green bold"
 git config --global color.diff.whitespace "red reverse"
 
+#ctags settings
+git config --global init.templatedir '~/.git_template'
+git config --global alias.ctags '!~/dotfiles/copy_ctags_files && .git/hooks/ctags'
+
 autoload -U compinit && compinit -u
 
 ## -------------------------------------
@@ -23,10 +27,6 @@ export GOPATH=$HOME/go
 export GOBIN=$GOPATH/bin
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$GOBIN
-
-if [ ! -f ghq ]; then
-  go get github.com/motemen/ghq
-fi
 
 ## -------------------------------------
 # fzf

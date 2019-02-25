@@ -7,7 +7,8 @@ set tabstop=4
 set noswapfile
 set ignorecase
 set noshowmode
-"set tags=./tags;
+set tags+=.git/tags
+set pumheight=10
 " 開いたファイルにワーキングディレクトリを移動する
 if 1 == exists("+autochdir")
     set autochdir
@@ -21,7 +22,7 @@ hi Search ctermfg=DarkBlue
 " visual mode hightlight color
 hi Visual ctermbg=LightRed
 hi Visual ctermfg=DarkBlue
-
+hi Comment ctermfg=Cyan
 set encoding=utf-8
 
 autocmd BufEnter *.yml set shiftwidth=2
@@ -42,6 +43,10 @@ set tabstop=4
 let mapleader = "\<Space>"
 "let mapleader = ","
 
+nnoremap Y y$
+set display=lastline
+nnoremap + <C-a>
+nnoremap - <C-x>
 "カーソル位置から画面移動
 nnoremap .t zt
 nnoremap .m zz
@@ -49,7 +54,7 @@ nnoremap .b zb
 
 nnoremap sn :<C-u>set number<CR>
 nnoremap snn :<C-u>set nonumber<CR>
-
+nnoremap srn :<C-u>setlocal relativenumber!<CR>
 nnoremap <silent> uss :<C-u>Uss<CR>
 nnoremap <silent> usos :call <SID>Unite_session_override_save()<CR>
 nnoremap src :<C-u>source ~/.vimrc<CR>
@@ -86,61 +91,30 @@ nnoremap [buffer]r :b#<CR>
 nnoremap [buffer]d :bdelete<CR>
 
 " panel size start ################################
-nnoremap noremap [panel]    <Nop>
-nmap     s [panel]
-nnoremap [panel]hh  :vertical resize -10<CR>
-nnoremap [panel]hhh :vertical resize -40<CR>
-" 横に最小化
-nnoremap [panel]hhhh <C-w>1\| <C-g><CR>
-nnoremap [panel]ll  :vertical resize +10<CR>
-nnoremap [panel]lll :vertical resize +40<CR>
-" 横に最大化
-nnoremap [panel]jj  :resize +10<CR>
-nnoremap [panel]jjj :resize +20<CR>
-" 縦に最大化
-nnoremap [panel]kk  :resize -10<CR>
-nnoremap [panel]kkk :resize -20<CR>
-" 縦に最小化
-nnoremap [panel]kkkk <C-w>1_ <C-g><CR>
-nnoremap [panel]l <C-w>l <C-g><CR>
-nnoremap [panel]h <C-w>h <C-g><CR>
-nnoremap [panel]j <C-w>j <C-g><CR>
-nnoremap [panel]k <C-w>k <C-g><CR>
-nnoremap [panel]w <C-w>w <C-g><CR>
-nnoremap [panel]s :split <C-g><CR>
-nnoremap [panel]v :vsplit <C-g><CR>
-nnoremap [panel]H <C-w>H <C-g><CR>
-nnoremap [panel]J <C-w>J <C-g><CR>
-nnoremap [panel]K <C-w>K <C-g><CR>
-nnoremap [panel]L <C-w>L <C-g><CR>
-" 上向きにローテーションする
-nnoremap [panel]r <C-w>r <C-g><CR>
-" 下向きにローテーションする
-nnoremap [panel]R <C-w>R <C-g><CR>
-" 現在カーソルがあるウィンドウと一つ前のウィンドウを入れ替える
-nnoremap [panel]x <C-w>x <C-g><CR>
-noremap [panel]o <C-w>= <C-g><CR>
 
+" resize panes
+nnoremap <silent> <Left> :vertical resize -10<CR>
+nnoremap <silent> <Right> :vertical resize +10<CR>
+nnoremap <silent> <Up> :resize +10<CR>
+nnoremap <silent> <Down> :resize -10<CR>
 
-" let g:tmux_navigator_no_mappings = 1
-" nnoremap <silent> [panel]h :TmuxNavigateLeft<cr>
-" nnoremap <silent> [panel]j :TmuxNavigateDown<cr>
-" nnoremap <silent> [panel]k :TmuxNavigateUp<cr>
-" nnoremap <silent> [panel]l :TmuxNavigateRight<cr>
-" nnoremap <silent> [panel]p :TmuxNavigatePrevious<cr>
-
+nnoremap <C-w> <C-w>w <C-g><CR>
+nnoremap <C-s> :split <C-g><CR>
+nnoremap <C-v> :vsplit <C-g><CR>
+nnoremap exg <C-w>x <C-g><CR>
+noremap <C-\> <C-w>= <C-g><CR>
 
 " panel size end  #################################
 
 " Plug 'regedarek/ZoomWin' ###########################################################################
 " 選択したパネルの最大化
-" nnoremap <silent> [panel]wo :call <SID>MyZoomWin()<CR>
-nnoremap <silent> [panel]wo :<C-u>ZoomWin<CR>
+nnoremap <silent> zwo :<C-u>ZoomWin<CR>
 
 set stl=Normal
 let g:zoomWinActive = 0
 
 fun! s:MyZoomWin()
+
     if g:zoomWinActive == 1
       " :TagbarClose
       let g:zoomWinActive = 0
@@ -171,8 +145,6 @@ let g:zoomwin_localoptlist = ["ai","ar","bh","bin","bl","bomb","bt","cfu","ci","
 endif
 " Plug 'regedarek/ZoomWin' ###########################################################################
 
-
-nnoremap <C-H> :noh <CR>
 " 削除でヤンクしない
 nnoremap x "_x
 nnoremap dd "_dd
@@ -234,7 +206,6 @@ Plug 'junegunn/fzf.vim'
 Plug 'Shougo/unite.vim'
 Plug 'rainbow23/unite-session'
 Plug 'Shougo/neomru.vim'
-Plug 'Shougo/vimfiler.vim'
 "unite-outline brew install ctagsが必要
 Plug 'Shougo/unite-outline'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
@@ -247,16 +218,13 @@ Plug 'thinca/vim-quickrun'
 Plug 'osyo-manga/unite-quickfix'
 Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'cohama/lexima.vim'
 Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
-Plug 'MattesGroeger/vim-bookmarks'
-Plug 'ivalkeen/vim-ctrlp-tjump'
+Plug 'mg979/vim-bookmarks', { 'branch': 'fzf' }
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
-Plug 'soramugi/auto-ctags.vim'
 Plug 'airblade/vim-gitgutter'
 " Plug 'deris/vim-gothrough-jk'
 Plug 'rhysd/accelerated-jk'
@@ -310,13 +278,6 @@ Plug 'itchyny/vim-parenmatch'
 Plug 'itchyny/vim-cursorword'
 call plug#end()
 
-function! s:all_files()
-  return extend(
-  \ filter(copy(v:oldfiles),
-  \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
-  \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
-endfunction
-
 "FZF start ####################################################################
 if has("mac")
     set rtp+=~/.fzf
@@ -328,6 +289,9 @@ let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit' }
+
+" fzfからファイルにジャンプできるようにする
+let g:fzf_buffers_jump = 1
 
 nnoremap [fzf] <Nop>
 nmap <Leader>f [fzf]
@@ -344,6 +308,18 @@ imap <c-x><c-l> <plug>(fzf-complete-line)
 " Advanced customization using autoload functions
 " inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
 
+function! s:Uss(file)
+    execute 'UniteSessionLoad ' . a:file
+    " echo a:file
+endfunction
+
+nnoremap [fzf]us :<C-u>MyUniteSessionLoad<CR>
+command! MyUniteSessionLoad  call fzf#run({
+      \ 'source': "ls -l ~/.vim/etc/unite/session | sed '1d' | awk '{print $9}'",
+      \ 'sink': function('<sid>Uss'),
+      \ 'options': '+m',
+      \ 'right': '40%'})
+
 nnoremap [fzf]m :<C-u>FZFMru<CR>
 nnoremap [fzf]f :<C-u>Files<CR>
 " git ls-files
@@ -355,9 +331,10 @@ nnoremap [fzf]h :<C-u>History<CR>
 " list tabs
 nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]a :<C-u>Ag<CR>
-nnoremap [fzf]l :<C-u>Lines<CR>
+nnoremap [fzf]l :<C-u>BLines<CR>
 nnoremap [fzf]s :<C-u>Search<CR>
 nnoremap [fzf]S :<C-u>SearchFromCurrDir<CR>
+nnoremap [fzf]k :<C-u>FzfBookmarks!<CR>
 
 command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview())
 
@@ -425,11 +402,11 @@ let g:neosnippet#snippets_directory='~/.vim/plugged/vim-snippets/snippets/'
 imap <expr><C-o>
 \ pumvisible() ? neosnippet#expandable_or_jumpable() ?
 \    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
-\    "\<Plug>(neosnippet_expand_or_jump)"
+\    "\<Plug>(neosnippet_expand_or_jump)" "neosnippetの２回目以降で移動する場合に使用する
 smap <expr><C-o>
 \ pumvisible() ? neosnippet#expandable_or_jumpable() ?
 \    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
-\    "\<Plug>(neosnippet_expand_or_jump)"
+\    "\<Plug>(neosnippet_expand_or_jump)" "neosnippetの２回目以降で移動する場合に使用する
 xmap <C-o>     <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
@@ -490,39 +467,6 @@ function! s:check_back_space() abort "{{{
 endfunction"}}}
 " deoplete end #####################################################################
 
-"neocomplcache start ###############################################################
-" highlight Pmenu ctermbg=6
-" highlight PmenuSel ctermbg=3
-" highlight PMenuSbar ctermbg=0
-
-" let g:neocomplcache_enable_at_startup = 1
-" let g:neocomplcache_max_list = 30
-" let g:neocomplcache_auto_completion_start_length = 2
-" let g:neocomplcache_enable_smart_case = 1
-" "" like AutoComplPop
-" let g:neocomplcache_enable_auto_select = 1
-" "" search with camel case like Eclipse
-" let g:neocomplcache_enable_camel_case_completion = 1
-" let g:neocomplcache_enable_underbar_completion = 1
-" "imap <C-k> <Plug>(neocomplcache_snippets_expand)
-" "smap <C-k> <Plug>(neocomplcache_snippets_expand)
-" inoremap <expr><C-g> neocomplcache#undo_completion()
-" "inoremap <expr><C-l> neocomplcache#complete_common_string()
-
-" "" SuperTab like snippets behavior.
-" "imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
-" "" <CR>: close popup and save indent.
-" "inoremap <expr><CR> neocomplcache#smart_close_popup() . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
-" inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
-" "" <TAB>: completion.
-" "inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-" "" <C-h>, <BS>: close popup and delete backword char.
-" inoremap <expr><C-h> neocomplcache#smart_close_popup() . "\<C-h>"
-" inoremap <expr><BS> neocomplcache#smart_close_popup() . "\<C-h>"
-" inoremap <expr><C-y> neocomplcache#close_popup()
-" inoremap <expr><C-e> neocomplcache#cancel_popup()
-"neocomplcache end ############################################################
-
 "unite start ##################################################################
 let g:unite_data_directory = expand('~/.vim/etc/unite')
 "ヒストリー/ヤンク機能を有効化
@@ -566,15 +510,18 @@ nnoremap <silent> ta :<C-u>Unite -auto-resize tab<CR>
 nnoremap <silent> ut :<C-u>Unite -auto-resize tab<CR>
 "スペースキーとrキーでレジストリを表示
 nnoremap <silent> [unite]r :<C-u>Unite register<CR>
-nnoremap <silent> [unite]v :<C-u>VimFiler -buffer-name=default -split -simple -winwidth=35 -toggle -no-quit<CR>
 nnoremap <silent> uo :<C-u>Unite -auto-resize outline<CR>
 nnoremap <silent> uov :<C-u>Unite -vertical -winwidth=50 outline<CR>
 nnoremap <silent> uv :<C-u>Unite -auto-resize output:version<CR>
 
-"MattesGroeger/vim-bookmarks ***********************************************
+" 'mg979/vim-bookmarks' start ****************************************************
 highlight BookmarkLine ctermbg=238 ctermfg=none
 highlight BookmarkAnnotationLine ctermbg=238 ctermfg=none
 let g:bookmark_highlight_lines = 1
+let g:bookmark_center = 1
+let g:bookmark_prefer_fzf = 1
+let g:bookmark_fzf_preview_layout = ['right', '80%']
+" 'mg979/vim-bookmarks' end ******************************************************
 
 nnoremap <silent> [unite]kk :<C-u>Unite -auto-resize vim_bookmarks<CR>
 "Unite bookmarkを開く
@@ -595,38 +542,6 @@ if executable('ag')
 endif
 "全体に適応 end    ##########
 
-"vimfiler ##################
-"vimデフォルトのエクスプローラをvimfilerで置き換える
-let g:vimfiler_as_default_explorer = 1
-"セーフモードを無効にした状態で起動する
-let g:vimfiler_safe_mode_by_default = 0
-
-"autocmd VimEnter * VimFilerExplorer
-" autocmd FileType vimfiler nmap <buffer> <Leader>uv <Plug>(vimfiler_close)
-
-augroup vimrc
-    autocmd FileType vimfiler call s:vimfiler_my_settings()
-augroup END
-
-function! s:vimfiler_my_settings()
-echo 'vimfiler_my_settings'
-let loaded_trailing_whitespace_plugin = 0
-    nmap <buffer> q <Plug>(vimfiler_close)
-    nmap <buffer> Q <Plug>(vimfiler_hide)
-"横に分割して開く
-    nnoremap <silent> <buffer> <expr> <C-s> vimfiler#do_switch_action('split')
-    inoremap <silent> <buffer> <expr> <C-s> vimfiler#do_switch_action('split')
-    nnoremap <silent> <buffer> <expr> <C-h> vimfiler#do_switch_action('split')
-    inoremap <silent> <buffer> <expr> <C-h> vimfiler#do_switch_action('split')
-"縦に分割して開く
-    nnoremap <silent> <buffer> <expr> <C-v> vimfiler#do_switch_action('vsplit')
-    inoremap <silent> <buffer> <expr> <C-v> vimfiler#do_switch_action('vsplit')
-"タブで開く
-    nnoremap <silent> <buffer> <expr> <C-t> vimfiler#do_action('tabopen')
-    nnoremap <silent> <buffer> <expr> <C-t> vimfiler#do_action('tabopen')
-endfunction
-"vimfiler ##################
-
 "セッションを保存 start   ##
 let g:unite_source_session_default_session_name = 'default'
 
@@ -642,7 +557,6 @@ function! s:Unite_session_save(...)
         echo "UniteSessionSave ".g:unite_source_session_default_session_name
         execute 'UniteSessionSave '.g:unite_source_session_default_session_name
     end
-    NERDTreeTabsOpen
 endfunction
 "セッションを保存 enc    ##
 
@@ -778,33 +692,9 @@ nnoremap sws :<C-u>StripWhitespace<CR>
 nnoremap ilt :<C-u>IndentLinesToggle<CR>
 "Yggdroot/indentLine end    #########################################
 
-"ctrlp start ###################################################################
-nnoremap [ctrlp]    <Nop>
-nmap     <Leader>c [ctrlp]
-nnoremap [ctrlp]p :<C-u>CtrlP<CR>
-nnoremap [ctrlp]b :<C-u>CtrlPBuffer<CR>
-nnoremap [ctrlp]d :<C-u>CtrlPDir<CR>
-nnoremap [ctrlp]f :<C-u>CtrlP<CR>
-nnoremap [ctrlp]l :<C-u>CtrlPLine<CR>
-nnoremap [ctrlp]m :<C-u>CtrlPMRUFiles<CR>
-nnoremap [ctrlp]k :<C-u>CtrlPBookmark<CR>
-nnoremap [ctrlp]q :<C-u>CtrlPQuickfix<CR>
-nnoremap [ctrlp]s :<C-u>CtrlPMixed<CR>
-nnoremap [ctrlp]t :<C-u>CtrlPTag<CR>
-
-let g:ctrlp_map = '<Nop>'
-" Guess vcs root dir
-let g:ctrlp_working_path_mode = 'ra'
-" Open new file in current window
-let g:ctrlp_open_new_file = 'r'
-let g:ctrlp_extensions = ['tag', 'quickfix', 'dir', 'line', 'mixed']
-let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:18'
-let g:ctrlp_user_command = 'ag %s -l'
-"cnnoremap [ctrlp]trlp end   ###################################################################
-
 "tpope/vim-fugitive start   ###################################################################
 nnoremap [fugitive] <Nop>
-nmap     <Leader>fu [fugitive]
+nmap     <Leader>gi [fugitive]
 nnoremap [fugitive]s  :<C-u>Gstatus<CR>
 nnoremap [fugitive]d :<C-u>Gvdiff<CR>
 nnoremap [fugitive]l  :<C-u>Glog<CR>
@@ -813,6 +703,10 @@ nnoremap [fugitive]rd :<C-u>Gread<CR>
 nnoremap [fugitive]g :<C-u>Ggrep
 nnoremap [fugitive]w :<C-u>Gbrowse<CR>
 
+autocmd BufWritePost *
+      \ if exists('b:git_dir') && executable(b:git_dir.'/hooks/ctags') |
+      \   call system('"'.b:git_dir.'/hooks/ctags" &') |
+      \ endif
 "tpope/vim-fugitive end      ###################################################################
 
 "osyo-manga/vim-anzu' start  ###################################################################
@@ -831,16 +725,6 @@ set statusline=%{anzu#search_status()}
 nnoremap [tagbar]    <Nop>
 nmap     <Leader>t [tagbar]
 nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
-"ivalkeen/vim-ctrlp-tjump start  ###################################################################
-nnoremap [tagbar]p :CtrlPtjump<cr>
-vnoremap [tagbar]p :CtrlPtjumpVisual<cr>
-"ivalkeen/vim-ctrlp-tjump end    ###################################################################
-
-"soramugi/auto-ctags.vim  start  ###################################################################
-let g:auto_ctags = 0
-let g:auto_ctags_directory_list = ['.git', '.svn']
-set tags+=.svn/tags
-"soramugi/auto-ctags.vim  end    ###################################################################
 
 "airblade/vim-gitgutter   start  ###################################################################
 nnoremap [gitgutter]    <Nop>
