@@ -222,7 +222,7 @@ Plug 'cohama/lexima.vim'
 Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
-Plug 'mg979/vim-bookmarks', { 'branch': 'fzf' }
+Plug 'rainbow23/vim-bookmarks', { 'branch': 'fzf' }
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
 Plug 'airblade/vim-gitgutter'
@@ -514,14 +514,14 @@ nnoremap <silent> uo :<C-u>Unite -auto-resize outline<CR>
 nnoremap <silent> uov :<C-u>Unite -vertical -winwidth=50 outline<CR>
 nnoremap <silent> uv :<C-u>Unite -auto-resize output:version<CR>
 
-" 'mg979/vim-bookmarks' start ****************************************************
+" 'rainbow23/vim-bookmarks.git' start ****************************************************
 highlight BookmarkLine ctermbg=238 ctermfg=none
 highlight BookmarkAnnotationLine ctermbg=238 ctermfg=none
 let g:bookmark_highlight_lines = 1
 let g:bookmark_center = 1
 let g:bookmark_prefer_fzf = 1
 let g:bookmark_fzf_preview_layout = ['right', '80%']
-" 'mg979/vim-bookmarks' end ******************************************************
+" 'rainbow23/vim-bookmarks.git' start ****************************************************
 
 nnoremap <silent> [unite]kk :<C-u>Unite -auto-resize vim_bookmarks<CR>
 "Unite bookmarkを開く

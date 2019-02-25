@@ -8,7 +8,7 @@ gitname=("rainbow23/easy-oneliner.git" \
 "peco/peco.git" \
 "junegunn/fzf.git" \
 "monochromegane/the_platinum_searcher.git" \
-"mg979/vim-bookmarks.git" \
+"rainbow23/vim-bookmarks.git" \"
 "junegunn/fzf.vim.git" \
 "ucan-lab/docker-laravel5.git" \
 \  )
