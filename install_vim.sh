@@ -7,7 +7,7 @@ fi
 vimpath=$HOME/vim8src
 
 # fixed fzf clash version https://github.com/vim/vim/issues/3873
-version=8.1.0715
+version=8.1.0847
 
 if [ ! -d $vimpath ]; then
   mkdir -p $vimpath && cd $vimpath
