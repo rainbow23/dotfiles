@@ -694,7 +694,7 @@ nnoremap ilt :<C-u>IndentLinesToggle<CR>
 
 "tpope/vim-fugitive start   ###################################################################
 nnoremap [fugitive] <Nop>
-nmap     <Leader>gi [fugitive]
+nmap     <Leader>v [fugitive]
 nnoremap [fugitive]s  :<C-u>Gstatus<CR>
 nnoremap [fugitive]d :<C-u>Gvdiff<CR>
 nnoremap [fugitive]l  :<C-u>Glog<CR>
