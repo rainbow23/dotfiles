@@ -16,7 +16,8 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 ostype=$(./ostype.sh)
 
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
-  array=( "automake" \
+  array=( "sudo" \
+          "automake" \
           "ncurses-devel" \
           "make" \
           "gcc" \
