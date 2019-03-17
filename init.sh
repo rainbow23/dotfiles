@@ -64,3 +64,5 @@ fi
 cd $INSTALL_DIR
 make deploy
 make install
+
+exec $SHELL
