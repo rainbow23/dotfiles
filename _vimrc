@@ -24,7 +24,7 @@ hi Visual ctermbg=LightRed
 hi Visual ctermfg=DarkBlue
 hi Comment ctermfg=Cyan
 set encoding=utf-8
-
+set
 autocmd BufEnter *.yml set shiftwidth=2
 autocmd BufEnter *.sh  set shiftwidth=2
 autocmd BufEnter *.zsh set shiftwidth=2
@@ -237,7 +237,7 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
 if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  Plug 'Shougo/deoplete.nvim', { 'tag': '5.0', 'do': ':UpdateRemotePlugins' }
 else
   Plug 'Shougo/deoplete.nvim'
   Plug 'roxma/nvim-yarp'
