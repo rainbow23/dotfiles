@@ -1,6 +1,16 @@
 #!/bin/sh
 sudo chsh $USER -s /bin/zsh 2>/dev/null
 INSTALL_DIR=$HOME/dotfiles
+
+if [[ ! -d $INSTALL_DIR ]]; then
+  git clone https://github.com/rainbow23/dotfiles.git $INSTALL_DIR
+fi
+
+cd $INSTALL_DIR
+
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
 ostype=$(./ostype.sh)
 
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
@@ -39,8 +49,6 @@ elif [ $ostype = 'darwin' ]; then
           "python" \
           "python3" \
           )
-
-
 fi
 
 for i in "${array[@]}"
@@ -53,14 +61,5 @@ do
   fi
 done
 
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
-
-if [[ ! -d $INSTALL_DIR ]]; then
-  git clone https://github.com/rainbow23/dotfiles.git $INSTALL_DIR
-fi
-
-cd $INSTALL_DIR
 make deploy
 make install
