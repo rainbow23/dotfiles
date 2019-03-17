@@ -1,22 +1,13 @@
 #!/bin/sh
-sudo chsh $USER -s /bin/zsh 2>/dev/null
-INSTALL_DIR=$HOME/dotfiles
-
-yum -y install sudo git
-
-if [[ ! -d $INSTALL_DIR ]]; then
-  git clone https://github.com/rainbow23/dotfiles.git $INSTALL_DIR
-fi
-
-cd $INSTALL_DIR
+ostype=$(bash -c "$(curl -L https://raw.githubusercontent.com/rainbow23/dotfiles/develop/ostype.sh)")
 
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-ostype=$(./ostype.sh)
-
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
-  array=( "automake" \
+  array=( "sudo" \
+          "git" \
+          "automake" \
           "ncurses-devel" \
           "make" \
           "gcc" \
@@ -63,5 +54,13 @@ do
   fi
 done
 
+sudo chsh $USER -s /bin/zsh 2>/dev/null
+INSTALL_DIR=$HOME/dotfiles
+
+if [[ ! -d $INSTALL_DIR ]]; then
+  git clone https://github.com/rainbow23/dotfiles.git $INSTALL_DIR
+fi
+
+cd $INSTALL_DIR
 make deploy
 make install
