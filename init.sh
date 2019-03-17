@@ -2,7 +2,7 @@
 sudo chsh $USER -s /bin/zsh 2>/dev/null
 INSTALL_DIR=$HOME/dotfiles
 
-yum -y install git
+yum -y install sudo git
 
 if [[ ! -d $INSTALL_DIR ]]; then
   git clone https://github.com/rainbow23/dotfiles.git $INSTALL_DIR
@@ -16,8 +16,7 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 ostype=$(./ostype.sh)
 
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
-  array=( "sudo" \
-          "automake" \
+  array=( "automake" \
           "ncurses-devel" \
           "make" \
           "gcc" \
