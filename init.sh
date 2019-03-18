@@ -4,9 +4,10 @@ ostype=$(bash -c "$(curl -L https://raw.githubusercontent.com/rainbow23/dotfiles
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
+yum -y install sudo
+
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
-  array=( "sudo" \
-          "git" \
+  array=( "git" \
           "automake" \
           "ncurses-devel" \
           "make" \
