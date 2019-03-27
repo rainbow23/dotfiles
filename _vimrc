@@ -730,7 +730,6 @@ nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
 highlight DiffText         cterm=bold ctermfg=none ctermbg=54 gui=none
 highlight GitGutterAddLine cterm=bold ctermfg=none ctermbg=18 gui=none
 highlight link GitGutterChangeLine DiffText
-autocmd BufNewFile,BufEnter * GitGutterLineHighlightsEnable
 nnoremap [gitgutter]    <Nop>
 nmap     <Leader>g [gitgutter]
 nnoremap [gitgutter]t :<C-u>GitGutterLineHighlightsToggle<CR>
