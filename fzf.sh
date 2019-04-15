@@ -191,6 +191,10 @@ tks() {
   tmux ls | fzf-tmux --query="$1" | awk '{print $1}' | sed "s/:$//g" | xargs tmux kill-session -t
 }
 
+tp() {
+  tmux list-panes -s -F '#I:#W' | fzf +m | sed -e 's/:.*//g' | xargs tmux select-window -t
+}
+
 ## -------------------------------------
 # fzf fd
 # -------------------------------------
