@@ -100,7 +100,6 @@ nnoremap <silent> <Down> :resize -10<CR>
 
 nnoremap <C-w> <C-w>w <C-g><CR>
 nnoremap <C-s> :split <C-g><CR>
-nnoremap <C-v> :vsplit <C-g><CR>
 nnoremap exg <C-w>x <C-g><CR>
 noremap <C-\> <C-w>= <C-g><CR>
 
