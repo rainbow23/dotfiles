@@ -17,8 +17,8 @@ syntax on
 colorscheme peachpuff
 filetype on
 set hlsearch
-hi Search ctermbg=Red
-hi Search ctermfg=DarkBlue
+hi Search ctermbg=White
+hi Search ctermfg=Black
 " visual mode hightlight color
 hi Visual ctermbg=LightRed
 hi Visual ctermfg=DarkBlue
