@@ -12,6 +12,26 @@ ftags() {
 ## -------------------------------------
 # fzf git
 # -------------------------------------
+
+# https://qiita.com/reviry/items/e798da034955c2af84c5
+gadd() {
+  local out q n addfiles
+  while out=$(
+      git status --short |
+      awk '{if (substr($0,2,1) !~ / /) print $2}' |
+      fzf-tmux --multi --exit-0 --expect=ctrl-d); do
+    q=$(head -1 <<< "$out")
+    n=$[$(wc -l <<< "$out") - 1]
+    addfiles=(`echo $(tail "-$n" <<< "$out")`)
+    [[ -z "$addfiles" ]] && continue
+    if [ "$q" = ctrl-d ]; then
+      git diff --color=always $addfiles | less -R
+    else
+      git add $addfiles
+    fi
+  done
+}
+
 gcb() {
   local brh cbrh
   IFS=$'\n'
@@ -169,6 +189,10 @@ tm() {
 # tmux-kill-session
 tks() {
   tmux ls | fzf-tmux --query="$1" | awk '{print $1}' | sed "s/:$//g" | xargs tmux kill-session -t
+}
+
+tp() {
+  tmux list-panes -s -F '#I:#W' | fzf +m | sed -e 's/:.*//g' | xargs tmux select-window -t
 }
 
 ## -------------------------------------

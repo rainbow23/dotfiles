@@ -17,8 +17,8 @@ syntax on
 colorscheme peachpuff
 filetype on
 set hlsearch
-hi Search ctermbg=Red
-hi Search ctermfg=DarkBlue
+hi Search ctermbg=White
+hi Search ctermfg=Black
 " visual mode hightlight color
 hi Visual ctermbg=LightRed
 hi Visual ctermfg=DarkBlue
@@ -100,7 +100,6 @@ nnoremap <silent> <Down> :resize -10<CR>
 
 nnoremap <C-w> <C-w>w <C-g><CR>
 nnoremap <C-s> :split <C-g><CR>
-nnoremap <C-v> :vsplit <C-g><CR>
 nnoremap exg <C-w>x <C-g><CR>
 noremap <C-\> <C-w>= <C-g><CR>
 
@@ -730,7 +729,6 @@ nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
 highlight DiffText         cterm=bold ctermfg=none ctermbg=54 gui=none
 highlight GitGutterAddLine cterm=bold ctermfg=none ctermbg=18 gui=none
 highlight link GitGutterChangeLine DiffText
-autocmd BufNewFile,BufEnter * GitGutterLineHighlightsEnable
 nnoremap [gitgutter]    <Nop>
 nmap     <Leader>g [gitgutter]
 nnoremap [gitgutter]t :<C-u>GitGutterLineHighlightsToggle<CR>
