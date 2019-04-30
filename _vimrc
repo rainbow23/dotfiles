@@ -67,7 +67,7 @@ nnoremap tl :tablast<CR>
 
 nnoremap tmk :tabmove +1<CR>
 nnoremap tmj :tabmove -1<CR>
-
+noremap ter :terminal<CR>
 " 次の行からインサードモードで始める
 nnoremap nl $a<CR>
 inoremap nl <ESC>$a<CR>
