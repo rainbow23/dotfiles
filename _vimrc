@@ -90,6 +90,8 @@ nnoremap [buffer]r :b#<CR>
 "直前のバッファを開く
 nnoremap [buffer]d :bdelete<CR>
 
+highlight Directory ctermfg=cyan
+
 " panel size start ################################
 
 " resize panes
