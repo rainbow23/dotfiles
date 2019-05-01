@@ -8,7 +8,7 @@ cmd="$(basename "$cmd" | tr A-Z a-z)"
 pane_count="$(printf %d $(tmux list-panes | wc -l))"
 zoomed_pane_flag="$(tmux display -p '#{window_zoomed_flag}')"
 
-if [[ "${cmd%m}" = "vi" || ($pane_count = 1) || ($zoomed_pane_flag = 1) ]]; then
+if [[ "${cmd%m}" = "vi" || "${cmd%m}" = "nvi" || ($pane_count = 1) || ($zoomed_pane_flag = 1) ]]; then
   direction="$(echo "${1#-}" | tr 'lLDUR' '\\hjkl')"
   # forward the keystroke to Vim
   tmux send-keys "C-$direction"

@@ -67,7 +67,7 @@ nnoremap tl :tablast<CR>
 
 nnoremap tmk :tabmove +1<CR>
 nnoremap tmj :tabmove -1<CR>
-
+noremap ter :terminal<CR>
 " 次の行からインサードモードで始める
 nnoremap nl $a<CR>
 inoremap nl <ESC>$a<CR>
@@ -89,6 +89,8 @@ nnoremap [buffer]n :bnext<CR>
 nnoremap [buffer]r :b#<CR>
 "直前のバッファを開く
 nnoremap [buffer]d :bdelete<CR>
+
+highlight Directory ctermfg=cyan
 
 " panel size start ################################
 
