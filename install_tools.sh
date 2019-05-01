@@ -3,8 +3,8 @@
 #go
 if [ ! -d /usr/local/go/bin ]; then
   cd /usr/local/src
-  sudo wget https://storage.googleapis.com/golang/go1.11.4.linux-amd64.tar.gz
-  sudo tar -C /usr/local -xzf go1.11.4.linux-amd64.tar.gz
+  sudo wget https://dl.google.com/go/go1.12.4.linux-amd64.tar.gz
+  sudo tar -C /usr/local -xzf go1.12.4.linux-amd64.tar.gz
   # cat 'export PATH=$PATH:/usr/local/go/bin' > $HOME/.profile
 fi
 
