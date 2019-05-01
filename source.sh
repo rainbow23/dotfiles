@@ -68,9 +68,9 @@ zplug "b4b4r07/79ee61f7c140c63d2786", \
     from:gist, \
     as:command, \
     use:get_last_pane_path.sh
-# zplug "motemen/ghq", \
-#     as:command, \
-#     hook-build:"make install"
+zplug "motemen/ghq", at:980d2b45 \
+    as:command, \
+    hook-build:"make install"
 
 # zsh-completions
 COMPLETIONS=$HOME/.zsh/completions
