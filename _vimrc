@@ -24,7 +24,6 @@ hi Visual ctermbg=LightRed
 hi Visual ctermfg=DarkBlue
 hi Comment ctermfg=Cyan
 set encoding=utf-8
-set
 autocmd BufEnter *.yml set shiftwidth=2
 autocmd BufEnter *.sh  set shiftwidth=2
 autocmd BufEnter *.zsh set shiftwidth=2
