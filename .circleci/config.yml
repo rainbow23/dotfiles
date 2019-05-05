@@ -13,4 +13,5 @@ jobs:
       - run: ./install_tools.sh
       - run: ./install_python.sh
       - run: ./install_vim.sh
+      - run: /bin/zsh
       - run: ./gitclone_list.sh
