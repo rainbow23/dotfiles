@@ -8,7 +8,7 @@ install:
 	@./install_tools.sh
 	@./install_python.sh
 	@./install_vim.sh
-	@/bin/zsh
+	@exec /bin/zsh -l
 	@./gitclone_list.sh
 
 .PHONY: testbuild
