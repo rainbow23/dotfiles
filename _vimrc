@@ -956,25 +956,21 @@ tnoremap <ESC>   <C-\><C-n>
 " Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } #################################################
 let g:go_term_mode = "vsplit"
 nnoremap <silent> gor :call <SID>MyGoRun()<CR>
-nnoremap <silent> gob :<C-u>:GoBuild<CR>
+nnoremap <silent> gob :call <C-u>:GoBuild<CR>
 
 fun! s:MyGoRun()
-    call <SID>CloseGoRunWindow()
+    call <SID>CloseAllGoRunWindow()
     :GoRun<CR>
 endfun
 
-fun! s:CloseGoRunWindow()
+fun! s:CloseAllGoRunWindow()
     for w in range(1, winnr('$'))
-        let l:ft = getwinvar(w, '&filetype')
-
-        if l:ft == "goterm"
+        if getwinvar(w, '&filetype') == "goterm"
             " windowを閉じる
             exe eval(w)."q"
 
             " windowを閉じたらwindows番号が変わるため最初から実行する
-            :call <SID>CloseGoRunWindow()
-        else
-            " echo "else"
+            :call <SID>CloseAllGoRunWindow()
         endif
     endfor
 endfun
