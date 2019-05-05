@@ -38,7 +38,10 @@ if [ ! -d $HOME/.fzf ] ; then
 fi
 
 if [ ! -d $HOME/.zplug ] ; then
-curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+  mkdir $HOME/.zplug
+  export ZPLUG_HOME=$HOME/.zplug
+  git clone https://github.com/zplug/zplug.git $HOME/.zplug
+  printf " Install zplug processes are successfully completed \U1F389\n"
 fi
 
 SILVER_SEARCHER=$HOME/the_silver_searcher
