@@ -954,8 +954,30 @@ tnoremap <ESC>   <C-\><C-n>
 " Plug 'Shougo/deol.nvim'#############################################################################
 
 " Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } #################################################
-nnoremap <silent> gor :<C-u>:GoRun<CR>
+let g:go_term_mode = "vsplit"
+nnoremap <silent> gor :call <SID>MyGoRun()<CR>
 nnoremap <silent> gob :<C-u>:GoBuild<CR>
+
+fun! s:MyGoRun()
+    call <SID>CloseGoRunWindow()
+    :GoRun<CR>
+endfun
+
+fun! s:CloseGoRunWindow()
+    for w in range(1, winnr('$'))
+        let l:ft = getwinvar(w, '&filetype')
+
+        if l:ft == "goterm"
+            " windowを閉じる
+            exe eval(w)."q"
+
+            " windowを閉じたらwindows番号が変わるため最初から実行する
+            :call <SID>CloseGoRunWindow()
+        else
+            " echo "else"
+        endif
+    endfor
+endfun
 " Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } #################################################
 
 " Plug 'itchyny/vim-parenmatch' ######################################################################
