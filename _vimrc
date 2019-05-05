@@ -186,7 +186,7 @@ inoremap <silent> jj <ESC>l
 "highlight Normal ctermbg=black ctermfg=white
 highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 "highlight CursorLine term=none cterm=none ctermfg=none ctermbg=grey
-nnoremap <Leader>. :<C-u>tabedit $MYVIMRC<CR>
+nnoremap <Leader>. :<C-u>tabedit $HOME/dotfiles/_vimrc<CR>
 :set list lcs=tab:\|\ 
 
 
