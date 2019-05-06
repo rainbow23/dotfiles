@@ -9,6 +9,10 @@ yum -y install sudo
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
   array=( "git" \
           "automake" \
+          "cmake" \
+          "gcc-c++" \
+          "libtool" \
+          "patch" \
           "ncurses-devel" \
           "make" \
           "gcc" \

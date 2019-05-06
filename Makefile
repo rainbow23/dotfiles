@@ -8,6 +8,7 @@ install:
 	@./install_tools.sh
 	@./install_python.sh
 	@./install_vim.sh
+	@./install_nvim.sh
 	@exec /bin/zsh -l
 	@./gitclone_list.sh
 

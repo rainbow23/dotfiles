@@ -962,7 +962,7 @@ augroup go
 augroup END
 
 nnoremap [go]    <Nop>
-nmap     <Leader>go [go]
+nmap     go [go]
 nnoremap <silent> [go]r :call <SID>MyGoRun()<CR>
 nnoremap <silent> [go]b :call <C-u>:GoBuild<CR>
 

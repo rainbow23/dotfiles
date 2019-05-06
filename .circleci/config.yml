@@ -13,3 +13,4 @@ jobs:
       - run: ./install_tools.sh
       - run: ./install_python.sh
       - run: ./install_vim.sh
+      - run: ./install_nvim.sh
