@@ -43,7 +43,6 @@ elif [ $ostype = 'darwin' ]; then
   array=( "tmux" \
           "git" \
           "zsh" \
-          "neovim" \
           "python" \
           "python3" \
           )
