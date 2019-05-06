@@ -5,11 +5,12 @@ deploy:
 
 .PHONY: install
 install:
+	@./install_packages.sh
 	@./install_tools.sh
 	@./install_python.sh
 	@./install_vim.sh
 	@./install_nvim.sh
-	@exec /bin/zsh -l
+	@zsh
 	@./gitclone_list.sh
 
 .PHONY: testbuild

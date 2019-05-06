@@ -12,10 +12,11 @@ if [ ! -f /usr/local/bin/nvim ] ; then
   sudo make install
 
   # vim-plug
-  curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-fi
+  NEOVIM_VIM_PLUG_PATH=$HOME/.local/share/nvim/site/autoload
+  if [ ! -d $NEOVIM_VIM_PLUG_PATH ]; then
+    mkdir -p $NEOVIM_VIM_PLUG_PATH
+  fi
 
-/usr/local/bin/nvim +slient +PlugInstall +qall
-/usr/local/bin/nvim +silent +GoInstallBinaries +qall
-/usr/local/bin/nvim +silent +UpdateRemotePlugin +qall
+  ln -sfn $HOME/.vim/autoload/plug.vim "${NEOVIM_VIM_PLUG_PATH}/plug.vim"
+  nvim +silent +UpdateRemotePlugin +qall
+fi
