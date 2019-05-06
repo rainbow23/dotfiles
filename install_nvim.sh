@@ -16,6 +16,6 @@ if [ ! -f /usr/local/bin/nvim ] ; then
       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
 
-nvim +slient +PlugInstall +qall
-nvim +silent +GoInstallBinaries +qall
-nvim +silent +UpdateRemotePlugin +qall
+/usr/local/bin/nvim +slient +PlugInstall +qall
+/usr/local/bin/nvim +silent +GoInstallBinaries +qall
+/usr/local/bin/nvim +silent +UpdateRemotePlugin +qall
