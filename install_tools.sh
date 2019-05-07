@@ -43,6 +43,7 @@ if [ ! -d $HOME/.fzf ] ; then
   yes | $HOME/.fzf/install
 fi
 
+# zplug
 if [ ! -d $HOME/.zplug ] ; then
   mkdir $HOME/.zplug
   export ZPLUG_HOME=$HOME/.zplug
@@ -50,6 +51,7 @@ if [ ! -d $HOME/.zplug ] ; then
   printf " Install zplug processes are successfully completed \U1F389\n"
 fi
 
+# the_silver_searcher
 SILVER_SEARCHER=$HOME/the_silver_searcher
 if [ ! -f /usr/local/bin/ag ] ; then
   if [ ! -d $SILVER_SEARCHER ]; then
@@ -60,6 +62,7 @@ if [ ! -f /usr/local/bin/ag ] ; then
   sudo make install
 fi
 
+# zsh
 ZSH_COMPLETIONS=$HOME/.zsh-completions
 if [ ! -d $ZSH_COMPLETIONS ] ; then
   mkdir -p $ZSH_COMPLETIONS
@@ -75,6 +78,7 @@ if [ ! -d $COMPLETIONS/docker-fzf-completion ]; then
   git clone --depth 1 https://github.com/kwhrtsk/docker-fzf-completion.git $COMPLETIONS/docker-fzf-completion
 fi
 
+# ctags
 if [[ ! -e /usr/local/bin/ctags ]]; then
   git clone --depth 1 https://github.com/universal-ctags/ctags.git $HOME/ctags
   cd $HOME/ctags

@@ -5,16 +5,19 @@ ostype=$(./ostype.sh)
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
   echo "" && "install python  ostype $ostype ****************************************" && echo ""
 
-  mkdir ~/src
-  cd ~/src
-  wget https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tgz
-  tar zxvf Python-3.5.0.tgz
-  cd Python-3.5.0
-  sudo yum -y install zlib-devel openssl-devel tk-devel
-  sudo ./configure --prefix=/usr/local/Python35
-  sudo make
-  sudo make install
-  sudo chown -R ${USERNAME}:${USERNAME} /usr/local/Python35
+PYTHON_INSTALL_DIR=$HOME/python
+  if [ ! -d $PYTHON_INSTALL_DIR ]; then
+    mkdir $PYTHON_INSTALL_DIR
+    cd $PYTHON_INSTALL_DIR
+    wget https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tgz
+    tar zxvf Python-3.5.0.tgz
+    cd Python-3.5.0
+    sudo yum -y install zlib-devel openssl-devel tk-devel
+    sudo ./configure --prefix=/usr/local/Python35
+    sudo make
+    sudo make install
+    sudo chown -R ${USERNAME}:${USERNAME} /usr/local/Python35
+  fi
 
   if [ -L /usr/local/bin/python3.5 ]; then
       sudo rm -rf /usr/local/bin/python3.5
