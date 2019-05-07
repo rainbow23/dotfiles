@@ -41,6 +41,7 @@ if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
           )
 elif [ $ostype = 'darwin' ]; then
   array=( "tmux" \
+          "cmake" \
           "git" \
           "zsh" \
           "python" \
