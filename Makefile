@@ -11,8 +11,8 @@ install:
 	@exec /bin/zsh -l
 	@./gitclone_list.sh
 
-.PHONY: testbuild
-testbuild:
+.PHONY: publish
+publish:
 	docker-compose build
 
 .PHONY: testrun

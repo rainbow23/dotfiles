@@ -4,9 +4,9 @@ services:
   #   build: ./docker/base
   #   image: rainbow23/base_dotfiles:latest
   #   container_name: rainbow23-dotfiles
-  test:
+  publish:
     build: .
-    image: test_dotfiles:latest
-    container_name: rainbow23-dotfiles-test
+    image: rainbow23/publish_dotfiles:latest
+    container_name: rainbow23-publish-dotfiles
     volumes:
       - ${PWD}:/home/rainbow23/dotfiles
