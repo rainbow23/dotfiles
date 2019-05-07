@@ -14,6 +14,12 @@ fi
 
 /usr/local/go/bin/go get -u github.com/mdempsky/gocode
 
+# ghq
+if [ ! -d $HOME/.ghq ]; then
+  mkdir -p $HOME/.ghq
+  export GHQ_ROOT=$HOME/.ghq
+fi
+
 # tmux
 if [ ! -d $HOME/tmux ]; then
   git clone --depth 1 https://github.com/tmux/tmux.git $HOME/tmux
