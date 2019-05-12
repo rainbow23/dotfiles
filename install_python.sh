@@ -37,3 +37,4 @@ pip3 install --upgrade pip
 pip3 install neovim
 pip3 install --user neovim
 pip3 install pynvim
+pip install tmuxp
