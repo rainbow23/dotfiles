@@ -13,10 +13,10 @@ install:
 	@zsh
 	@./gitclone_list.sh
 
-.PHONY: publish
-publish:
+.PHONY: build
+build:
 	docker-compose build
 
-.PHONY: testrun
-testrun:
-	docker-compose run test
+.PHONY: run
+run:
+	docker-compose run publish

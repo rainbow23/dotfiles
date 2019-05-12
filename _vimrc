@@ -25,7 +25,7 @@ hi Visual ctermfg=DarkBlue
 hi Comment ctermfg=Cyan
 set encoding=utf-8
 
-autocmd BufEnter *.yml,*.sh,*.zsh,_zshrc,_vimrc set shiftwidth=2
+autocmd BufEnter *.yml,*.yaml,*.sh,*.zsh,_zshrc,_vimrc set shiftwidth=2
 autocmd InsertLeave * set nopaste
 
 " autocmd BufRead * if getfsize(expand(@%)) == -1 | :q | endif
