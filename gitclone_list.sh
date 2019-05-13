@@ -4,6 +4,7 @@ gitname=("rainbow23/easy-oneliner.git" \
 "rainbow23/enhancd.git"
 "rainbow23/study_golang.git" \
 "rainbow23/vim-anzu.git" \
+"rainbow23/vim-snippets" \
 "peco/peco.git" \
 "junegunn/fzf.git" \
 "monochromegane/the_platinum_searcher.git" \

@@ -253,7 +253,7 @@ if has('python3')
 endif
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
-Plug 'honza/vim-snippets'
+Plug 'rainbow23/vim-snippets'
 Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'fatih/vim-go', { 'tag': 'v1.19', 'do': ':GoUpdateBinaries' }
