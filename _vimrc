@@ -856,7 +856,7 @@ nmap [easymotion]L <Plug>(easymotion-overwin-line)
 " JK motions: Line motions
 map [easymotion]l <Plug>(easymotion-lineforward)
 map [easymotion]n <Plug>(easymotion-j)
-" map [easymotion]k <Plug>(easymotion-k)
+map [easymotion]K <Plug>(easymotion-k)
 map [easymotion]h <Plug>(easymotion-linebackward)
 
 " Move to word
