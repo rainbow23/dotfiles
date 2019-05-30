@@ -19,6 +19,8 @@ get_os_distribution() {
     elif [ -e /etc/arch-release ]; then
         # Arch Linux
         distri_name="arch"
+    elif [ cat  /etc/alpine-release ]; then
+        distri_name="alpine"
     elif echo ${OSTYPE} | grep -q "darwin"; then
         # Mac
         distri_name="darwin"
