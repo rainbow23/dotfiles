@@ -162,14 +162,10 @@ nnoremap ns :<C-u>nohlsearch<CR>
 nnoremap <silent> <C-e> <C-e>j
 "進む 画面半分
 nnoremap <silent> <C-d> <C-d>zz
-"10行進む
-nnoremap <Leader>j 10<C-e>10j
 "進む 画面1ページ分
 nnoremap <silent> <C-f> <C-f>zz
 "戻る 一行
 nnoremap <silent> <C-y> <C-y>k
-"10行戻る
-nnoremap <Leader>k 10<C-y>10k
 "戻る 画面半分
 nnoremap <silent> <C-u> <C-u>zz
 "戻る 画面1ページ分
@@ -270,6 +266,7 @@ Plug 'tpope/vim-repeat'
 " 対応する括弧
 Plug 'itchyny/vim-parenmatch'
 Plug 'itchyny/vim-cursorword'
+Plug 'yuttie/comfortable-motion.vim'
 call plug#end()
 
 "FZF start ####################################################################
@@ -985,3 +982,18 @@ endfun
 " Plug 'itchyny/vim-parenmatch' ######################################################################
 let g:loaded_matchparen = 1
 " Plug 'itchyny/vim-parenmatch' ######################################################################
+
+" Plug 'yuttie/comfortable-motion.vim' ###############################################################
+let g:comfortable_motion_no_default_key_mappings = 1
+let g:comfortable_motion_friction = 200.0
+let g:comfortable_motion_air_drag = 4.0
+
+let g:comfortable_motion_impulse_multiplier = 1.5  " Feel free to increase/decrease this value.
+" nnoremap <Leader>j :call comfortable_motion#flick(100)<CR>
+nnoremap <silent> <Leader>j :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 2)<CR>
+nnoremap <silent> <Leader>k :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -2)<CR>
+nnoremap <silent> <C-d> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 2)<CR>
+nnoremap <silent> <C-u> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -2)<CR>
+nnoremap <silent> <C-f> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 4)<CR>
+nnoremap <silent> <C-b> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -4)<CR>
+" Plug 'yuttie/comfortable-motion.vim' ###############################################################
