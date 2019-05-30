@@ -268,6 +268,7 @@ Plug 'leafcage/yankround.vim'
 Plug 'ujihisa/unite-colorscheme'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
 " 対応する括弧
 Plug 'itchyny/vim-parenmatch'
 Plug 'itchyny/vim-cursorword'
