@@ -6,9 +6,12 @@ ARG WORKSPACE=/home/rainbow23
 ARG UID=1000
 ARG GID=1000
 ARG SHELL=/bin/sh
+ARG DOTFILES="${WORKSPACE}/dotfiles"
 
 RUN apk add --no-cache sudo \
-  && mkdir -p "${WORKSPACE}" \
+  && mkdir -p "${WORKSPACE}/.config" \
+##   && mkdir -p "${WORKSPACE}" \
+  && mkdir -p "${DOTFILES}" \
   && echo "${USERNAME}:x:${UID}:${GID}:${USERNAME},,,:${WORKSPACE}:${SHELL}" \
   >> /etc/passwd \
   && echo "${USERNAME}::17032:0:99999:7:::" \
@@ -17,7 +20,7 @@ RUN apk add --no-cache sudo \
   > "/etc/sudoers.d/${USERNAME}" \
   && chmod 0440 "/etc/sudoers.d/${USERNAME}" \
   && echo "${GROUPNAME}:x:${GID}:${USERNAME}" >> /etc/group \
-  && chown "${UID}":"${GID}" "${WORKSPACE}"
+  && chown -R "${UID}":"${GID}" "${WORKSPACE}"
 
 WORKDIR $WORKSPACE
 
@@ -25,9 +28,6 @@ USER $USERNAME
 
 # COPY plug.vim ${WORKSPACE}/.vim/autoload/plug.vim
 # COPY plugged ${WORKSPACE}/.vim/plugged/
-
-ARG DOTFILES="${WORKSPACE}/dotfiles"
-RUN mkdir "${DOTFILES}"
 
 COPY _vimrc ${DOTFILES}/_vimrc
 COPY _zshrc ${DOTFILES}/_zshrc
@@ -39,16 +39,24 @@ COPY mru.sh ${DOTFILES}/mru.sh
 COPY source.sh ${DOTFILES}/source.sh
 COPY symlink.sh ${DOTFILES}/symlink.sh
 COPY tmux-vim-select-pane.sh ${DOTFILES}/tmux-vim-select-pane.sh
+COPY ctags_gitfiles ${DOTFILES}/ctags_gitfiles
 
-RUN ${DOTFILES}/symlink.sh
+
+# RUN ${DOTFILES}/symlink.sh
+RUN ln -sfn ${DOTFILES}/_vimrc $HOME/.vimrc \
+ && ln -sfn ${DOTFILES}/_bashrc $HOME/.bashrc \
+ && ln -sfn ${DOTFILES}/_zshrc $HOME/.zshrc \
+ && ln -sfn ${DOTFILES}/_tmux.conf $HOME/.tmux.conf
+
+RUN ${DOTFILES}/install_tools.sh
 
 # COPY fzf-default.sh ${WORKSPACE}/.vim/fzf-default
 # RUN sudo mv /root/.fzf ${WORKSPACE}/.vim/
 
-RUN sudo chown -R "${UID}":"${GID}" .vimrc .vim/
+# RUN sudo chown -R "${UID}":"${GID}" .vimrc .vim/
 # RUN ~/.vim/.fzf/install
 
-RUN mkdir -p .vim/backups .vim/undo
+# RUN mkdir -p .vim/backups .vim/undo
 # ENV FZF_DEFAULT_COMMAND ~/.vim/fzf-default
 
 ENTRYPOINT ["/bin/zsh"]
