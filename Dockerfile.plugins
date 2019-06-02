@@ -1,4 +1,3 @@
-/* FROM rainbow23/vim */
 FROM rainbow23/vim:latest
 
 ARG USERNAME=rainbow23
@@ -24,8 +23,8 @@ WORKDIR $WORKSPACE
 
 USER $USERNAME
 
-/* COPY plug.vim ${WORKSPACE}/.vim/autoload/plug.vim */
-/* COPY plugged ${WORKSPACE}/.vim/plugged/ */
+# COPY plug.vim ${WORKSPACE}/.vim/autoload/plug.vim
+# COPY plugged ${WORKSPACE}/.vim/plugged/
 
 ARG DOTFILES="${WORKSPACE}/dotfiles"
 RUN mkdir "${DOTFILES}"
@@ -43,8 +42,8 @@ COPY tmux-vim-select-pane.sh ${DOTFILES}/tmux-vim-select-pane.sh
 
 RUN ${DOTFILES}/symlink.sh
 
-/* COPY fzf-default.sh ${WORKSPACE}/.vim/fzf-default */
-/* RUN sudo mv /root/.fzf ${WORKSPACE}/.vim/ */
+# COPY fzf-default.sh ${WORKSPACE}/.vim/fzf-default
+# RUN sudo mv /root/.fzf ${WORKSPACE}/.vim/
 
 RUN sudo chown -R "${UID}":"${GID}" .vimrc .vim/
 # RUN ~/.vim/.fzf/install
