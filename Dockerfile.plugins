@@ -1,0 +1,55 @@
+/* FROM rainbow23/vim */
+FROM rainbow23/vim:latest
+
+ARG USERNAME=rainbow23
+ARG GROUPNAME=rainbow23
+ARG WORKSPACE=/home/rainbow23
+ARG UID=1000
+ARG GID=1000
+ARG SHELL=/bin/sh
+
+RUN apk add --no-cache sudo \
+  && mkdir -p "${WORKSPACE}" \
+  && echo "${USERNAME}:x:${UID}:${GID}:${USERNAME},,,:${WORKSPACE}:${SHELL}" \
+  >> /etc/passwd \
+  && echo "${USERNAME}::17032:0:99999:7:::" \
+  >> /etc/shadow \
+  && echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" \
+  > "/etc/sudoers.d/${USERNAME}" \
+  && chmod 0440 "/etc/sudoers.d/${USERNAME}" \
+  && echo "${GROUPNAME}:x:${GID}:${USERNAME}" >> /etc/group \
+  && chown "${UID}":"${GID}" "${WORKSPACE}"
+
+WORKDIR $WORKSPACE
+
+USER $USERNAME
+
+/* COPY plug.vim ${WORKSPACE}/.vim/autoload/plug.vim */
+/* COPY plugged ${WORKSPACE}/.vim/plugged/ */
+
+ARG DOTFILES="${WORKSPACE}/dotfiles"
+RUN mkdir "${DOTFILES}"
+
+COPY _vimrc ${DOTFILES}/_vimrc
+COPY _zshrc ${DOTFILES}/_zshrc
+COPY alias.sh ${DOTFILES}/alias.sh
+COPY _tmux.conf ${DOTFILES}/_tmux.conf
+COPY fzf.sh ${DOTFILES}/fzf.sh
+COPY install_tools.sh ${DOTFILES}/install_tools.sh
+COPY mru.sh ${DOTFILES}/mru.sh
+COPY source.sh ${DOTFILES}/source.sh
+COPY symlink.sh ${DOTFILES}/symlink.sh
+COPY tmux-vim-select-pane.sh ${DOTFILES}/tmux-vim-select-pane.sh
+
+RUN ${DOTFILES}/symlink.sh
+
+/* COPY fzf-default.sh ${WORKSPACE}/.vim/fzf-default */
+/* RUN sudo mv /root/.fzf ${WORKSPACE}/.vim/ */
+
+RUN sudo chown -R "${UID}":"${GID}" .vimrc .vim/
+# RUN ~/.vim/.fzf/install
+
+RUN mkdir -p .vim/backups .vim/undo
+# ENV FZF_DEFAULT_COMMAND ~/.vim/fzf-default
+
+ENTRYPOINT ["/bin/zsh"]
