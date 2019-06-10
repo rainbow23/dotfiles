@@ -37,6 +37,12 @@ if [[ ! -d $TMUX_PLUGIN ]]; then
   git clone https://github.com/tmux-plugins/tpm $TMUX_PLUGIN
 fi
 
+
+if [ ! -f /usr/local/bin/diff-so-fancy ] ; then
+  curl -L https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -o /usr/local/bin/diff-so-fancy \
+  && chmod +x /usr/local/bin/diff-so-fancy
+fi
+
 # fzf
 if [ ! -d $HOME/.fzf ] ; then
   git clone --depth 1 https://github.com/junegunn/fzf.git $HOME/.fzf

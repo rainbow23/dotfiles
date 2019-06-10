@@ -1,18 +1,19 @@
 #!/bin/sh
 source ~/.zplug/init.zsh
 
-git config --global color.ui true
-git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
-git config --global color.diff-highlight.oldNormal    "red bold"
-git config --global color.diff-highlight.oldHighlight "red bold 52"
-git config --global color.diff-highlight.newNormal    "green bold"
-git config --global color.diff-highlight.newHighlight "green bold 22"
-git config --global color.diff.meta       "yellow"
-git config --global color.diff.frag       "magenta bold"
-git config --global color.diff.commit     "yellow bold"
-git config --global color.diff.old        "red bold"
-git config --global color.diff.new        "green bold"
-git config --global color.diff.whitespace "red reverse"
+if [ -f /usr/local/bin/diff-so-fancy ] ; then
+  git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+  git config --global color.diff-highlight.oldNormal    "red bold"
+  git config --global color.diff-highlight.oldHighlight "red bold 52"
+  git config --global color.diff-highlight.newNormal    "green bold"
+  git config --global color.diff-highlight.newHighlight "green bold 22"
+  git config --global color.diff.meta       "yellow"
+  git config --global color.diff.frag       "magenta bold"
+  git config --global color.diff.commit     "yellow bold"
+  git config --global color.diff.old        "red bold"
+  git config --global color.diff.new        "green bold"
+  git config --global color.diff.whitespace "red reverse"
+fi
 
 #ctags settings
 git config --global init.templatedir '~/.git_template'
@@ -43,9 +44,9 @@ fi
 
 zplug "mollifier/anyframe", at:4c23cb60
 zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
-zplug "so-fancy/diff-so-fancy", \
-    use:diff-so-fancy, \
-    as:command
+# zplug "so-fancy/diff-so-fancy", \
+#     use:diff-so-fancy, \
+#     as:command
 zplug "b4b4r07/zsh-gomi", \
     as:command, \
     use:bin/gomi, \
