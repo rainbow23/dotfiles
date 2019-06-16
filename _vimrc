@@ -26,7 +26,9 @@ hi Comment ctermfg=Cyan
 set encoding=utf-8
 
 autocmd BufEnter *.yml,*.yaml,*.sh,*.zsh,_zshrc,_vimrc set shiftwidth=2
-autocmd InsertLeave * set nopaste
+autocmd BufEnter *.php set noexpandtab " Use tabs, not spaces
+autocmd BufEnter *.php set tabstop=4
+" %retab!            "spaceをtabに変換
 
 " autocmd BufRead * if getfsize(expand(@%)) == -1 | :q | endif
 
