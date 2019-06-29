@@ -269,6 +269,8 @@ Plug 'tpope/vim-repeat'
 Plug 'itchyny/vim-parenmatch'
 Plug 'itchyny/vim-cursorword'
 Plug 'yuttie/comfortable-motion.vim'
+Plug 'mileszs/ack.vim'
+Plug 't9md/vim-textmanip'
 call plug#end()
 
 "FZF start ####################################################################
@@ -999,3 +1001,16 @@ nnoremap <silent> <C-u> :call comfortable_motion#flick(g:comfortable_motion_impu
 nnoremap <silent> <C-f> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 4)<CR>
 nnoremap <silent> <C-b> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -4)<CR>
 " Plug 'yuttie/comfortable-motion.vim' ###############################################################
+
+" Plug 'mileszs/ack.vim' #############################################################################
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
+" Plug 'mileszs/ack.vim' #############################################################################
+
+" Plug 't9md/vim-textmanip' ##########################################################################
+xmap <C-j> <Plug>(textmanip-move-down)
+xmap <C-k> <Plug>(textmanip-move-up)
+xmap <C-h> <Plug>(textmanip-move-left)
+xmap <C-l> <Plug>(textmanip-move-right)
+" Plug 't9md/vim-textmanip' ##########################################################################
