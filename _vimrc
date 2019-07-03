@@ -271,6 +271,7 @@ Plug 'itchyny/vim-cursorword'
 Plug 'yuttie/comfortable-motion.vim'
 Plug 'mileszs/ack.vim'
 Plug 't9md/vim-textmanip'
+Plug 'thinca/vim-qfreplace'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1014,3 +1015,7 @@ xmap <C-k> <Plug>(textmanip-move-up)
 xmap <C-h> <Plug>(textmanip-move-left)
 xmap <C-l> <Plug>(textmanip-move-right)
 " Plug 't9md/vim-textmanip' ##########################################################################
+
+" Plug 'thinca/vim-qfreplace' ########################################################################
+nnoremap qfr :Qfreplace<CR>
+" Plug 'thinca/vim-qfreplace' ########################################################################
