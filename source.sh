@@ -85,7 +85,7 @@ export FZF_COMPLETION_TRIGGER="," # default: '**'
 # zplug check returns true if the given repository exists
 if zplug check b4b4r07/enhancd; then
     # setting if enhancd is available
-    export ENHANCD_FILTER=fzf-tmux
+    export ENHANCD_FILTER=fzy:fzf
 fi
 
 # zplug check returns true if all packages are installed
