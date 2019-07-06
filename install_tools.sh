@@ -15,13 +15,13 @@ fi
 /usr/local/go/bin/go get -u github.com/mdempsky/gocode
 
 # ghq
-if [ ! -d $HOME/.ghq ]; then
+if [ ! -f /usr/local/bin/ghq ]; then
   mkdir -p $HOME/.ghq
   export GHQ_ROOT=$HOME/.ghq
 fi
 
 # tmux
-if [ ! -d $HOME/tmux ]; then
+if [ ! -f /usr/local/bin/tmux ]; then
   git clone --depth 1 https://github.com/tmux/tmux.git $HOME/tmux
   cd $HOME/tmux
   # checkout latest tag
@@ -44,7 +44,7 @@ if [ ! -f /usr/local/bin/diff-so-fancy ] ; then
 fi
 
 # fzf
-if [ ! -d $HOME/.fzf ] ; then
+if [ ! -f $HOME/.fzf/bin/fzf ] ; then
   git clone --depth 1 https://github.com/junegunn/fzf.git $HOME/.fzf
   yes | $HOME/.fzf/install
 fi
