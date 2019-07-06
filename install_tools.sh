@@ -39,8 +39,8 @@ fi
 
 
 if [ ! -f /usr/local/bin/diff-so-fancy ] ; then
-  curl -L https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -o /usr/local/bin/diff-so-fancy \
-  && chmod +x /usr/local/bin/diff-so-fancy
+  sudo curl -L https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -o /usr/local/bin/diff-so-fancy \
+  && sudo chmod +x /usr/local/bin/diff-so-fancy
 fi
 
 # fzf
