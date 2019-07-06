@@ -818,37 +818,26 @@ let g:EasyMotion_smartcase = 1
 
 nnoremap [easymotion]    <Nop>
 nmap <Leader> [easymotion]
-
 map [easymotion] <Plug>(easymotion-prefix)
-
-" <Leader>f{char} to move to {char}
-" map  [easymotion]f <Plug>(easymotion-bd-f)
-" nmap [easymotion]f <Plug>(easymotion-overwin-f)
-
-" Turn on case insensitive feature
-
 " s{char}{char} to move to {char}{char}
 " Jump to anywhere you want with minimal keystrokes, with just one key binding.
 " `s{char}{label}`
-"nmap s <Plug>(easymotion-overwin-f)
-" or
 " `s{char}{char}{label}`
 " Need one more keystroke, but on average, it may be more comfortable.
-"nmap s <Plug>(easymotion-overwin-f2)
+nmap s <Plug>(easymotion-s2)
+xmap s <Plug>(easymotion-s2)
 
-" Gif config
-"nmap s <Plug>(easymotion-s2)
-"nmap t <Plug>(easymotion-t2)
+" カーソルより下の行を検索
+nmap t <Plug>(easymotion-t2)
 
-" Gif config
-"map  / <Plug>(easymotion-sn)
-"omap / <Plug>(easymotion-tn)
+" surround.vimと被らないように
+omap z <Plug>(easymotion-s2)
 
-" These `n` & `N` mappings are options. You do not have to map `n` & `N` to EasyMotion.
-" Without these mappings, `n` & `N` works fine. (These mappings just provide
-" different highlight method and have some other features )
-"map  n <Plug>(easymotion-next)
-"map  N <Plug>(easymotion-prev)
+nmap / <Plug>(easymotion-sn)
+omap / <Plug>(easymotion-tn)
+" below optin does not work
+" easymotion-next
+" easymotion-prev
 
 " Move to line
 map [easymotion]L <Plug>(easymotion-bd-jk)
@@ -860,9 +849,7 @@ map [easymotion]n <Plug>(easymotion-j)
 map [easymotion]K <Plug>(easymotion-k)
 map [easymotion]h <Plug>(easymotion-linebackward)
 
-" Move to word
-"map  [easymotion]w <Plug>(easymotion-bd-w)
-"nmap [easymotion]w <Plug>(easymotion-overwin-w)
+map <Leader><Leader> <Plug>(easymotion-repeat)
 "Plug 'easymotion/vim-easymotion' end  ##################################################
 
 "Plug 'elzr/vim-json' start ##################################################
