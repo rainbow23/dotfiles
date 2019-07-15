@@ -833,8 +833,8 @@ nmap t <Plug>(easymotion-t2)
 " surround.vimと被らないように
 omap z <Plug>(easymotion-s2)
 
-nmap / <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-tn)
+nmap g/ <Plug>(easymotion-sn)
+omap g/ <Plug>(easymotion-tn)
 " below optin does not work
 " easymotion-next
 " easymotion-prev
