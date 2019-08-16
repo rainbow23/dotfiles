@@ -9,6 +9,7 @@ set ignorecase
 set noshowmode
 set tags+=.git/tags
 set pumheight=10
+set splitright
 " 開いたファイルにワーキングディレクトリを移動する
 if 1 == exists("+autochdir")
     set autochdir
