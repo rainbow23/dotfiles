@@ -30,8 +30,6 @@ autocmd BufEnter *.php set noexpandtab " Use tabs, not spaces
 autocmd BufEnter *.php set tabstop=4
 " %retab!            "spaceをtabに変換
 
-" autocmd BufRead * if getfsize(expand(@%)) == -1 | :q | endif
-
 "ヤンクをクリップボードに保存　kana/vim-fakeclipと連動
 set clipboard=unnamed
 " タブ入力を複数の空白入力に置き換える
@@ -66,7 +64,9 @@ nnoremap tl :tablast<CR>
 
 nnoremap tmk :tabmove +1<CR>
 nnoremap tmj :tabmove -1<CR>
-noremap ter :terminal<CR>
+
+noremap ter :100VTerm<CR>
+noremap tert :TTerm<CR>
 " 次の行からインサードモードで始める
 nnoremap nl $a<CR>
 inoremap nl <ESC>$a<CR>
@@ -272,6 +272,7 @@ Plug 'yuttie/comfortable-motion.vim'
 Plug 'mileszs/ack.vim'
 Plug 't9md/vim-textmanip'
 Plug 'thinca/vim-qfreplace'
+Plug 'vimlab/split-term.vim'
 call plug#end()
 
 "FZF start ####################################################################
