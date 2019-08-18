@@ -955,21 +955,30 @@ nnoremap <silent> [go]r :call <SID>MyGoRun()<CR>
 nnoremap <silent> [go]b :call <C-u>:GoBuild<CR>
 
 fun! s:MyGoRun()
-    call <SID>CloseAllGoRunWindow()
+    let l:winWidth = winwidth("%")
+    let l:closeWinNum = s:CloseAllGoRunWindow()
+
     :set splitright
     :GoRun<CR>
     :set nosplitright
+
+    if l:closeWinNum >= 1
+        exe "vertical resize" . str2nr(l:winWidth)
+    endif
 endfun
 
 fun! s:CloseAllGoRunWindow()
+  let l:closeNum = 0
     for w in range(1, winnr('$'))
         if getwinvar(w, '&filetype') == "goterm"
             " windowを閉じる
             exe eval(w)."q"
+            let l:closeNum += 1
             " windowを閉じたらwindows番号が変わるため最初から実行する
             :call <SID>CloseAllGoRunWindow()
         endif
     endfor
+    return l:closeNum
 endfun
 " Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } #################################################
 
