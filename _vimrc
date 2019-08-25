@@ -826,8 +826,8 @@ map [easymotion] <Plug>(easymotion-prefix)
 " `s{char}{label}`
 " `s{char}{char}{label}`
 " Need one more keystroke, but on average, it may be more comfortable.
-nmap s <Plug>(easymotion-s2)
-xmap s <Plug>(easymotion-s2)
+nmap <Leader>s <Plug>(easymotion-s2)
+xmap <Leader>s <Plug>(easymotion-s2)
 
 " カーソルより下の行を検索
 nmap t <Plug>(easymotion-t2)
