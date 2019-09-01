@@ -620,25 +620,43 @@ let g:multi_cursor_skip_key='<C-x>'
 let g:multi_cursor_quit_key='<Esc>'
 let g:multi_cursor_start_key='<C-n>'
 let g:multi_cursor_start_word_key='g<C-n>'
+let g:enable_pair_map = 1
 
 " Disable Deoplete when selecting multiple cursors starts
 function! Multiple_cursors_before()
-    if exists('*deoplete#disable')
-        exe 'call deoplete#disable()'
-    elseif exists(':NeoCompleteLock') == 2
-        exe 'NeoCompleteLock'
-    endif
+  let g:enable_pair_map = 0
+  if exists('*deoplete#disable')
+    exe 'call deoplete#disable()'
+  elseif exists(':NeoCompleteLock') == 2
+    exe 'NeoCompleteLock'
+  endif
 endfunction
 
 " Enable Deoplete when selecting multiple cursors ends
 function! Multiple_cursors_after()
-    if exists('*deoplete#toggle')
-        exe 'call deoplete#toggle()'
-    elseif exists(':NeoCompleteUnlock') == 2
-        exe 'NeoCompleteUnlock'
-    endif
+  let g:enable_pair_map = 1
+  if exists('*deoplete#toggle')
+    exe 'call deoplete#toggle()'
+  elseif exists(':NeoCompleteUnlock') == 2
+    exe 'NeoCompleteUnlock'
+  endif
 endfunction
 
+function! ConditionalPairMap(open, close)
+  if g:enable_pair_map == 0
+    return a:open
+  endif
+
+  let line = getline('.')
+  let col = col('.')
+  return a:open . a:close . repeat("\<left>", len(a:close))
+endfunction
+
+inoremap <expr> " ConditionalPairMap('"', '"')
+inoremap <expr> ' ConditionalPairMap("'", "'")
+inoremap <expr> ( ConditionalPairMap('(', ')')
+inoremap <expr> { ConditionalPairMap('{', '}')
+inoremap <expr> [ ConditionalPairMap('[', ']')
 "vim-multiple-cursors end ######################################################
 
 "quickrun start ################################################################
