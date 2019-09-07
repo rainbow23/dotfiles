@@ -274,6 +274,7 @@ Plug 'mileszs/ack.vim'
 Plug 't9md/vim-textmanip'
 Plug 'thinca/vim-qfreplace'
 Plug 'vimlab/split-term.vim'
+Plug 'vim-scripts/YankRing.vim'
 call plug#end()
 
 "FZF start ####################################################################
