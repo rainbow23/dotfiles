@@ -3,7 +3,7 @@
 alias hsn='hostname'
 alias ez='exec zsh -l'
 alias vim='nvim'
-
+alias et='exit'
 ## -------------------------------------
 # docker operation
 # -------------------------------------
