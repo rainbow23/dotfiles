@@ -839,16 +839,13 @@ let g:clever_f_smart_case = 1
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
 let g:EasyMotion_smartcase = 1
 
+hi EasyMotionTarget ctermbg=none ctermfg=green
+
 nnoremap [easymotion]    <Nop>
 nmap <Leader> [easymotion]
 map [easymotion] <Plug>(easymotion-prefix)
-" s{char}{char} to move to {char}{char}
-" Jump to anywhere you want with minimal keystrokes, with just one key binding.
-" `s{char}{label}`
-" `s{char}{char}{label}`
-" Need one more keystroke, but on average, it may be more comfortable.
-nmap <Leader>s <Plug>(easymotion-s2)
-xmap <Leader>s <Plug>(easymotion-s2)
+map  <Leader><Leader> <Plug>(easymotion-bd-w)
+nmap <Leader><Leader> <Plug>(easymotion-overwin-w)
 
 " カーソルより下の行を検索
 nmap t <Plug>(easymotion-t2)
@@ -871,8 +868,6 @@ map [easymotion]l <Plug>(easymotion-lineforward)
 map [easymotion]n <Plug>(easymotion-j)
 map [easymotion]K <Plug>(easymotion-k)
 map [easymotion]h <Plug>(easymotion-linebackward)
-
-map <Leader><Leader> <Plug>(easymotion-repeat)
 "Plug 'easymotion/vim-easymotion' end  ##################################################
 
 "Plug 'elzr/vim-json' start ##################################################
