@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ostype=$(./ostype.sh)
+ostype=$($HOME/dotfiles/ostype.sh)
 
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
   echo "" && "install python  ostype $ostype ****************************************" && echo ""
