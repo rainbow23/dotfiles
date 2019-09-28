@@ -2,7 +2,11 @@
 
 alias hsn='hostname'
 alias ez='exec zsh -l'
-alias vim='nvim'
+
+if [ -f /usr/local/bin/nvim ] ; then
+  alias vim='/usr/local/bin/nvim'
+fi
+
 alias et='exit'
 ## -------------------------------------
 # docker operation

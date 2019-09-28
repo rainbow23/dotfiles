@@ -38,6 +38,7 @@ if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
           "docker-compose" \
           "tree" \
           "strace" \
+          "gettext" \
           )
 elif [ $ostype = 'darwin' ]; then
   array=( "tmux" \
