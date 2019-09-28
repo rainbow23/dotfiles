@@ -30,32 +30,17 @@ ENV LANG="ja_JP.UTF-8" \
     LANGUAGE="ja_JP:ja" \
     LC_ALL="ja_JP.UTF-8"
 
-RUN yum -y install epel-release \
-automake \
-ncurses-devel \
-make \
-gcc \
-curl \
-lua-devel \
-perl-ExtUtils-Embed \
-zlib-devel \
-bzip2 \
-bzip2-devel \
-readline-devel \
-sqlite \
-sqlite-devel \
-openssl-devel \
-libevent-devel \
-git \
-zsh \
-xz xz-devel \
-wget \
-unzip \
-docker \
-docker-compose \
-tree; yum clean all
+RUN yum -y install epel-release git
+RUN bash -c "$(curl -L https://raw.githubusercontent.com/rainbow23/dotfiles/develop/install_packages.sh)"
 
 USER ${USERNAME}
+
+RUN cd /home/rainbow23/ && mkdir dotfiles
+RUN git clone --depth 1 https://github.com/rainbow23/dotfiles.git /home/rainbow23/dotfiles/
+RUN /home/rainbow23/dotfiles/install_python.sh
+RUN /home/rainbow23/dotfiles/install_vim.sh
+RUN /home/rainbow23/dotfiles/install_nvim.sh
+
 WORKDIR /home/${USERNAME}/
 
 CMD ["zsh"]
