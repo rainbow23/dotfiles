@@ -42,6 +42,16 @@ if [ -d $HOME/.fzf ] ; then
   fi
 fi
 
+## -------------------------------------
+# easy-oneliner
+## -------------------------------------
+if [ ! -d $HOME/.easy-oneliner ] ; then
+  git clone https://github.com/rainbow23/easy-oneliner.git ~/.easy-oneliner
+  source $HOME/.easy-oneliner/easy-oneliner.zsh
+else
+  source $HOME/.easy-oneliner/easy-oneliner.zsh
+fi
+
 zplug "mollifier/anyframe", at:4c23cb60
 zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
 # zplug "so-fancy/diff-so-fancy", \
@@ -53,7 +63,6 @@ zplug "b4b4r07/zsh-gomi", \
     on:junegunn/fzf
 zplug "nnao45/zsh-kubectl-completion"
 zplug "b4b4r07/enhancd", use:init.sh
-zplug "rainbow23/easy-oneliner", use:easy-oneliner.zsh, if:"which fzf"
 zplug "b4b4r07/cli-finder", use:cli-finder.zsh, if:"which fzf"
 # Set the priority when loading
 # e.g., zsh-syntax-highlighting must be loaded
