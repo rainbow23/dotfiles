@@ -69,3 +69,7 @@ alias vim='/usr/local/bin/vim'
 vim  +PlugInstall +qall
 vim  +GoInstallBinaries +qall
 vim  +UpdateRemotePlugin +qall
+
+if [ -d $vimpath ]; then
+  rm -rf $vimpath
+fi

@@ -20,3 +20,7 @@ if [ ! -f /usr/local/bin/nvim ] ; then
   ln -sfn $HOME/.vim/autoload/plug.vim "${NEOVIM_VIM_PLUG_PATH}/plug.vim"
   nvim +silent +UpdateRemotePlugin +qall
 fi
+
+if [ -d $NEOVIM_PATH ]; then
+  rm -rf $NEOVIM_PATH
+fi
