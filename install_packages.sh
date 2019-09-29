@@ -26,8 +26,7 @@ if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
           "sqlite" \
           "sqlite-devel"
           "openssl-devel" \
-          "libevent-devel"
-          "git" \
+          "libevent-devel" \
           "zsh" \
           "pcre-devel" \
           "xz" \
