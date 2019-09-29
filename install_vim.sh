@@ -71,5 +71,5 @@ vim  +GoInstallBinaries +qall
 vim  +UpdateRemotePlugin +qall
 
 if [ -d $vimpath ]; then
-  rm -rf $vimpath
+  sudo rm -rf $vimpath
 fi

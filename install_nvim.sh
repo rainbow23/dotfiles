@@ -22,5 +22,5 @@ if [ ! -f /usr/local/bin/nvim ] ; then
 fi
 
 if [ -d $NEOVIM_PATH ]; then
-  rm -rf $NEOVIM_PATH
+  sudo rm -rf $NEOVIM_PATH
 fi
