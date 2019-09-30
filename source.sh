@@ -41,6 +41,7 @@ if [ -d $HOME/.fzf ] ; then
       [ -f ~/.fzf.bash ] && source ~/.fzf.bash;
   fi
 fi
+export FZF_COMPLETION_TRIGGER="," # default: '**'
 
 ## -------------------------------------
 # easy-oneliner
@@ -51,6 +52,22 @@ if [ ! -d $HOME/.easy-oneliner ] ; then
 else
   source $HOME/.easy-oneliner/easy-oneliner.zsh
 fi
+
+
+## -------------------------------------
+# zsh-completions
+## -------------------------------------
+COMPLETIONS=$HOME/.zsh/completions
+if [ -e $COMPLETIONS ]; then
+  fpath=($COMPLETIONS $fpath)
+fi
+source $COMPLETIONS/docker-fzf-completion/docker-fzf.zsh
+
+
+## -------------------------------------
+# zplug
+## -------------------------------------
+source ~/.zplug/init.zsh
 
 zplug "mollifier/anyframe", at:4c23cb60
 zplug "junegunn/fzf", as:command, use:bin/fzf-tmux

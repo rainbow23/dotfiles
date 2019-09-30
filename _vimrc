@@ -954,7 +954,7 @@ nmap k <Plug>(accelerated_jk_gk)
 
 " Plug 'Shougo/deol.nvim'#############################################################################
 nnoremap dl :<C-u>Deol<CR>
-tnoremap <ESC>   <C-\><C-n>
+noremap <ESC>   <C-\><C-n>
 " Plug 'Shougo/deol.nvim'#############################################################################
 
 " Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } #################################################
