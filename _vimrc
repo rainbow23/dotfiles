@@ -271,11 +271,11 @@ Plug 'itchyny/vim-parenmatch'
 Plug 'itchyny/vim-cursorword'
 Plug 'yuttie/comfortable-motion.vim'
 Plug 'mileszs/ack.vim'
-Plug 't9md/vim-textmanip'
 Plug 'thinca/vim-qfreplace'
 Plug 'vimlab/split-term.vim'
 Plug 'vim-scripts/YankRing.vim'
 Plug 'jiangmiao/auto-pairs'
+Plug 'matze/vim-move'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1025,13 +1025,12 @@ if executable('ag')
 endif
 " Plug 'mileszs/ack.vim' #############################################################################
 
-" Plug 't9md/vim-textmanip' ##########################################################################
-xmap <C-j> <Plug>(textmanip-move-down)
-xmap <C-k> <Plug>(textmanip-move-up)
-xmap <C-h> <Plug>(textmanip-move-left)
-xmap <C-l> <Plug>(textmanip-move-right)
-" Plug 't9md/vim-textmanip' ##########################################################################
-
 " Plug 'thinca/vim-qfreplace' ########################################################################
 nnoremap qfr :Qfreplace<CR>
 " Plug 'thinca/vim-qfreplace' ########################################################################
+
+" Plug 'matze/vim-move' ###############################################################################
+let g:move_map_keys = 0
+vmap <C-j> <Plug>MoveBlockDown
+vmap <C-k> <Plug>MoveBlockUp
+" Plug 'matze/vim-move' ###############################################################################
