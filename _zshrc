@@ -29,7 +29,7 @@ export MANPAGER="less -"
 setopt correct
 
 # ビープを鳴らさない
-setopt nobeep
+setopt no_beep
 
 ## 色を使う
 setopt prompt_subst
