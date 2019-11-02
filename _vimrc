@@ -276,6 +276,7 @@ Plug 'vimlab/split-term.vim'
 Plug 'vim-scripts/YankRing.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'matze/vim-move'
+Plug 'mcchrish/nnn.vim'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1034,3 +1035,12 @@ let g:move_map_keys = 0
 vmap <C-j> <Plug>MoveBlockDown
 vmap <C-k> <Plug>MoveBlockUp
 " Plug 'matze/vim-move' ###############################################################################
+
+" Plug 'mcchrish/nnn.vim' #############################################################################
+let g:nnn#set_default_mappings = 0
+nnoremap <silent> <leader>nn :NnnPicker<CR>
+let g:nnn#action = {
+      \ '<c-t>': 'tab split',
+      \ '<c-x>': 'split',
+      \ '<c-v>': 'vsplit' }
+" Plug 'mcchrish/nnn.vim' #############################################################################
