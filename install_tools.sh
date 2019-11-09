@@ -102,3 +102,11 @@ mkdir -p ~/.git_template/hooks
 for file in `\find $HOME/dotfiles/ctags_gitfiles -maxdepth 1 -type f`; do
     cp $file ~/.git_template/hooks/
 done
+
+# ZPLUGIN
+ZPLUGIN=$HOME/.zplugin
+if [ ! -d $ZPLUGIN ] ; then
+  mkdir -p $ZPLUGIN
+  git clone --depth 1 https://github.com/zdharma/zplugin.git $ZPLUGIN
+  source $ZPLUGIN/zplugin/zplugin.zsh
+fi

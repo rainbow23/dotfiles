@@ -70,4 +70,7 @@ export NNN_USE_EDITOR=1
 export NNN_FALLBACK_OPENER=xdg-open
 export NNN_DE_FILE_MANAGER=vim
 
-source $HOME/dotfiles/source_zplug.sh
+## -------------------------------------
+# zplugin
+## -------------------------------------
+source zplugin.sh
