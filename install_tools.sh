@@ -12,14 +12,6 @@ if [ ! -d $HOME/go ]; then
   mkdir -p $HOME/go/bin
 fi
 
-/usr/local/go/bin/go get -u github.com/mdempsky/gocode
-
-# ghq
-if [ ! -f /usr/local/bin/ghq ]; then
-  mkdir -p $HOME/.ghq
-  export GHQ_ROOT=$HOME/.ghq
-fi
-
 # tmux
 if [ ! -f /usr/local/bin/tmux ]; then
   git clone --depth 1 https://github.com/tmux/tmux.git $HOME/tmux
@@ -49,14 +41,6 @@ if [ ! -f $HOME/.fzf/bin/fzf ] ; then
   yes | $HOME/.fzf/install
 fi
 
-# zplug
-if [ ! -d $HOME/.zplug ] ; then
-  mkdir $HOME/.zplug
-  export ZPLUG_HOME=$HOME/.zplug
-  git clone https://github.com/zplug/zplug.git $HOME/.zplug
-  printf " Install zplug processes are successfully completed \U1F389\n"
-fi
-
 # the_silver_searcher
 SILVER_SEARCHER=$HOME/the_silver_searcher
 if [ ! -f /usr/local/bin/ag ] ; then
@@ -68,21 +52,9 @@ if [ ! -f /usr/local/bin/ag ] ; then
   sudo make install
 fi
 
-# zsh
-ZSH_COMPLETIONS=$HOME/.zsh-completions
-if [ ! -d $ZSH_COMPLETIONS ] ; then
-  mkdir -p $ZSH_COMPLETIONS
-  git clone --depth 1 https://github.com/zsh-users/zsh-completions.git $ZSH_COMPLETIONS
-fi
-
-COMPLETIONS=$HOME/.zsh/completions
-if [ ! -d $COMPLETIONS ] ; then
-  mkdir -p $COMPLETIONS
-fi
-
-if [ ! -d $COMPLETIONS/docker-fzf-completion ]; then
-  git clone --depth 1 https://github.com/kwhrtsk/docker-fzf-completion.git $COMPLETIONS/docker-fzf-completion
-fi
+# if [ ! -d $COMPLETIONS/docker-fzf-completion ]; then
+#   git clone --depth 1 https://github.com/kwhrtsk/docker-fzf-completion.git $COMPLETIONS/docker-fzf-completion
+# fi
 
 # ctags
 if [[ ! -e /usr/local/bin/ctags ]]; then
@@ -108,5 +80,15 @@ ZPLUGIN=$HOME/.zplugin
 if [ ! -d $ZPLUGIN ] ; then
   mkdir -p $ZPLUGIN
   git clone --depth 1 https://github.com/zdharma/zplugin.git $ZPLUGIN
-  source $ZPLUGIN/zplugin/zplugin.zsh
 fi
+
+# ZSH_COMPLETIONS=$HOME/.zsh-completions
+# if [ ! -d $ZSH_COMPLETIONS ] ; then
+#   mkdir -p $ZSH_COMPLETIONS
+#   git clone --depth 1 https://github.com/zsh-users/zsh-completions.git $ZSH_COMPLETIONS
+# fi
+
+# COMPLETIONS=$HOME/.zsh/completions
+# if [ ! -d $COMPLETIONS ] ; then
+#   mkdir -p $COMPLETIONS
+# fi

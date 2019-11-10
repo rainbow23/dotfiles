@@ -24,6 +24,17 @@ export MANPAGER="less -"
 # zshのオプション
 # -------------------------------------
 
+## -------------------------------------
+# ZSH_HISTORY
+# -------------------------------------
+# コマンド履歴
+HISTFILE=~/.zsh_history
+HISTSIZE=6000000
+SAVEHIST=6000000
+setopt hist_ignore_dups # 直前と同じコマンドをヒストリに追加しない
+setopt share_history    # 異なるウィンドウでコマンドヒストリを共有する
+setopt hist_ignore_dups # 直前と同じコマンドをヒストリに追加しない
+setopt hist_no_store    # historyコマンドは履歴に登録しない
 
 ## 入力しているコマンド名が間違っている場合にもしかして：を出す。
 setopt correct

@@ -46,15 +46,6 @@ alias tx='tmux'
 alias txl='tmux ls'
 alias t="tmuximum"
 alias b="chrome_bookmarks_with_fzf.rb"
-## -------------------------------------
-# ZSH_HISTORY
-# -------------------------------------
-# コマンド履歴
-HISTFILE=~/.zsh_history
-HISTSIZE=6000000
-SAVEHIST=6000000
-setopt hist_ignore_dups     # ignore duplication command history list
-setopt share_history        # share command history data
 
 # tree
 alias tree="tree -NC" # N: 文字化け対策, C:色をつける

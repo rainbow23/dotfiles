@@ -73,4 +73,4 @@ export NNN_DE_FILE_MANAGER=vim
 ## -------------------------------------
 # zplugin
 ## -------------------------------------
-source zplugin.sh
+source $HOME/dotfiles/zplugin.sh
