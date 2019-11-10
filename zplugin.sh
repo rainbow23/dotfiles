@@ -33,8 +33,7 @@ if [ -d $ZPLUGIN ] ; then
   zplugin light "b4b4r07/zsh-gomi"
   zplugin ice make'install'
   zplugin light "motemen/ghq"
-
-  # zplugin light "supercrabtree/k"
+  zplugin light "supercrabtree/k"
 
   # snippet
   zplugin ice mv"b.rb -> chrome_bookmarks_with_fzf.rb" \
