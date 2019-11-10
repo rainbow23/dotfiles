@@ -54,3 +54,26 @@ if [ ! -f /usr/local/bin/ghq ]; then
   export GHQ_ROOT=$HOME/.ghq
 fi
 
+: "略語展開(iab)" && {
+  abbrev-alias gco="git commit -av"
+  abbrev-alias ga="git add -A"
+  abbrev-alias dp="docker ps"
+  abbrev-alias di="docker images"
+  abbrev-alias -g a1="awk '{print \$1}'"
+  abbrev-alias -g a2="awk '{print \$2}'"
+  abbrev-alias -g a3="awk '{print \$3}'"
+  abbrev-alias -g a4="awk '{print \$4}'"
+  abbrev-alias -g a5="awk '{print \$5}'"
+  abbrev-alias -g a6="awk '{print \$6}'"
+  abbrev-alias -g a7="awk '{print \$7}'"
+  abbrev-alias -g a8="awk '{print \$8}'"
+  abbrev-alias -g a9="awk '{print \$9}'"
+  abbrev-alias -g a10="awk '{print \$10}'"
+  abbrev-alias -g a11="awk '{print \$11}'"
+  abbrev-alias -g a12="awk '{print \$12}'"
+  abbrev-alias -g a13="awk '{print \$13}'"
+  abbrev-alias -g a14="awk '{print \$14}'"
+  abbrev-alias -g a15="awk '{print \$15}'"
+  abbrev-alias -g a16="awk '{print \$16}'"
+  abbrev-alias -g and="|" # パイプが遠いのでandを割り当てる。例えば`tail -f ./log | grep error`を`tail -f ./log and grep error`と書くことができる
+}
