@@ -42,35 +42,9 @@ fi
 export FZF_COMPLETION_TRIGGER="," # default: '**'
 
 ## -------------------------------------
-# easy-oneliner
-## -------------------------------------
-if [ ! -d $HOME/.easy-oneliner ] ; then
-  git clone https://github.com/rainbow23/easy-oneliner.git ~/.easy-oneliner
-  source $HOME/.easy-oneliner/easy-oneliner.zsh
-else
-  source $HOME/.easy-oneliner/easy-oneliner.zsh
-fi
-
-
-## -------------------------------------
-# zsh-completions
-## -------------------------------------
-COMPLETIONS=$HOME/.zsh/completions
-if [ -e $COMPLETIONS ]; then
-  fpath=($COMPLETIONS $fpath)
-fi
-source $COMPLETIONS/docker-fzf-completion/docker-fzf.zsh
-
-
-## -------------------------------------
 # nnn
 ## -------------------------------------
 export NNN_BMS='d:~/Documents;u:/home/user/Cam Uploads;D:~/Downloads/'
 export NNN_USE_EDITOR=1
 export NNN_FALLBACK_OPENER=xdg-open
 export NNN_DE_FILE_MANAGER=vim
-
-## -------------------------------------
-# zplugin
-## -------------------------------------
-source $HOME/dotfiles/zplugin.sh

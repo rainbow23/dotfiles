@@ -19,6 +19,7 @@ if [ -d $ZPLUGIN ] ; then
   zplugin light zsh-users/zsh-autosuggestions
   zplugin load zsh-users/zsh-completions
   zplugin light zsh-users/zsh-syntax-highlighting
+  # zplugin light "mollifier/anyframe"
 
   # Plugin history-search-multi-word loaded with tracking.
   # zplugin ice wait'!0'
@@ -46,8 +47,6 @@ if [ -d $ZPLUGIN ] ; then
   zplugin snippet \
     https://github.com/b4b4r07/httpstat/blob/master/httpstat.sh
 fi
-
-# zplugin light "mollifier/anyframe"
 
 # ghq
 if [ ! -f /usr/local/bin/ghq ]; then

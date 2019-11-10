@@ -1,31 +1,42 @@
 export XDG_CONFIG_HOME=$HOME/.config
 ## 補完機能の強化
 autoload -U compinit && compinit -u
-
 LANG=ja_JP.utf8
 export LANG
+
+## -------------------------------------
+# zsh-completions
+## -------------------------------------
+COMPLETIONS=$HOME/.zsh/completions
+if [ -e $COMPLETIONS ]; then
+  fpath=($COMPLETIONS $fpath)
+fi
+source $COMPLETIONS/docker-fzf-completion/docker-fzf.zsh
+
+## -------------------------------------
+# easy-oneliner
+## -------------------------------------
+if [ ! -d $HOME/.easy-oneliner ] ; then
+  git clone https://github.com/rainbow23/easy-oneliner.git ~/.easy-oneliner
+  source $HOME/.easy-oneliner/easy-oneliner.zsh
+else
+  source $HOME/.easy-oneliner/easy-oneliner.zsh
+fi
 
 # -------------------------------------
 # 環境変数
 # -------------------------------------
-
 # SSHで接続した先で日本語が使えるようにする
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-
 # エディタ
 export EDITOR=/usr/local/bin/nvim
-
 # ページャ
 export MANPAGER="less -"
 # export PAGER=/usr/local/bin/vimpager
 
 # -------------------------------------
 # zshのオプション
-# -------------------------------------
-
-## -------------------------------------
-# ZSH_HISTORY
 # -------------------------------------
 # コマンド履歴
 HISTFILE=~/.zsh_history
@@ -35,39 +46,29 @@ setopt hist_ignore_dups # 直前と同じコマンドをヒストリに追加し
 setopt share_history    # 異なるウィンドウでコマンドヒストリを共有する
 setopt hist_ignore_dups # 直前と同じコマンドをヒストリに追加しない
 setopt hist_no_store    # historyコマンドは履歴に登録しない
-
 ## 入力しているコマンド名が間違っている場合にもしかして：を出す。
 setopt correct
-
 # ビープを鳴らさない
 setopt no_beep
-
 ## 色を使う
 setopt prompt_subst
-
 ## ^Dでログアウトしない。
 setopt ignoreeof
-
 ## バックグラウンドジョブが終了したらすぐに知らせる。
 setopt no_tify
-
 ## 直前と同じコマンドをヒストリに追加しない
 setopt hist_ignore_dups
-
 # 補完
 ## タブによるファイルの順番切り替えをしない
 unsetopt auto_menu
-
 # cd -[tab]で過去のディレクトリにひとっ飛びできるようにする
 setopt auto_pushd
-
 # ディレクトリ名を入力するだけでcdできるようにする
 setopt auto_cd
 
 # -------------------------------------
 # パス
 # -------------------------------------
-
 # 重複する要素を自動的に削除
 typeset -U path cdpath fpath manpath
 
@@ -81,19 +82,16 @@ path=(
 # -------------------------------------
 # プロンプト
 # -------------------------------------
-
 autoload -U promptinit; promptinit
 autoload -Uz colors; colors
 autoload -Uz vcs_info
 autoload -Uz is-at-least
-
 # begin VCS
 zstyle ":vcs_info:*" enable git svn hg bzr
 zstyle ":vcs_info:*" formats "(%s)-[%b]"
 zstyle ":vcs_info:*" actionformats "(%s)-[%b|%a]"
 zstyle ":vcs_info:(svn|bzr):*" branchformat "%b:r%r"
 zstyle ":vcs_info:bzr:*" use-simple true
-
 zstyle ":vcs_info:*" max-exports 6
 
 if is-at-least 4.3.10; then
@@ -112,7 +110,6 @@ function vcs_prompt_info() {
 
 OK="^_^ "
 NG="X_X "
-
 PROMPT=""
 PROMPT+="%(?.%F{green}$OK%f.%F{red}$NG%f) "
 PROMPT+="%F{blue}%~%f"
@@ -120,17 +117,14 @@ PROMPT+="\$(vcs_prompt_info)"
 PROMPT+="
 "
 PROMPT+="%% "
-
 RPROMPT="[%*]"
 
 # -------------------------------------
 # キーバインド vi mode
 # -------------------------------------
 bindkey -v
-
 # mode change time to 0.1seconds
 # export KEYTIMEOUT=1
-
 # Change cursor shape for different vi modes.
 function zle-keymap-select {
   if [[ ${KEYMAP} == vicmd ]] ||
@@ -152,16 +146,13 @@ function cdup() {
 }
 zle -N cdup
 # bindkey '^K' cdup
-
 bindkey "^R" history-incremental-search-backward
 
 # -------------------------------------
 # その他
 # -------------------------------------
-
 # cdしたあとで、自動的に ls する
 function chpwd() { ls -ltr }
-
 # iTerm2のタブ名を変更する
 function title {
     echo -ne "\033]0;"$*"\007"
@@ -174,3 +165,4 @@ source $HOME/dotfiles/source.sh
 source $HOME/dotfiles/alias.sh
 source $HOME/dotfiles/fzf.sh
 source $HOME/dotfiles/mru.sh
+source $HOME/dotfiles/zplugin.sh
