@@ -1,0 +1,9 @@
+"idea settings
+set surround
+nnoremap tk :action VimMotionNextTab<CR>
+nnoremap tj :action VimMotionPreviousTab<CR>
+" nnoremap x :close<CR>
+"KJump
+nnoremap ju :action KJumpAction<CR>
+" nnoremap w :action KJumpAction.Word0<CR>
+" nnoremap l :action KJumpAction.Line<CR>
