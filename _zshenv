@@ -1,0 +1,29 @@
+#!/bin/zsh
+
+LANG=ja_JP.utf8
+export LANG
+
+# -------------------------------------
+# パス
+# -------------------------------------
+# 重複する要素を自動的に削除
+typeset -U path cdpath fpath manpath
+
+path=(
+    $HOME/bin(N-/)
+    /usr/local/bin(N-/)
+    /usr/local/sbin(N-/)
+    $path
+)
+
+# -------------------------------------
+# 環境変数
+# -------------------------------------
+# SSHで接続した先で日本語が使えるようにする
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+# エディタ
+export EDITOR=/usr/local/bin/nvim
+# ページャ
+export MANPAGER="less -"
+# export PAGER=/usr/local/bin/vimpager

@@ -3,6 +3,7 @@
 ln -sfn $HOME/dotfiles/_vimrc $HOME/.vimrc
 ln -sfn $HOME/dotfiles/_bashrc $HOME/.bashrc
 ln -sfn $HOME/dotfiles/_zshrc $HOME/.zshrc
+ln -sfn $HOME/dotfiles/_zshenv $HOME/.zshenv
 ln -sfn $HOME/dotfiles/_ideavimrc $HOME/.ideavimrc
 ln -sfn $HOME/dotfiles/_tmux.conf $HOME/.tmux.conf
 ln -sfn $HOME/dotfiles/_tmuxp  $HOME/.tmuxp

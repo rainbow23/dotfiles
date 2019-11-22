@@ -1,17 +1,13 @@
+#!/bin/zsh
 export XDG_CONFIG_HOME=$HOME/.config
-## 補完機能の強化
-autoload -U compinit && compinit -u
-LANG=ja_JP.utf8
-export LANG
-
 ## -------------------------------------
 # zsh-completions
 ## -------------------------------------
-COMPLETIONS=$HOME/.zsh/completions
-if [ -e $COMPLETIONS ]; then
-  fpath=($COMPLETIONS $fpath)
-fi
-source $COMPLETIONS/docker-fzf-completion/docker-fzf.zsh
+# COMPLETIONS=$HOME/.zsh/completions
+# if [ -e $COMPLETIONS ]; then
+#   fpath=($COMPLETIONS $fpath)
+# fi
+# source $COMPLETIONS/docker-fzf-completion/docker-fzf.zsh
 
 ## -------------------------------------
 # easy-oneliner
@@ -22,18 +18,6 @@ if [ ! -d $HOME/.easy-oneliner ] ; then
 else
   source $HOME/.easy-oneliner/easy-oneliner.zsh
 fi
-
-# -------------------------------------
-# 環境変数
-# -------------------------------------
-# SSHで接続した先で日本語が使えるようにする
-export LC_CTYPE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-# エディタ
-export EDITOR=/usr/local/bin/nvim
-# ページャ
-export MANPAGER="less -"
-# export PAGER=/usr/local/bin/vimpager
 
 # -------------------------------------
 # zshのオプション
@@ -65,19 +49,6 @@ unsetopt auto_menu
 setopt auto_pushd
 # ディレクトリ名を入力するだけでcdできるようにする
 setopt auto_cd
-
-# -------------------------------------
-# パス
-# -------------------------------------
-# 重複する要素を自動的に削除
-typeset -U path cdpath fpath manpath
-
-path=(
-    $HOME/bin(N-/)
-    /usr/local/bin(N-/)
-    /usr/local/sbin(N-/)
-    $path
-)
 
 # -------------------------------------
 # プロンプト
@@ -162,6 +133,7 @@ function title {
     echo -ne "\033]0;"$*"\007"
 }
 
+
 # -------------------------------------
 # source
 # -------------------------------------
@@ -170,3 +142,6 @@ source $HOME/dotfiles/alias.sh
 source $HOME/dotfiles/fzf.sh
 source $HOME/dotfiles/mru.sh
 source $HOME/dotfiles/zplugin.sh
+
+## 補完機能の強化
+autoload -U compinit && compinit

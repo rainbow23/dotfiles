@@ -17,8 +17,6 @@ fi
 git config --global init.templatedir '~/.git_template'
 git config --global alias.ctags '!~/dotfiles/copy_ctags_files && .git/hooks/ctags'
 
-autoload -U compinit && compinit -u
-
 ## -------------------------------------
 # go
 # -------------------------------------
@@ -39,7 +37,9 @@ if [ -d $HOME/.fzf ] ; then
       [ -f ~/.fzf.bash ] && source ~/.fzf.bash;
   fi
 fi
-export FZF_COMPLETION_TRIGGER="," # default: '**'
+export FZF_COMPLETION_TRIGGER=''
+bindkey '^T' fzf-completion
+bindkey '^I' $fzf_default_completion
 
 ## -------------------------------------
 # nnn
