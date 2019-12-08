@@ -1,4 +1,5 @@
 #!/bin/sh
+ostype=$($HOME/dotfiles/ostype.sh)
 
 #go
 if [ ! -d /usr/local/go/bin ]; then
@@ -22,6 +23,9 @@ if [ ! -f /usr/local/bin/tmux ]; then
   ./configure
   make -j4
   sudo make install
+fi
+if [ $ostype = 'ubuntu' ] ; then
+  sudo apt-get install tmux
 fi
 
 TMUX_PLUGIN=$HOME/.tmux/plugins/tpm
@@ -51,6 +55,10 @@ if [ ! -f /usr/local/bin/ag ] ; then
   cd $SILVER_SEARCHER && ./build.sh
   sudo make install
 fi
+if [ $ostype = 'ubuntu' ] ; then
+  sudo apt-get install silversearcher-ag
+fi
+
 
 # if [ ! -d $COMPLETIONS/docker-fzf-completion ]; then
 #   git clone --depth 1 https://github.com/kwhrtsk/docker-fzf-completion.git $COMPLETIONS/docker-fzf-completion

@@ -1,4 +1,13 @@
-#!/bin/sh
+#!/bin/bash
+ostype=$($HOME/dotfiles/ostype.sh)
+
+# ubuntu
+if [ $ostype = 'ubuntu' ] ; then
+  sudo add-apt-repository ppa:neovim-ppa/stable
+  sudo apt-get update
+  sudo apt-get install neovim
+  exit
+fi
 
 # neovim
 if [ ! -f /usr/local/bin/nvim ] ; then

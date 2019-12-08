@@ -33,7 +33,9 @@ elif [ $ostype = 'darwin' ]; then
   brew install python3
 fi
 
-pip3 install --upgrade pip
-pip3 install neovim
-pip3 install --user neovim
-pip3 install pynvim
+if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ] || [ $ostype = 'darwin' ]; then
+  pip3 install --upgrade pip
+  pip3 install neovim
+  pip3 install --user neovim
+  pip3 install pynvim
+fi

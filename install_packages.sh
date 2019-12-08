@@ -1,10 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 ostype=$(bash -c "$(curl -L https://raw.githubusercontent.com/rainbow23/dotfiles/develop/ostype.sh)")
 
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
-yum -y install sudo
 
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
   array=( "git" \
@@ -39,6 +37,15 @@ if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
           "strace" \
           "gettext" \
           )
+elif [ $ostype = 'ubuntu' ]; then
+  array=( "sudo" \
+          "git" \
+          "automake" \
+          "curl" \
+          "cmake" \
+          "python-pip" \
+          "python3-pip" \
+          )
 elif [ $ostype = 'darwin' ]; then
   array=( "tmux" \
           "cmake" \
@@ -54,6 +61,8 @@ do
   echo $i
   if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
     sudo yum -y install $i
+  elif [ $ostype = 'ubuntu' ]; then
+    sudo apt-get install $i
   elif [ $ostype = 'darwin' ]; then
     brew install $i
   fi
