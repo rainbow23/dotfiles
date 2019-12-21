@@ -12,8 +12,8 @@ if [ -d $ZPLUGIN ] ; then
   # zplugin load junegunn/fzf-bin
   zplugin light "b4b4r07/cli-finder"
   zplugin light hlissner/zsh-autopair
-  zplugin ice as"command" pick"bin/grep-view"
-  zplugin light m5d215/grep-view
+  # zplugin ice as"command" pick"bin/grep-view"
+  # zplugin light m5d215/grep-view
   zplugin light momo-lab/zsh-abbrev-alias
   zplugin ice wait'0'
   zplugin light zsh-users/zsh-autosuggestions
@@ -26,8 +26,6 @@ if [ -d $ZPLUGIN ] ; then
   # zplugin load zdharma/history-search-multi-word
 
   zplugin light "nnao45/zsh-kubectl-completion"
-  zplugin ice wait'0'
-  zplugin light "b4b4r07/enhancd"
   export ENHANCD_FILTER=fzf-tmux
 
   zplugin light "b4b4r07/zsh-gomi"

@@ -14,18 +14,19 @@ if [ ! -d $HOME/go ]; then
 fi
 
 # tmux
-if [ ! -f /usr/local/bin/tmux ]; then
-  git clone --depth 1 https://github.com/tmux/tmux.git $HOME/tmux
-  cd $HOME/tmux
-  # checkout latest tag
-  git checkout $(git tag | sort -V | tail -n 1)
-  sh autogen.sh
-  ./configure
-  make -j4
-  sudo make install
-fi
 if [ $ostype = 'ubuntu' ] ; then
   sudo apt-get install tmux
+  else
+    if [ ! -f /usr/local/bin/tmux ]; then
+      git clone --depth 1 https://github.com/tmux/tmux.git $HOME/tmux
+      cd $HOME/tmux
+      # checkout latest tag
+      git checkout $(git tag | sort -V | tail -n 1)
+      sh autogen.sh
+      ./configure
+      make -j4
+      sudo make install
+    fi
 fi
 
 TMUX_PLUGIN=$HOME/.tmux/plugins/tpm
@@ -65,7 +66,7 @@ fi
 # fi
 
 # ctags
-if [[ ! -e /usr/local/bin/ctags ]]; then
+if [ ! -e /usr/local/bin/ctags ]; then
   git clone --depth 1 https://github.com/universal-ctags/ctags.git $HOME/ctags
   cd $HOME/ctags
   ./autogen.sh
@@ -88,6 +89,13 @@ ZPLUGIN=$HOME/.zplugin
 if [ ! -d $ZPLUGIN ] ; then
   mkdir -p $ZPLUGIN
   git clone --depth 1 https://github.com/zdharma/zplugin.git $ZPLUGIN
+fi
+
+# enhancd
+ENHANCD=$HOME/.enhancd
+if [ ! -d $ENHANCD ] ; then
+  mkdir -p $ENHANCD
+  git clone https://github.com/b4b4r07/enhancd $ENHANCD
 fi
 
 # ZSH_COMPLETIONS=$HOME/.zsh-completions
