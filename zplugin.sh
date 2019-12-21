@@ -43,6 +43,10 @@ if [ -d $ZPLUGIN ] ; then
     pick"httpstat" as"program"
   zplugin snippet \
     https://github.com/b4b4r07/httpstat/blob/master/httpstat.sh
+  zplugin ice as"program" pick"layout_manager.sh"
+  zplugin light klaxalk/i3-layout-manager
+  # zplugin ice as"program" pick"bin/git-dsf"
+  # zplugin light zdharma/zsh-diff-so-fancy
 fi
 
 # ghq
