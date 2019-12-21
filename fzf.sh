@@ -19,14 +19,18 @@ gadd() {
   while out=$(
       git status --short |
       awk '{if (substr($0,2,1) !~ / /) print $2}' |
-      fzf-tmux --multi --exit-0 --expect=ctrl-d); do
+      fzf-tmux --multi --exit-0 --border \
+      --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a \
+      --header "ctrl-d=git diff, enter=git diff, ctrl-e=edit, ctrl-a=git add"); do
     q=$(head -1 <<< "$out")
     n=$[$(wc -l <<< "$out") - 1]
     addfiles=(`echo $(tail "-$n" <<< "$out")`)
     [[ -z "$addfiles" ]] && continue
-    if [ "$q" = ctrl-d ]; then
-      git diff --color=always $addfiles | less -R
-    else
+    if [ "$q" = ctrl-d ] || [ "$q" = enter ] ; then
+      git diff --color=always -u $addfiles | diff-so-fancy | less -R
+    elif [ "$q" = ctrl-e ] ; then
+      ${EDITOR:-vim} $addfiles
+    elif [ "$q" = ctrl-a ] ; then
       git add $addfiles
     fi
   done
