@@ -48,3 +48,12 @@ export NNN_BMS='d:~/Documents;u:/home/user/Cam Uploads;D:~/Downloads/'
 export NNN_USE_EDITOR=1
 export NNN_FALLBACK_OPENER=xdg-open
 export NNN_DE_FILE_MANAGER=vim
+
+## -------------------------------------
+# enhancd
+# -------------------------------------
+ENHANCD=$HOME/.enhancd
+if [ -e $ENHANCD ]; then
+  source $ENHANCD/init.sh
+fi
+
