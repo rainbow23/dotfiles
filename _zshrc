@@ -138,3 +138,11 @@ source $HOME/dotfiles/zplugin.sh
 
 ## 補完機能の強化
 autoload -U compinit && compinit
+# 補完候補に色つける
+autoload -U colors && colors
+zstyle ':completion:*' list-colors "${LS_COLORS}"
+
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' '+m:{A-Z}={a-z}' # 大文字と小文字の区別なし
+zstyle ':completion:*:default' menu select=2
+zstyle ':completion:*:processes' menu yes select=2                      # kill コマンドのようなものに関しては候補をタブで選択できるようにする
+
