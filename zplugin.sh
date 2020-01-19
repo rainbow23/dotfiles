@@ -47,6 +47,7 @@ if [ -d $ZPLUGIN ] ; then
   zplugin light klaxalk/i3-layout-manager
   # zplugin ice as"program" pick"bin/git-dsf"
   # zplugin light zdharma/zsh-diff-so-fancy
+  zplugin load "Aloxaf/fzf-tab"
 fi
 
 # ghq
