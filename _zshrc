@@ -28,8 +28,10 @@ HISTSIZE=6000000
 SAVEHIST=6000000
 setopt hist_ignore_dups # 直前と同じコマンドをヒストリに追加しない
 setopt share_history    # 異なるウィンドウでコマンドヒストリを共有する
-setopt hist_ignore_dups # 直前と同じコマンドをヒストリに追加しない
 setopt hist_no_store    # historyコマンドは履歴に登録しない
+setopt auto_menu        # タブで補完候補を表示する
+setopt auto_list        # 補完候補が複数ある時に、一覧表示
+
 ## 入力しているコマンド名が間違っている場合にもしかして：を出す。
 setopt correct
 # ビープを鳴らさない
@@ -40,15 +42,6 @@ setopt prompt_subst
 setopt ignoreeof
 ## バックグラウンドジョブが終了したらすぐに知らせる。
 setopt no_tify
-## 直前と同じコマンドをヒストリに追加しない
-setopt hist_ignore_dups
-# 補完
-## タブによるファイルの順番切り替えをしない
-unsetopt auto_menu
-# cd -[tab]で過去のディレクトリにひとっ飛びできるようにする
-setopt auto_pushd
-# ディレクトリ名を入力するだけでcdできるようにする
-setopt auto_cd
 
 # -------------------------------------
 # プロンプト
@@ -145,3 +138,11 @@ source $HOME/dotfiles/zplugin.sh
 
 ## 補完機能の強化
 autoload -U compinit && compinit
+# 補完候補に色つける
+autoload -U colors && colors
+zstyle ':completion:*' list-colors "${LS_COLORS}"
+
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' '+m:{A-Z}={a-z}' # 大文字と小文字の区別なし
+zstyle ':completion:*:default' menu select=2
+zstyle ':completion:*:processes' menu yes select=2                      # kill コマンドのようなものに関しては候補をタブで選択できるようにする
+
