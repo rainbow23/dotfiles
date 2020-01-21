@@ -26,6 +26,8 @@ if [ -d $ZPLUGIN ] ; then
   # zplugin load zdharma/history-search-multi-word
 
   zplugin light "nnao45/zsh-kubectl-completion"
+  zplugin ice wait'0'
+  zplugin light "rainbow23/enhancd"
   export ENHANCD_FILTER=fzf-tmux
 
   zplugin light "b4b4r07/zsh-gomi"
@@ -59,6 +61,8 @@ fi
 : "略語展開(iab)" && {
   abbrev-alias gco="git commit -av"
   abbrev-alias ga="git add -A"
+  abbrev-alias d="docker"
+  abbrev-alias dc="docker-compose"
   abbrev-alias dp="docker ps"
   abbrev-alias di="docker images"
   abbrev-alias -g a1="awk '{print \$1}'"
