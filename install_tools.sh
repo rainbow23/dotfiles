@@ -1,5 +1,4 @@
 #!/bin/sh
-ostype=$($HOME/dotfiles/ostype.sh)
 
 #go
 if [ ! -d /usr/local/go/bin ]; then
@@ -14,19 +13,15 @@ if [ ! -d $HOME/go ]; then
 fi
 
 # tmux
-if [ $ostype = 'ubuntu' ] ; then
-  sudo apt-get install tmux
-  else
-    if [ ! -f /usr/local/bin/tmux ]; then
-      git clone --depth 1 https://github.com/tmux/tmux.git $HOME/tmux
-      cd $HOME/tmux
-      # checkout latest tag
-      git checkout $(git tag | sort -V | tail -n 1)
-      sh autogen.sh
-      ./configure
-      make -j4
-      sudo make install
-    fi
+if [ ! -f /usr/local/bin/tmux ]; then
+  git clone --depth 1 https://github.com/tmux/tmux.git $HOME/tmux
+  cd $HOME/tmux
+  # checkout latest tag
+  git checkout $(git tag | sort -V | tail -n 1)
+  sh autogen.sh
+  ./configure
+  make -j4
+  sudo make install
 fi
 
 TMUX_PLUGIN=$HOME/.tmux/plugins/tpm
@@ -56,17 +51,13 @@ if [ ! -f /usr/local/bin/ag ] ; then
   cd $SILVER_SEARCHER && ./build.sh
   sudo make install
 fi
-if [ $ostype = 'ubuntu' ] ; then
-  sudo apt-get install silversearcher-ag
-fi
-
 
 # if [ ! -d $COMPLETIONS/docker-fzf-completion ]; then
 #   git clone --depth 1 https://github.com/kwhrtsk/docker-fzf-completion.git $COMPLETIONS/docker-fzf-completion
 # fi
 
 # ctags
-if [ ! -e /usr/local/bin/ctags ]; then
+if [[ ! -e /usr/local/bin/ctags ]]; then
   git clone --depth 1 https://github.com/universal-ctags/ctags.git $HOME/ctags
   cd $HOME/ctags
   ./autogen.sh
@@ -89,13 +80,6 @@ ZPLUGIN=$HOME/.zplugin
 if [ ! -d $ZPLUGIN ] ; then
   mkdir -p $ZPLUGIN
   git clone --depth 1 https://github.com/zdharma/zplugin.git $ZPLUGIN
-fi
-
-# enhancd
-ENHANCD=$HOME/.enhancd
-if [ ! -d $ENHANCD ] ; then
-  mkdir -p $ENHANCD
-  git clone https://github.com/b4b4r07/enhancd $ENHANCD
 fi
 
 # ZSH_COMPLETIONS=$HOME/.zsh-completions

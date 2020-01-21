@@ -229,7 +229,7 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
 if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  Plug 'Shougo/deoplete.nvim', { 'tag': '4.1', 'do': ':UpdateRemotePlugins' }
 else
   Plug 'Shougo/deoplete.nvim'
   Plug 'roxma/nvim-yarp'
@@ -239,10 +239,7 @@ endif
 if has("mac")
 
 elseif has("unix")
-  " ubuntu use default installed python3.6
-  let g:python3_host_prog = expand('/usr/bin/python3')
-  " centos, macOS
-  " let g:python3_host_prog = expand('/usr/local/bin/python3.5')
+    let g:python3_host_prog = expand('/usr/local/bin/python3.5')
 endif
 
 if has('pythonx')
@@ -406,11 +403,11 @@ let g:neosnippet#snippets_directory='~/.vim/plugged/vim-snippets/snippets/'
 " use together neosnippet and deoplete
 imap <expr><C-o>
 \ pumvisible() ? neosnippet#expandable_or_jumpable() ?
-\    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#close_popup() :
+\    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
 \    "\<Plug>(neosnippet_expand_or_jump)" "neosnippetの２回目以降で移動する場合に使用する
 smap <expr><C-o>
 \ pumvisible() ? neosnippet#expandable_or_jumpable() ?
-\    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#close_popup() :
+\    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#mappings#close_popup() :
 \    "\<Plug>(neosnippet_expand_or_jump)" "neosnippetの２回目以降で移動する場合に使用する
 xmap <C-o>     <Plug>(neosnippet_expand_target)
 
@@ -438,7 +435,7 @@ noremap <C-j> <Esc>
 "コマンドラインモード＋インサートモード
 noremap! <C-j> <Esc>
 
-inoremap <silent> <expr> <CR>  pumvisible() ? deoplete#close_popup() : "\n"
+inoremap <silent> <expr> <CR>  pumvisible() ? deoplete#mappings#close_popup() : "\n"
 inoremap <silent> <expr> <C-j> pumvisible() ? "\<C-n>" : ""
 inoremap <silent> <expr> <C-k> pumvisible() ? "\<C-p>" : ""
 
