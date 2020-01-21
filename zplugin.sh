@@ -12,9 +12,11 @@ if [ -d $ZPLUGIN ] ; then
   # zplugin load junegunn/fzf-bin
   zplugin light "b4b4r07/cli-finder"
   zplugin light hlissner/zsh-autopair
-  zplugin ice as"command" pick"bin/grep-view"
-  zplugin light m5d215/grep-view
-  zplugin light momo-lab/zsh-abbrev-alias
+
+  # zplugin ice as"command" pick"bin/grep-view"
+  # zplugin light m5d215/grep-view
+
+  zplugin load momo-lab/zsh-abbrev-alias
   zplugin ice wait'0'
   zplugin light zsh-users/zsh-autosuggestions
   zplugin load zsh-users/zsh-completions
@@ -27,7 +29,7 @@ if [ -d $ZPLUGIN ] ; then
 
   zplugin light "nnao45/zsh-kubectl-completion"
   zplugin ice wait'0'
-  zplugin light "b4b4r07/enhancd"
+  zplugin light "rainbow23/enhancd"
   export ENHANCD_FILTER=fzf-tmux
 
   zplugin light "b4b4r07/zsh-gomi"
@@ -59,6 +61,8 @@ fi
 : "略語展開(iab)" && {
   abbrev-alias gco="git commit -av"
   abbrev-alias ga="git add -A"
+  abbrev-alias d="docker"
+  abbrev-alias dc="docker-compose"
   abbrev-alias dp="docker ps"
   abbrev-alias di="docker images"
   abbrev-alias -g a1="awk '{print \$1}'"
