@@ -163,3 +163,8 @@ if [ ! -f $ZSHCOMPLETION/_docker-compose ] ; then
 fi
 fpath=(~/.zsh/completion $fpath)
 autoload -Uz compinit && compinit -i
+
+# -------------------------------------
+# ZSH_AUTOSUGGEST
+# -------------------------------------
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=45'
