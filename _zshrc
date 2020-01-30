@@ -126,3 +126,21 @@ zstyle ':completion:*' list-colors "${LS_COLORS}"
 zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' '+m:{A-Z}={a-z}' # 大文字と小文字の区別なし
 zstyle ':completion:*:default' menu select=2
 zstyle ':completion:*:processes' menu yes select=2                      # kill コマンドのようなものに関しては候補をタブで選択できるようにする
+
+# -------------------------------------
+# docker補完設定
+# -------------------------------------
+ZSHCOMPLETION=$HOME/.zsh/completion
+if [ ! -d $ZSHCOMPLETION ]; then
+  mkdir -p $ZSHCOMPLETION
+fi
+# https://docs.docker.com/compose/completion/
+if [ ! -f $ZSHCOMPLETION/_docker ] ; then
+  curl -L https://raw.githubusercontent.com/docker/cli/master/contrib/completion/zsh/_docker > $ZSHCOMPLETION/_docker
+fi
+# https://github.com/docker/cli/blob/master/contrib/completion/zsh/_docker
+if [ ! -f $ZSHCOMPLETION/_docker-compose ] ; then
+  curl -L https://raw.githubusercontent.com/docker/compose/1.25.0/contrib/completion/zsh/_docker-compose > $ZSHCOMPLETION/_docker-compose
+fi
+fpath=(~/.zsh/completion $fpath)
+autoload -Uz compinit && compinit -i
