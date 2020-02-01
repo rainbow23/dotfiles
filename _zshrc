@@ -167,4 +167,7 @@ autoload -Uz compinit && compinit -i
 # -------------------------------------
 # ZSH_AUTOSUGGEST
 # -------------------------------------
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=45'
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=45,bold"
+bindkey '^ ' autosuggest-accept
+bindkey '^f' autosuggest-fetch
+bindkey '^d' autosuggest-disable
