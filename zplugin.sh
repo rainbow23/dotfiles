@@ -59,6 +59,7 @@ if [ ! -f /usr/local/bin/ghq ]; then
 fi
 
 : "略語展開(iab)" && {
+  abbrev-alias g="git"
   abbrev-alias gco="git commit -av"
   abbrev-alias ga="git add -A"
   abbrev-alias d="docker"
