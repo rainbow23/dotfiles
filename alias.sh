@@ -8,6 +8,7 @@ if [ -f /usr/local/bin/nvim ] ; then
 fi
 
 alias et='exit'
+alias cl='clear'
 ## -------------------------------------
 # docker operation
 # -------------------------------------
@@ -28,8 +29,8 @@ alias glg='git log --graph'
 alias gs='git status'
 alias gss='git stash save'
 alias gc='git checkout'
-alias gd='git diff'
-alias gds='git diff --staged'
+alias gd='clear && git diff'
+alias gds='clear && git diff --staged'
 alias gr='git reset'
 alias gph='git push'
 alias gpl='git pull'
