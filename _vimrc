@@ -229,7 +229,7 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
 if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'tag': '4.1', 'do': ':UpdateRemotePlugins' }
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 else
   Plug 'Shougo/deoplete.nvim'
   Plug 'roxma/nvim-yarp'
@@ -237,7 +237,7 @@ else
 endif
 "exmodeから確認  call deoplete#enable()
 if has("mac")
-
+    let g:python3_host_prog = expand('/usr/local/bin/python3')
 elseif has("unix")
     let g:python3_host_prog = expand('/usr/local/bin/python3')
 endif
