@@ -1,6 +1,6 @@
 #!/bin/sh
-if [[ ! -e /usr/local/bin/python3.5 ]]; then
-  echo "python3.5がインストールされていません"
+if [ ! -e /usr/local/bin/python3 ]; then
+  echo "python3がインストールされていません"
   exit 1
 fi
 
@@ -33,7 +33,7 @@ if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
     --enable-fail-if-missing\
     --with-features=huge\
     --disable-selinux\
-    --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.5\
+    --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3\
     # --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m-x86_64-linux-gnu\
     --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m\
     --enable-luainterp\
