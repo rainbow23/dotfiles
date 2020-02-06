@@ -60,8 +60,17 @@ fi
 
 : "略語展開(iab)" && {
   abbrev-alias g="git"
-  abbrev-alias gco="git commit -av"
-  abbrev-alias ga="git add -A"
+  abbrev-alias gco="git commit "
+  abbrev-alias ga="git add -u"
+  abbrev-alias gl='git log'
+  abbrev-alias glo='git log --oneline'
+  abbrev-alias gls='git log --stat'
+  abbrev-alias glg='git log --graph'
+  abbrev-alias gs='git status'
+  abbrev-alias gss='git stash save'
+  abbrev-alias gc='git checkout'
+  abbrev-alias gb='git branch'
+
   abbrev-alias d="docker"
   abbrev-alias db="docker build"
   abbrev-alias dc="docker container"
@@ -69,10 +78,14 @@ fi
   abbrev-alias dcl="docker container ls"
   abbrev-alias dcp="docker container prune"
   abbrev-alias dcm="docker container rm"
+  abbrev-alias dcs='docker container stats'
   abbrev-alias dp="docker ps"
   abbrev-alias dr="docker rm"
   abbrev-alias di="docker image"
+  abbrev-alias dil='docker image ls'
+  abbrev-alias dip='docker image prune'
   abbrev-alias dcom="docker-compose"
+
   abbrev-alias -g a1="awk '{print \$1}'"
   abbrev-alias -g a2="awk '{print \$2}'"
   abbrev-alias -g a3="awk '{print \$3}'"
