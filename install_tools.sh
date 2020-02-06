@@ -75,11 +75,11 @@ for file in `\find $HOME/dotfiles/ctags_gitfiles -maxdepth 1 -type f`; do
     cp $file ~/.git_template/hooks/
 done
 
-# ZPLUGIN
-ZPLUGIN=$HOME/.zplugin
-if [ ! -d $ZPLUGIN ] ; then
-  mkdir -p $ZPLUGIN
-  git clone --depth 1 https://github.com/zdharma/zplugin.git $ZPLUGIN
+# ZINIT
+ZINIT=$HOME/.zinit
+if [ ! -d $ZINIT ] ; then
+  mkdir $ZINIT
+  git clone https://github.com/zdharma/zinit.git $ZINIT/bin
 fi
 
 # ZSH_COMPLETIONS=$HOME/.zsh-completions

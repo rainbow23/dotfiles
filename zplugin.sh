@@ -1,55 +1,56 @@
 #!/bin/zsh
 ## -------------------------------------
-# zplugin
+# zinit
 ## -------------------------------------
-ZPLUGIN=$HOME/.zplugin
-if [ -d $ZPLUGIN ] ; then
-  source $ZPLUGIN/zplugin.zsh
-  autoload -Uz _zplugin
-  (( ${+_comps} )) && _comps[zplugin]=_zplugin
+ZINIT=$HOME/.zinit
+if [ -d $ZINIT ] ; then
+  source $ZINIT/bin/zinit.zsh
 
-  # zplugin ice from"gh-r" as"command"
-  # zplugin load junegunn/fzf-bin
-  zplugin light "b4b4r07/cli-finder"
-  zplugin light hlissner/zsh-autopair
+  autoload -Uz _zinit
+  (( ${+_comps} )) && _comps[zinit]=_zinit
 
-  # zplugin ice as"command" pick"bin/grep-view"
-  # zplugin light m5d215/grep-view
+  # zinit ice from"gh-r" as"command"
+  # zinit load junegunn/fzf-bin
+  zinit light "b4b4r07/cli-finder"
+  zinit light hlissner/zsh-autopair
 
-  zplugin load momo-lab/zsh-abbrev-alias
-  zplugin ice wait'0'
-  zplugin light zsh-users/zsh-autosuggestions
-  zplugin load zsh-users/zsh-completions
-  zplugin light zsh-users/zsh-syntax-highlighting
-  # zplugin light "mollifier/anyframe"
+  # zinit ice as"command" pick"bin/grep-view"
+  # zinit light m5d215/grep-view
+
+  zinit load momo-lab/zsh-abbrev-alias
+  # zinit ice wait'0'
+  zinit light zsh-users/zsh-autosuggestions
+  zinit load zsh-users/zsh-completions
+  zinit light zsh-users/zsh-syntax-highlighting
+  # zinit light "mollifier/anyframe"
 
   # Plugin history-search-multi-word loaded with tracking.
-  # zplugin ice wait'!0'
-  # zplugin load zdharma/history-search-multi-word
+  # zinit ice wait'!0'
+  # zinit load zdharma/history-search-multi-word
 
-  zplugin light "nnao45/zsh-kubectl-completion"
-  zplugin ice wait'0'
-  zplugin light "rainbow23/enhancd"
+  zinit light "nnao45/zsh-kubectl-completion"
+  zinit ice wait'0'
+  zinit light "rainbow23/enhancd"
   export ENHANCD_FILTER=fzf-tmux
 
-  zplugin light "b4b4r07/zsh-gomi"
-  zplugin ice make'install'
-  zplugin light "motemen/ghq"
-  zplugin light "supercrabtree/k"
+  zinit light "b4b4r07/zsh-gomi"
+  zinit ice make'install'
+  zinit light "motemen/ghq"
+  zinit light "supercrabtree/k"
 
   # snippet
-  zplugin ice mv"b.rb -> chrome_bookmarks_with_fzf.rb" \
+  zinit ice mv"b.rb -> chrome_bookmarks_with_fzf.rb" \
     pick"chrome_bookmarks_with_fzf.rb" as"program"
-  zplugin snippet https://gist.githubusercontent.com/rainbow23/73236d896399ca7ee68b8b3900ae39e0/raw/e25f1b1512d813b9475cd2470b1440f3efaa19e5/b.rb
+  zinit snippet https://gist.githubusercontent.com/rainbow23/73236d896399ca7ee68b8b3900ae39e0/raw/e25f1b1512d813b9475cd2470b1440f3efaa19e5/b.rb
   alias b="chrome_bookmarks_with_fzf.rb"
 
-  zplugin ice mv"httpstat.sh -> httpstat" \
+  zinit ice mv"httpstat.sh -> httpstat" \
     pick"httpstat" as"program"
-  zplugin snippet \
+  zinit snippet \
     https://github.com/b4b4r07/httpstat/blob/master/httpstat.sh
-  # zplugin ice as"program" pick"bin/git-dsf"
-  # zplugin light zdharma/zsh-diff-so-fancy
-  zplugin load "Aloxaf/fzf-tab"
+  # zinit ice as"program" pick"bin/git-dsf"
+  # zinit light zdharma/zsh-diff-so-fancy
+  zinit load "Aloxaf/fzf-tab"
 fi
 
 # ghq
