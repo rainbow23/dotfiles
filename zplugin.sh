@@ -50,7 +50,9 @@ if [ -d $ZINIT ] ; then
     https://github.com/b4b4r07/httpstat/blob/master/httpstat.sh
   # zinit ice as"program" pick"bin/git-dsf"
   # zinit light zdharma/zsh-diff-so-fancy
-  zinit load "Aloxaf/fzf-tab"
+
+  # tab func with bug
+  # zinit load "Aloxaf/fzf-tab"
 fi
 
 # ghq
