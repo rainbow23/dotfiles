@@ -51,8 +51,7 @@ if [ -d $ZINIT ] ; then
   # zinit ice as"program" pick"bin/git-dsf"
 # zinit light zdharma/zsh-diff-so-fancy
 
-  # tab func with bug
-# zinit load "Aloxaf/fzf-tab"
+  zinit load "Aloxaf/fzf-tab"
 fi
 
 # ghq
