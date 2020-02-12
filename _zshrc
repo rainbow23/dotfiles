@@ -132,8 +132,8 @@ function title {
 # -------------------------------------
 source $HOME/dotfiles/source.sh
 source $HOME/dotfiles/alias.sh
-# source $HOME/dotfiles/fzf.sh
-# source $HOME/dotfiles/mru.sh
+source $HOME/dotfiles/fzf.sh
+source $HOME/dotfiles/mru.sh
 # source $HOME/dotfiles/zplugin.sh
 
 ## 補完機能の強化
