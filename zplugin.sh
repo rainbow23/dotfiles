@@ -29,9 +29,9 @@ if [ -d $ZINIT ] ; then
   # zinit load zdharma/history-search-multi-word
 
   # zinit light "nnao45/zsh-kubectl-completion"
-  zinit ice wait'0'
-  zinit light "rainbow23/enhancd"
-  export ENHANCD_FILTER=fzf-tmux
+# zinit ice wait'0'
+# zinit light "rainbow23/enhancd"
+# export ENHANCD_FILTER=fzf-tmux
 
   # zinit light "b4b4r07/zsh-gomi"
   # zinit ice make'install'
@@ -49,7 +49,7 @@ if [ -d $ZINIT ] ; then
   # zinit snippet \
   #   https://github.com/b4b4r07/httpstat/blob/master/httpstat.sh
   # zinit ice as"program" pick"bin/git-dsf"
-  # zinit light zdharma/zsh-diff-so-fancy
+# zinit light zdharma/zsh-diff-so-fancy
 
   # tab func with bug
 # zinit load "Aloxaf/fzf-tab"

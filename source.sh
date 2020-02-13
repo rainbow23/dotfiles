@@ -88,11 +88,19 @@ if [ ! -d $ZSH_AUTOSUGGESTIONS ] ; then
   mkdir -p $ZSH_AUTOSUGGESTIONS
   git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions $ZSH_AUTOSUGGESTIONS
 fi
-source $ZSH_AUTOSUGGESTIONS/zsh-autosuggestions.zsh
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=45,bold"
-bindkey '^ ' autosuggest-accept
-bindkey '^f' autosuggest-fetch
-bindkey '^d' autosuggest-disable
+# source $ZSH_AUTOSUGGESTIONS/zsh-autosuggestions.zsh
+# ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=45,bold"
+# bindkey '^ ' autosuggest-accept
+# bindkey '^f' autosuggest-fetch
+# bindkey '^d' autosuggest-disable
+
+ZSH_ABBREV_ALIAS=$HOME/.abbrev_alias
+if [ ! -d $ZSH_ABBREV_ALIAS ] ; then
+  mkdir -p $ZSH_ABBREV_ALIAS
+  git clone --depth 1 https://github.com/momo-lab/zsh-abbrev-alias.git $ZSH_ABBREV_ALIAS
+fi
+source $ZSH_ABBREV_ALIAS/abbrev-alias.plugin.zsh
+
 
 ## -------------------------------------
 # ZSH_COMPLETIONS
@@ -130,7 +138,7 @@ if [ ! -f $ZSHCOMPLETION/_docker-compose ] ; then
   curl -L https://raw.githubusercontent.com/docker/compose/1.25.0/contrib/completion/zsh/_docker-compose > $ZSHCOMPLETION/_docker-compose
 fi
 fpath=(~/.zsh/completion $fpath)
-autoload -Uz compinit && compinit -i
+# autoload -Uz compinit && compinit -i
 
 ## -------------------------------------
 # FZF-TAB
@@ -146,4 +154,4 @@ if [ -f $FZF_TAB/fzf-tab.plugin.zsh ] ; then
   source $FZF_TAB/fzf-tab.plugin.zsh
 fi
 
-# autoload -U compinit && compinit
+autoload -Uz compinit && compinit -i
