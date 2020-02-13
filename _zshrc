@@ -1,24 +1,5 @@
 #!/bin/zsh
 export XDG_CONFIG_HOME=$HOME/.config
-## -------------------------------------
-# zsh-completions
-## -------------------------------------
-# COMPLETIONS=$HOME/.zsh/completions
-# if [ -e $COMPLETIONS ]; then
-#   fpath=($COMPLETIONS $fpath)
-# fi
-# source $COMPLETIONS/docker-fzf-completion/docker-fzf.zsh
-
-## -------------------------------------
-# easy-oneliner
-## -------------------------------------
-if [ ! -d $HOME/.easy-oneliner ] ; then
-  git clone https://github.com/rainbow23/easy-oneliner.git ~/.easy-oneliner
-  source $HOME/.easy-oneliner/easy-oneliner.zsh
-else
-  source $HOME/.easy-oneliner/easy-oneliner.zsh
-fi
-
 # -------------------------------------
 # zshのオプション
 # -------------------------------------
@@ -47,45 +28,45 @@ setopt no_tify
 # プロンプト
 # -------------------------------------
 # Edit line in vim with ctrl-e:
-# autoload edit-command-line; zle -N edit-command-line
-# bindkey '^e' edit-command-line
+autoload edit-command-line; zle -N edit-command-line
+bindkey '^e' edit-command-line
 
-# autoload -U promptinit; promptinit
-# autoload -Uz colors; colors
-# autoload -Uz vcs_info
-# autoload -Uz is-at-least
-# # begin VCS
-# zstyle ":vcs_info:*" enable git svn hg bzr
-# zstyle ":vcs_info:*" formats "(%s)-[%b]"
-# zstyle ":vcs_info:*" actionformats "(%s)-[%b|%a]"
-# zstyle ":vcs_info:(svn|bzr):*" branchformat "%b:r%r"
-# zstyle ":vcs_info:bzr:*" use-simple true
-# zstyle ":vcs_info:*" max-exports 6
+autoload -U promptinit; promptinit
+autoload -Uz colors; colors
+autoload -Uz vcs_info
+autoload -Uz is-at-least
+# begin VCS
+zstyle ":vcs_info:*" enable git svn hg bzr
+zstyle ":vcs_info:*" formats "(%s)-[%b]"
+zstyle ":vcs_info:*" actionformats "(%s)-[%b|%a]"
+zstyle ":vcs_info:(svn|bzr):*" branchformat "%b:r%r"
+zstyle ":vcs_info:bzr:*" use-simple true
+zstyle ":vcs_info:*" max-exports 6
 
-# if is-at-least 4.3.10; then
-#     zstyle ":vcs_info:git:*" check-for-changes true # commitしていないのをチェック
-#     zstyle ":vcs_info:git:*" stagedstr "<S>"
-#     zstyle ":vcs_info:git:*" unstagedstr "<U>"
-#     zstyle ":vcs_info:git:*" formats "(%b) %c%u"
-#     zstyle ":vcs_info:git:*" actionformats "(%s)-[%b|%a] %c%u"
-# fi
+if is-at-least 4.3.10; then
+    zstyle ":vcs_info:git:*" check-for-changes true # commitしていないのをチェック
+    zstyle ":vcs_info:git:*" stagedstr "<S>"
+    zstyle ":vcs_info:git:*" unstagedstr "<U>"
+    zstyle ":vcs_info:git:*" formats "(%b) %c%u"
+    zstyle ":vcs_info:git:*" actionformats "(%s)-[%b|%a] %c%u"
+fi
 
-# function vcs_prompt_info() {
-#     LANG=en_US.UTF-8 vcs_info
-#     [[ -n "$vcs_info_msg_0_" ]] && echo -n " %{$fg[yellow]%}$vcs_info_msg_0_%f"
-# }
-# # end VCS
+function vcs_prompt_info() {
+    LANG=en_US.UTF-8 vcs_info
+    [[ -n "$vcs_info_msg_0_" ]] && echo -n " %{$fg[yellow]%}$vcs_info_msg_0_%f"
+}
+# end VCS
 
-# OK="^_^ "
-# NG="X_X "
-# PROMPT=""
-# PROMPT+="%(?.%F{green}$OK%f.%F{red}$NG%f) "
-# PROMPT+="%F{blue}%~%f"
-# PROMPT+="\$(vcs_prompt_info)"
-# PROMPT+="
-# "
-# PROMPT+="%% "
-# RPROMPT="[%*]"
+OK="^_^ "
+NG="X_X "
+PROMPT=""
+PROMPT+="%(?.%F{green}$OK%f.%F{red}$NG%f) "
+PROMPT+="%F{blue}%~%f"
+PROMPT+="\$(vcs_prompt_info)"
+PROMPT+="
+"
+PROMPT+="%% "
+RPROMPT="[%*]"
 
 # -------------------------------------
 # キーバインド vi mode
@@ -134,57 +115,14 @@ source $HOME/dotfiles/source.sh
 source $HOME/dotfiles/alias.sh
 source $HOME/dotfiles/fzf.sh
 source $HOME/dotfiles/mru.sh
-# source $HOME/dotfiles/zplugin.sh
+ # source $HOME/dotfiles/zplugin.sh
 
 ## 補完機能の強化
-# autoload -U compinit && compinit
-# # 補完候補に色つける
-# autoload -U colors && colors
-# zstyle ':completion:*' list-colors "${LS_COLORS}"
-
-# zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' '+m:{A-Z}={a-z}' # 大文字と小文字の区別なし
-# zstyle ':completion:*:default' menu select=2
-# zstyle ':completion:*:processes' menu yes select=2                      # kill コマンドのようなものに関しては候補をタブで選択できるようにする
-
-# -------------------------------------
-# docker補完設定
-# -------------------------------------
-ZSHCOMPLETION=$HOME/.zsh/completion
-if [ ! -d $ZSHCOMPLETION ]; then
-  mkdir -p $ZSHCOMPLETION
-fi
-# https://docs.docker.com/compose/completion/
-if [ ! -f $ZSHCOMPLETION/_docker ] ; then
-  curl -L https://raw.githubusercontent.com/docker/cli/master/contrib/completion/zsh/_docker > $ZSHCOMPLETION/_docker
-fi
-# https://github.com/docker/cli/blob/master/contrib/completion/zsh/_docker
-if [ ! -f $ZSHCOMPLETION/_docker-compose ] ; then
-  curl -L https://raw.githubusercontent.com/docker/compose/1.25.0/contrib/completion/zsh/_docker-compose > $ZSHCOMPLETION/_docker-compose
-fi
-fpath=(~/.zsh/completion $fpath)
-autoload -Uz compinit && compinit -i
-
-# -------------------------------------
-# ZSH_AUTOSUGGEST
-# -------------------------------------
-# ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=45,bold"
-# bindkey '^ ' autosuggest-accept
-# bindkey '^f' autosuggest-fetch
-# bindkey '^d' autosuggest-disable
-
-
-## -------------------------------------
-# FZF-TAB
-## -------------------------------------
-FZF_TAB=$HOME/.fzf-tab
-if [ ! -d $FZF_TAB ] ; then
-  mkdir $FZF_TAB
-  git clone https://github.com/Aloxaf/fzf-tab.git $FZF_TAB
-fi
-
-if [ -f $FZF_TAB/fzf-tab.plugin.zsh ] ; then
-  echo "check fzf-tab"
-  source $FZF_TAB/fzf-tab.plugin.zsh
-fi
-
 autoload -U compinit && compinit
+# 補完候補に色つける
+autoload -U colors && colors
+zstyle ':completion:*' list-colors "${LS_COLORS}"
+
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' '+m:{A-Z}={a-z}' # 大文字と小文字の区別なし
+zstyle ':completion:*:default' menu select=2
+zstyle ':completion:*:processes' menu yes select=2                      # kill コマンドのようなものに関しては候補をタブで選択できるようにする

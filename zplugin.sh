@@ -6,53 +6,53 @@ ZINIT=$HOME/.zinit
 if [ -d $ZINIT ] ; then
   source $ZINIT/bin/zinit.zsh
 
-  autoload -Uz _zinit
-  (( ${+_comps} )) && _comps[zinit]=_zinit
+  # autoload -Uz _zinit
+  # (( ${+_comps} )) && _comps[zinit]=_zinit
 
   # zinit ice from"gh-r" as"command"
   # zinit load junegunn/fzf-bin
-  zinit light "b4b4r07/cli-finder"
-  zinit light hlissner/zsh-autopair
+  # zinit light "b4b4r07/cli-finder"
+# zinit light hlissner/zsh-autopair
 
   # zinit ice as"command" pick"bin/grep-view"
   # zinit light m5d215/grep-view
 
   zinit load momo-lab/zsh-abbrev-alias
   # zinit ice wait'0'
-  zinit light zsh-users/zsh-autosuggestions
-  zinit load zsh-users/zsh-completions
-  zinit light zsh-users/zsh-syntax-highlighting
+# zinit light zsh-users/zsh-autosuggestions
+# zinit load zsh-users/zsh-completions
+# zinit light zsh-users/zsh-syntax-highlighting
   # zinit light "mollifier/anyframe"
 
   # Plugin history-search-multi-word loaded with tracking.
   # zinit ice wait'!0'
   # zinit load zdharma/history-search-multi-word
 
-  zinit light "nnao45/zsh-kubectl-completion"
+  # zinit light "nnao45/zsh-kubectl-completion"
   zinit ice wait'0'
   zinit light "rainbow23/enhancd"
   export ENHANCD_FILTER=fzf-tmux
 
-  zinit light "b4b4r07/zsh-gomi"
-  zinit ice make'install'
-  zinit light "motemen/ghq"
-  zinit light "supercrabtree/k"
+  # zinit light "b4b4r07/zsh-gomi"
+  # zinit ice make'install'
+  # zinit light "motemen/ghq"
+  # zinit light "supercrabtree/k"
 
   # snippet
-  zinit ice mv"b.rb -> chrome_bookmarks_with_fzf.rb" \
-    pick"chrome_bookmarks_with_fzf.rb" as"program"
-  zinit snippet https://gist.githubusercontent.com/rainbow23/73236d896399ca7ee68b8b3900ae39e0/raw/e25f1b1512d813b9475cd2470b1440f3efaa19e5/b.rb
-  alias b="chrome_bookmarks_with_fzf.rb"
+  # zinit ice mv"b.rb -> chrome_bookmarks_with_fzf.rb" \
+  #   pick"chrome_bookmarks_with_fzf.rb" as"program"
+  # zinit snippet https://gist.githubusercontent.com/rainbow23/73236d896399ca7ee68b8b3900ae39e0/raw/e25f1b1512d813b9475cd2470b1440f3efaa19e5/b.rb
+  # alias b="chrome_bookmarks_with_fzf.rb"
 
-  zinit ice mv"httpstat.sh -> httpstat" \
-    pick"httpstat" as"program"
-  zinit snippet \
-    https://github.com/b4b4r07/httpstat/blob/master/httpstat.sh
+  # zinit ice mv"httpstat.sh -> httpstat" \
+  #   pick"httpstat" as"program"
+  # zinit snippet \
+  #   https://github.com/b4b4r07/httpstat/blob/master/httpstat.sh
   # zinit ice as"program" pick"bin/git-dsf"
   # zinit light zdharma/zsh-diff-so-fancy
 
   # tab func with bug
-  # zinit load "Aloxaf/fzf-tab"
+# zinit load "Aloxaf/fzf-tab"
 fi
 
 # ghq
