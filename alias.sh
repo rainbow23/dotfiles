@@ -67,7 +67,8 @@ alias fdr='finder'
   abbrev-alias dp="docker ps"
   abbrev-alias dr="docker rm"
   abbrev-alias di="docker image"
-  abbrev-alias dil='docker image ls'
+  abbrev-alias dil='docker image ls -a'
+  abbrev-alias dib='docker image build'
   abbrev-alias dip='docker image prune'
   abbrev-alias dcom="docker-compose"
 
