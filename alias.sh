@@ -11,42 +11,23 @@ fi
 
 alias et='exit'
 alias cl='clear'
-## -------------------------------------
-# docker operation
-# -------------------------------------
-alias dk='docker'
-alias dkcls='docker container ls'
-alias dkils='docker image ls'
-alias dkr='docker container run'
-alias dkcpr='docker container prune'
-alias dkipr='docker image prune'
-alias dkcs='docker container stats'
-## -------------------------------------
-# git operation
-# -------------------------------------
-alias gl='git log'
-alias glo='git log --oneline'
-alias gls='git log --stat'
-alias glg='git log --graph'
-alias gs='git status'
-alias gss='git stash save'
-alias gc='git checkout'
-alias gd='clear && git diff'
-alias gds='clear && git diff --staged'
-alias gr='git reset'
-alias gph='git push'
-alias gpl='git pull'
-alias gb='git branch'
-alias gba='git branch --all'
-alias gbr='git branch --remotes'
-alias gv='git branch -vv'
-alias fdr='finder'
 
 ## -------------------------------------
 # abbrev-alias
 ## -------------------------------------
 : "略語展開(iab)" && {
+  ## ------------------------------------
+  # git operation
+  # -------------------------------------
   abbrev-alias g="git"
+  abbrev-alias gd='clear && git diff'
+  abbrev-alias gds='clear && git diff --staged'
+  abbrev-alias gph='git push'
+  abbrev-alias gpl='git pull'
+  abbrev-alias gb='git branch'
+  abbrev-alias gba='git branch --all'
+  abbrev-alias gbr='git branch --remotes'
+  abbrev-alias gv='git branch -vv'
   abbrev-alias gco="git commit "
   abbrev-alias ga="git add -u"
   abbrev-alias gl='git log'
@@ -56,11 +37,16 @@ alias fdr='finder'
   abbrev-alias gs='git status'
   abbrev-alias gss='git stash save'
   abbrev-alias gc='git checkout'
-  abbrev-alias gb='git branch'
+  abbrev-alias gr='git rebase '
+  abbrev-alias gri='git rebase -i'
 
+  ## ------------------------------------
+  # docker operation
+  # -------------------------------------
   abbrev-alias d="docker"
   abbrev-alias db="docker build"
   abbrev-alias dc="docker container"
+  abbrev-alias dce="docker container exec -it"
   abbrev-alias dcr="docker container run"
   abbrev-alias dcl="docker container ls"
   abbrev-alias dcp="docker container prune"
