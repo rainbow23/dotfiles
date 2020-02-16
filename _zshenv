@@ -22,8 +22,14 @@ path=(
 # SSHで接続した先で日本語が使えるようにする
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+
 # エディタ
-export EDITOR=$(which vim)
+if [ -f /usr/local/bin/nvim ] ; then
+  export EDITOR='/usr/local/bin/nvim'
+elif [ -f /usr/bin/vim ] ; then
+  export EDITOR='/usr/bin/vim'
+fi
+
 # ページャ
 export MANPAGER="less -"
 # export PAGER=/usr/local/bin/vimpager
