@@ -150,7 +150,6 @@ if [ ! -d $FZF_TAB ] ; then
 fi
 
 if [ -f $FZF_TAB/fzf-tab.plugin.zsh ] ; then
-  echo "check fzf-tab"
   source $FZF_TAB/fzf-tab.plugin.zsh
 fi
 
