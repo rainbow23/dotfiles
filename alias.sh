@@ -8,9 +8,6 @@ if [ -f /usr/local/bin/nvim ] ; then
 elif [ -f /usr/bin/vim ] ; then
   alias vim='/usr/bin/vim'
 fi
-if [ -f /usr/bin/vim ] ; then
-  alias vim='/usr/bin/vim'
-fi
 
 alias et='exit'
 alias cl='clear'
