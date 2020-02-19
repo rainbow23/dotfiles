@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 ## -------------------------------------
 # git
@@ -83,16 +83,16 @@ autopair-init
 ## -------------------------------------
 # ZSH_AUTOSUGGESTIONS
 # -------------------------------------
-ZSH_AUTOSUGGESTIONS=$HOME/.zsh/zsh_autosuggestions
+ZSH_AUTOSUGGESTIONS=$HOME/.zsh_autosuggestions
 if [ ! -d $ZSH_AUTOSUGGESTIONS ] ; then
   mkdir -p $ZSH_AUTOSUGGESTIONS
   git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions $ZSH_AUTOSUGGESTIONS
 fi
-# source $ZSH_AUTOSUGGESTIONS/zsh-autosuggestions.zsh
-# ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=45,bold"
-# bindkey '^ ' autosuggest-accept
-# bindkey '^f' autosuggest-fetch
-# bindkey '^d' autosuggest-disable
+source $ZSH_AUTOSUGGESTIONS/zsh-autosuggestions.zsh
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=45,bold"
+bindkey '^j' autosuggest-accept
+bindkey '^f' autosuggest-fetch
+bindkey '^d' autosuggest-disable
 
 ZSH_ABBREV_ALIAS=$HOME/.abbrev_alias
 if [ ! -d $ZSH_ABBREV_ALIAS ] ; then
@@ -102,15 +102,6 @@ fi
 source $ZSH_ABBREV_ALIAS/abbrev-alias.plugin.zsh
 
 
-## -------------------------------------
-# ZSH_COMPLETIONS
-# -------------------------------------
-ZSH_COMPLETIONS=$HOME/.zsh/zsh_completions
-if [ ! -d $ZSH_COMPLETIONS ] ; then
-  mkdir -p $ZSH_COMPLETIONS
-  git clone --depth 1 git://github.com/zsh-users/zsh-completions.git $ZSH_COMPLETIONS
-fi
-fpath=($ZSH_COMPLETIONS/src $fpath)
 
 ## -------------------------------------
 # ZSH_SYNTAX_HIGHLIGHTING
@@ -122,9 +113,17 @@ if [ ! -d $ZSH_SYNTAX_HIGHLIGHTING ] ; then
 fi
 source $ZSH_SYNTAX_HIGHLIGHTING/zsh-syntax-highlighting.zsh
 
+## -------------------------------------
+# ZSH_COMPLETIONS
 # -------------------------------------
+ZSHCOMPLETION=$HOME/.zsh/completion
+
+if [ ! -d $ZSHCOMPLETION ] ; then
+  mkdir -p $ZSHCOMPLETION
+  git clone --depth 1 git://github.com/zsh-users/zsh-completions.git $ZSHCOMPLETION/zsh_completions
+fi
+
 # docker補完設定
-# -------------------------------------
 ZSHCOMPLETION=$HOME/.zsh/completion
 if [ ! -d $ZSHCOMPLETION ]; then
   mkdir -p $ZSHCOMPLETION
@@ -137,8 +136,7 @@ fi
 if [ ! -f $ZSHCOMPLETION/_docker-compose ] ; then
   curl -L https://raw.githubusercontent.com/docker/compose/1.25.0/contrib/completion/zsh/_docker-compose > $ZSHCOMPLETION/_docker-compose
 fi
-fpath=(~/.zsh/completion $fpath)
-# autoload -Uz compinit && compinit -i
+fpath=($ZSHCOMPLETION(N-/) $fpath)
 
 ## -------------------------------------
 # FZF-TAB
@@ -152,5 +150,3 @@ fi
 if [ -f $FZF_TAB/fzf-tab.plugin.zsh ] ; then
   source $FZF_TAB/fzf-tab.plugin.zsh
 fi
-
-autoload -Uz compinit && compinit -i

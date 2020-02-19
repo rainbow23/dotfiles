@@ -81,21 +81,3 @@ if [ ! -d $ZINIT ] ; then
   mkdir $ZINIT
   git clone https://github.com/zdharma/zinit.git $ZINIT/bin
 fi
-
-AUTOSUGGESTIONS = $HOME/.zsh/zsh-autosuggestions
-if [ ! -d $AUTOSUGGESTIONS ] ; then
-  mkdir -p $AUTOSUGGESTIONS
-  git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions $AUTOSUGGESTIONS
-fi
-
-
-# ZSH_COMPLETIONS=$HOME/.zsh-completions
-# if [ ! -d $ZSH_COMPLETIONS ] ; then
-#   mkdir -p $ZSH_COMPLETIONS
-#   git clone --depth 1 https://github.com/zsh-users/zsh-completions.git $ZSH_COMPLETIONS
-# fi
-
-# COMPLETIONS=$HOME/.zsh/completions
-# if [ ! -d $COMPLETIONS ] ; then
-#   mkdir -p $COMPLETIONS
-# fi
