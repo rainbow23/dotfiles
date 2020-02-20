@@ -101,7 +101,15 @@ if [ ! -d $ZSH_ABBREV_ALIAS ] ; then
 fi
 source $ZSH_ABBREV_ALIAS/abbrev-alias.plugin.zsh
 
-
+# -------------------------------------
+# supercrabtree/k
+# -------------------------------------
+SUPERCRABTREE_K=$HOME/.k
+if [ ! -d $SUPERCRABTREE_K ] ; then
+  mkdir -p $SUPERCRABTREE_K
+  git clone --depth 1 https://github.com/supercrabtree/k.git $SUPERCRABTREE_K
+fi
+source $SUPERCRABTREE_K/k.sh
 
 ## -------------------------------------
 # ZSH_SYNTAX_HIGHLIGHTING
