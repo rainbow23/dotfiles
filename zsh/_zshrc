@@ -71,12 +71,12 @@ function title {
 # -------------------------------------
 # source
 # -------------------------------------
-source $HOME/dotfiles/zsh-my-theme.zsh
+source $HOME/dotfiles/zsh/_zsh-my-theme.zsh
 source $HOME/dotfiles/source.sh
 source $HOME/dotfiles/alias.sh
 source $HOME/dotfiles/fzf.sh
 source $HOME/dotfiles/mru.sh
- # source $HOME/dotfiles/zplugin.sh
+ # source $HOME/dotfiles/zsh/_zplugin.sh
 
 ## 補完機能の強化
 autoload -Uz compinit && compinit -i
