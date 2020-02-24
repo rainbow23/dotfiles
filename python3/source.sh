@@ -1,7 +1,7 @@
 
 #!/bin/sh
 
-ostype=$($HOME/dotfiles/ostype.sh)
+ostype=$($HOME/dotfiles/etc/ostype.sh)
 # echo "" && echo "install python  ostype $ostype ****************************************" && echo ""
 
 if [ $ostype = 'darwin' ]; then

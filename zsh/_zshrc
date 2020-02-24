@@ -73,8 +73,8 @@ function title {
 # -------------------------------------
 source $HOME/dotfiles/zsh/_zsh-my-theme.zsh
 source $HOME/dotfiles/source.sh
-source $HOME/dotfiles/alias.sh
-source $HOME/dotfiles/fzf.sh
+source $HOME/dotfiles/etc/alias.sh
+source $HOME/dotfiles/etc/fzf.sh
 source $HOME/dotfiles/mru.sh
  # source $HOME/dotfiles/zsh/_zplugin.sh
 

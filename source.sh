@@ -19,7 +19,7 @@ fi
 
 #ctags settings
 git config --global init.templatedir '~/.git_template'
-git config --global alias.ctags '!~/dotfiles/copy_ctags_files && .git/hooks/ctags'
+git config --global alias.ctags '!~/dotfiles/etc/copy_ctags_files && .git/hooks/ctags'
 
 ## -------------------------------------
 # go
