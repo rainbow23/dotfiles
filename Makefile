@@ -5,13 +5,13 @@ deploy:
 
 .PHONY: install
 install:
-	@./install_packages.sh
-	@./install_tools.sh
-	@./install_python.sh
-	@./install_vim.sh
-	@./install_nvim.sh
+	@./install/install_packages.sh
+	@./install/install_tools.sh
+	@./install/install_python.sh
+	@./install/install_vim.sh
+	@./install/install_nvim.sh
 	@zsh
-	@./gitclone_list.sh
+	@./etc/gitclone_list.sh
 
 .PHONY: build
 build:

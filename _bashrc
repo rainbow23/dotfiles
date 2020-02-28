@@ -6,4 +6,4 @@ LANG=ja_JP.utf8
 export LANG
 
 source $HOME/dotfiles/source.sh
-source $HOME/dotfiles/alias.sh
+source $HOME/dotfiles/etc/alias.sh
