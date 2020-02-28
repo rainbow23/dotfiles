@@ -1,3 +1,4 @@
+#!/bin/zsh
 # ftags - search ctags
 ftags() {
   local line
@@ -14,7 +15,7 @@ ftags() {
 # -------------------------------------
 
 # https://qiita.com/reviry/items/e798da034955c2af84c5
-gadd() {
+git-add-files() {
   local out q n addfiles
   while out=$(
       git status --short |
@@ -60,7 +61,7 @@ glf() {
   fi
 }
 
-gsh() {
+git-commit-show(){
   git log --graph --color=always \
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
   fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
@@ -76,8 +77,8 @@ alias glNoGraph='git log --graph --color=always --format="%C(auto)%h%d %s %C(bla
 _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
 _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | diff-so-fancy'"
 
-# fshow_preview - git commit browser with previews
-fsh() {
+# show_preview - git commit browser with previews
+git-commit-show-preview() {
     glNoGraph |
         fzf --no-sort --reverse --tiebreak=index --no-multi \
             --ansi --preview="$_viewGitLogLine" \
@@ -95,7 +96,7 @@ gsd() {
   git diff $out
 }
 
-gsts() {
+git-stash-list() {
   IFS=$'\n'
   local stash key stashfullpath
   stash=$(git stash list | fzf --ansi +m --exit-0 \
@@ -146,8 +147,7 @@ do_enter() {
 zle -N do_enter
 bindkey '^m' do_enter
 
-# fdg - ghq
-fdg() {
+cd-to-ghq-selected-directory() {
   local selected
   selected=$(ghq list | fzf)
 
@@ -173,17 +173,21 @@ fkill() {
 # ts [FUZZY PATTERN] - Select selected tmux session
 #   - Bypass fuzzy finder if there's only one match (--select-1)
 #   - Exit if there's no match (--exit-0)
-ts() {
+tmux-select-session() {
   local session
   session=$(tmux list-sessions -F "#{session_name}" | \
     fzf --query="$1" --select-1 --exit-0) &&
   tmux switch-client -t "$session"
 }
 
+_fzf_complete_tmux-select-session() {
+  tmux-select-session
+}
+
 # tm - create new tmux session, or switch to existing one. Works from within tmux too. (@bag-man)
 # `tm` will allow you to select your tmux session via fzf.
 # `tm irc` will attach to the irc session (if it exists), else it will create it.
-tm() {
+tmux-session() {
   [[ -n "$TMUX" ]] && change="switch-client" || change="attach-session"
   if [ $1 ]; then
     tmux $change -t "$1" 2>/dev/null || (tmux new-session -d -s $1 && tmux $change -t "$1"); return
@@ -191,13 +195,24 @@ tm() {
   session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --exit-0) &&  tmux $change -t "$session" || echo "No sessions found."
 }
 
-# tmux-kill-session
-tks() {
-  tmux ls | fzf-tmux --query="$1" | awk '{print $1}' | sed "s/:$//g" | xargs tmux kill-session -t
+_fzf_complete_tmux-session() {
+  tmux-session
 }
 
-tp() {
+# tmux-kill-session
+tmux-kill-session() {
+  tmux ls | fzf-tmux --query="$1" | awk '{print $1}' | sed "s/:$//g" | xargs tmux kill-session -t
+}
+_fzf_complete_tmux-kill-session() {
+  tmux-kill-session
+}
+
+# tmux-list-panes
+tmux-list-panes() {
   tmux list-panes -s -F '#I:#W' | fzf +m | sed -e 's/:.*//g' | xargs tmux select-window -t
+}
+_fzf_complete_tmux-list-panes() {
+  tmux-list-panes
 }
 
 ## -------------------------------------
@@ -205,7 +220,7 @@ tp() {
 # -------------------------------------
 
 # fd - cd to selected directory
-fd() {
+fd-selected-directory() {
   local dir
   dir=$(find ${1:-.} -path '*/\.*' -prune \
                   -o -type d -print 2> /dev/null | fzf +m) &&
@@ -215,13 +230,13 @@ fd() {
 # Another fd - cd into the selected directory
 # This one differs from the above, by only showing the sub directories and not
 #  showing the directories within those.
-fdo() {
+fd-selected-sub-directory() {
   DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf-tmux` \
     && cd "$DIR"
 }
 
 # fdp - cd to selected parent directory
-fdp() {
+fd-selected-parent-directory() {
   local declare dirs=()
   get_parent_dirs() {
     if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
@@ -265,8 +280,7 @@ ftpane() {
 #     cd "$(autojump -s | sed '/_____/Q; s/^[0-9,.:]*\s*//' |  fzf --height 40% --nth 1.. --reverse --inline-info +s --tac --query "${*##-* }" )"
 # }
 
-# c - browse chrome history
-c() {
+browse-chrome-history() {
   local cols sep google_history open
   cols=$(( COLUMNS / 3 ))
   sep='{::}'

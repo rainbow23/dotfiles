@@ -29,13 +29,17 @@ alias cl='clear'
   abbrev-alias gbr='git branch --remotes'
   abbrev-alias gv='git branch -vv'
   abbrev-alias gco="git commit "
-  abbrev-alias ga="git add -u"
+  abbrev-alias gau="git add -u"
+  abbrev-alias ga='git-add-files'
   abbrev-alias gl='git log'
   abbrev-alias glo='git log --oneline'
   abbrev-alias gls='git log --stat'
   abbrev-alias glg='git log --graph'
   abbrev-alias gs='git status'
   abbrev-alias gss='git stash save'
+  abbrev-alias gsl='git-stash-list'
+  abbrev-alias gsp='git-commit-show-preview'
+  abbrev-alias gsh='git-commit-show'
   abbrev-alias gc='git checkout'
   abbrev-alias gr='git rebase '
   abbrev-alias gri='git rebase -i'
@@ -77,15 +81,32 @@ alias cl='clear'
   abbrev-alias -g a15="awk '{print \$15}'"
   abbrev-alias -g a16="awk '{print \$16}'"
   abbrev-alias -g and="|" # パイプが遠いのでandを割り当てる。例えば`tail -f ./log | grep error`を`tail -f ./log and grep error`と書くことができる
+
+  ## -------------------------------------
+  # tmux operation
+  # -------------------------------------
+  abbrev-alias -g t='tmux'
+  abbrev-alias -g tm='tmux-session'
+  abbrev-alias -g ts='tmux-select-session'
+  abbrev-alias -g tks='tmux-kill-session'
+  abbrev-alias -g tl='tmux-list-panes'
+
+  ## -------------------------------------
+  # fzf fd
+  # -------------------------------------
+  abbrev-alias -g fdg='cd-to-ghq-selected-directory'
+  abbrev-alias -g fd='fd-selected-directory'
+  abbrev-alias -g fdo='fd-selected-sub-directory'
+  abbrev-alias -g fdp='fd-selected-parent-directory'
+
+  ## -------------------------------------
+  # ls
+  # -------------------------------------
+  abbrev-alias -g ll="ls -latr"
+
+  abbrev-alias -g c='browse-chrome-history'
 }
 
-
-## -------------------------------------
-# tmux operation
-# -------------------------------------
-alias tx='tmux'
-alias txl='tmux ls'
-alias t="tmuximum"
 alias b="chrome_bookmarks_with_fzf.rb"
 
 # tree
