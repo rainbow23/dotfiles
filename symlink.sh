@@ -7,6 +7,8 @@ ln -sfn $HOME/dotfiles/zsh/_zshenv $HOME/.zshenv
 ln -sfn $HOME/dotfiles/_ideavimrc $HOME/.ideavimrc
 ln -sfn $HOME/dotfiles/_tmux.conf $HOME/.tmux.conf
 ln -sfn $HOME/dotfiles/_tmuxp  $HOME/.tmuxp
+ln -sfn $HOME/dotfiles/i3wm/_config /$HOME/.config/i3/config
+
 if [ ! -d $HOME/.config/nvim ];then
     mkdir -p -m 744 $HOME/.config/nvim
 fi
