@@ -152,9 +152,20 @@ fpath=($ZSHCOMPLETION(N-/) $fpath)
 FZF_TAB=$HOME/.fzf-tab
 if [ ! -d $FZF_TAB ] ; then
   mkdir $FZF_TAB
-  git clone --depth 1 https://github.com/Aloxaf/fzf-tab.git $FZF_TAB
+  git clone https://github.com/Aloxaf/fzf-tab.git $FZF_TAB
 fi
 
 if [ -f $FZF_TAB/fzf-tab.plugin.zsh ] ; then
+  ostype=$($HOME/dotfiles/etc/ostype.sh)
+
+  # macで動作するコミットに移動
+  if [ $ostype = 'darwin' ]; then
+    CURRPATH=$(pwd)
+    cd $FZF_TAB
+    git checkout 1738f67018c48b7a1a3f8ce378264e88404d4e79
+    cd $CURRPATH
+    unset CURRPATH
+  fi
+
   source $FZF_TAB/fzf-tab.plugin.zsh
 fi
