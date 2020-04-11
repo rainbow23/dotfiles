@@ -147,6 +147,16 @@ fi
 fpath=($ZSHCOMPLETION(N-/) $fpath)
 
 ## -------------------------------------
+# ZSH-YOU-SHOULD-USE
+# -------------------------------------
+ZSH_YOU_SHOULD_USE=$HOME/.zsh-you-should-use
+if [ ! -d $ZSH_YOU_SHOULD_USE ] ; then
+  mkdir -p $ZSH_YOU_SHOULD_USE
+  git clone https://github.com/MichaelAquilina/zsh-you-should-use.git $ZSH_YOU_SHOULD_USE
+fi
+source $ZSH_YOU_SHOULD_USE/you-should-use.plugin.zsh
+
+## -------------------------------------
 # FZF-TAB
 ## -------------------------------------
 FZF_TAB=$HOME/.fzf-tab
