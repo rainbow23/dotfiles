@@ -196,6 +196,7 @@ endif
 call plug#begin('~/.vim/plugged')
 Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/fzf.vim'
+Plug 'junegunn/vim-peekaboo'
 Plug 'Shougo/unite.vim'
 Plug 'rainbow23/unite-session'
 Plug 'Shougo/neomru.vim'
