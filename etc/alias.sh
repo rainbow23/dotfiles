@@ -65,6 +65,8 @@ alias cl='clear'
   abbrev-alias dib='docker image build'
   abbrev-alias dip='docker image prune'
   abbrev-alias dcom="docker-compose"
+  abbrev-alias escape='\'
+  abbrev-alias undervar='_'
 
   abbrev-alias -g a1="awk '{print \$1}'"
   abbrev-alias -g a2="awk '{print \$2}'"
