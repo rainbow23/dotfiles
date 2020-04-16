@@ -1055,6 +1055,6 @@ nmap <Space>M <Plug>(quickhl-manual-reset)
 xmap <Space>M <Plug>(quickhl-manual-reset)
 nmap <Space>j <Plug>(quickhl-cword-toggle)
 nmap <Space>] <Plug>(quickhl-tag-toggle)
-map H <Plug>(operator-quickhl-manual-this-motion)
+" map H <Plug>(operator-quickhl-manual-this-motion)
 " Plug t9md/vim-quickhl ###############################################################################
 
