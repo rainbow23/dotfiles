@@ -109,6 +109,7 @@ alias cl='clear'
   abbrev-alias -g ll="ls -latr"
 
   abbrev-alias -g c='browse-chrome-history'
+  abbrev-alias -g rm='gomi'
 }
 
 alias b="chrome_bookmarks_with_fzf.rb"

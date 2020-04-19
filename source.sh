@@ -157,6 +157,16 @@ fi
 source $ZSH_YOU_SHOULD_USE/you-should-use.plugin.zsh
 
 ## -------------------------------------
+# ZSH-GOMI
+# -------------------------------------
+ZSH_GOMI=$HOME/.zsh-gomi
+if [ ! -d $ZSH_GOMI ] ; then
+  mkdir -p $ZSH_GOMI
+  git clone https://github.com/b4b4r07/zsh-gomi $ZSH_GOMI
+fi
+source $ZSH_GOMI/gomi.zsh
+
+## -------------------------------------
 # FZF-TAB
 ## -------------------------------------
 FZF_TAB=$HOME/.fzf-tab
