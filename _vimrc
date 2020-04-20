@@ -73,7 +73,9 @@ nnoremap nl $a<CR>
 inoremap nl <ESC>$a<CR>
 " move cursor to end position
 inoremap edp <ESC>$a
-
+" 折返し無し
+set nowrap
+nnoremap swp :<C-u>set nowrap!<CR>
 " 現在開いているファイルにワーキングディレクトリを移動する
 nnoremap mvd :<C-u>cd %:h<CR> :pwd<CR>
 " fullpathでファイル名表示
