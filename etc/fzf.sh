@@ -18,7 +18,7 @@ ftags() {
 git-add-files() {
   local out q n addfiles
   while out=$(
-      git status --short |
+      git status --short --untracked-files=no |
       awk '{if (substr($0,2,1) !~ / /) print $2}' |
       fzf-tmux --multi --exit-0 --border \
       --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a \
