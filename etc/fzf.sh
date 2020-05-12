@@ -99,7 +99,7 @@ gsd() {
 git-stash-list() {
   IFS=$'\n'
   local stash key stashfullpath
-  stash=$(git stash list | fzf --ansi +m --exit-0 \
+  stash=$(git stash list --color=always --pretty="%C(auto)%h %gs %C(black)%C(bold)%cr" | fzf --ansi +m --exit-0 \
         --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
         --expect=enter --expect=ctrl-d --expect=ctrl-a)
 

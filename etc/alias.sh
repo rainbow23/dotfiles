@@ -34,7 +34,7 @@ alias cl='clear'
   abbrev-alias gau="git add -u"
   abbrev-alias ga='git-add-files'
   abbrev-alias gl='git log'
-  abbrev-alias glo='git log --oneline'
+  abbrev-alias glo='git log --oneline --format="%C(auto)%h %d %s %C(black)%C(bold)%cr" --date=format:"%y/%m/%d %H:%M"'
   abbrev-alias gls='git log --stat'
   abbrev-alias glg='git log --graph'
   abbrev-alias gs='git status'
