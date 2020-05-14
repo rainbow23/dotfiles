@@ -15,6 +15,8 @@ if [ -f /usr/local/bin/diff-so-fancy ] ; then
   git config --global color.diff.old        "red bold"
   git config --global color.diff.new        "green bold"
   git config --global color.diff.whitespace "red reverse"
+  # git status の表示で、日本語のファイル名が文字化け対応
+  git config --global core.quotepath false
 fi
 
 #ctags settings
