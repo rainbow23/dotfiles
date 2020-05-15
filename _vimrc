@@ -764,7 +764,7 @@ nnoremap [gitgutter]n :call NextHunkAllBuffers()<cr>
 nnoremap [gitgutter]p :call PrevHunkAllBuffers()<cr>
 "カーソル行だけステージングに追加する、Git diffで表示されなくなる
 nnoremap [gitgutter]s :<C-u>GitGutterStageHunk<CR>
-nnoremap [gitgutter]u :<C-u>GitGutterUndoHunk<CR>
+nnoremap [gitgutter]u :<C-u>GitGutterUndoHunk<CR>:<C-u>GitGutterAll<CR>
 nnoremap [gitgutter]v :<C-u>GitGutterPreviewHunk<CR>
 nnoremap [gitgutter]a :<C-u>GitGutterAll<CR>
 "バッファで次のハンクがあれば移動する
