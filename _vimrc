@@ -151,7 +151,6 @@ nnoremap dd "_dd
 nnoremap dw "_dw
 nnoremap d$ "_d$
 nnoremap diw "_diw
-
 nnoremap ; :
 nnoremap : ;
 " Count number of matches of a pattern
@@ -756,6 +755,7 @@ highlight GitGutterAddLine cterm=bold ctermfg=none ctermbg=18 gui=none
 highlight link GitGutterChangeLine DiffText
 let g:gitgutter_preview_win_floating = 0
 
+autocmd TextChanged * GitGutterAll
 nnoremap [gitgutter]    <Nop>
 nmap     <Leader>g [gitgutter]
 nnoremap [gitgutter]t :<C-u>GitGutterLineHighlightsToggle<CR>
