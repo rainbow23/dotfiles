@@ -281,6 +281,10 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'matze/vim-move'
 Plug 'mcchrish/nnn.vim'
 Plug 't9md/vim-quickhl'
+Plug 'lighttiger2505/sqls.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/async.vim'
+Plug 'lighttiger2505/deoplete-vim-lsp'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1060,3 +1064,41 @@ nmap <Space>] <Plug>(quickhl-tag-toggle)
 " map H <Plug>(operator-quickhl-manual-this-motion)
 " Plug t9md/vim-quickhl ###############################################################################
 
+" lighttiger2505/sqls ##############################################################
+nnoremap seq :SqlsExecuteQuery<CR>
+nnoremap ssc :SqlsShowConnections<CR>
+nnoremap ssd :SqlsSwitchDatabase<CR>
+" localにsqlサーバたてる方法
+" go get github.com/lighttiger2505/sqls
+" cd $GOPATH/src/github.com/lighttiger2505/sqls
+" docker-compse up -d
+
+if executable('sqls')
+    augroup LspSqls
+        autocmd!
+        autocmd User lsp_setup call lsp#register_server({
+        \   'name': 'sqls',
+        \   'cmd': {server_info->['sqls']},
+        \   'whitelist': ['sql'],
+        \   'workspace_config': {
+        \     'sqls': {
+        \       'connections': [
+        \         {
+        \           'driver': 'mysql',
+        \           'dataSourceName': 'root:root@tcp(127.0.0.1:13306)/world',
+        \         },
+        \         {
+        \           'driver': 'mysql',
+        \           'dataSourceName': 'root:root@tcp(127.0.0.1:43306)/todo',
+        \         },
+        \         {
+        \           'driver': 'postgresql',
+        \           'dataSourceName': 'host=127.0.0.1 port=15432 user=postgres password=mysecretpassword1234 dbname=dvdrental sslmode=disable',
+        \         },
+        \       ],
+        \     },
+        \   },
+        \ })
+    augroup END
+endif
+" lighttiger2505/sqls ##############################################################
