@@ -146,11 +146,11 @@ endif
 " Plug 'regedarek/ZoomWin' ###########################################################################
 
 " 削除でヤンクしない
-nnoremap x "_x
-nnoremap dd "_dd
-nnoremap dw "_dw
-nnoremap d$ "_d$
-nnoremap diw "_diw
+nnoremap x "_x:<C-u>GitGutterAll<CR>
+nnoremap dd "_dd:<C-u>GitGutterAll<CR>
+nnoremap dw "_dw:<C-u>GitGutterAll<CR>
+nnoremap d$ "_d$:<C-u>GitGutterAll<CR>
+nnoremap diw "_diw:<C-u>GitGutterAll<CR>
 
 nnoremap ; :
 nnoremap : ;
@@ -727,7 +727,7 @@ nnoremap [fugitive]s  :<C-u>Gstatus<CR>
 nnoremap [fugitive]d :<C-u>Gvdiff<CR>
 nnoremap [fugitive]l  :<C-u>Glog<CR>
 nnoremap [fugitive]b :<C-u>Gblame<CR>
-nnoremap [fugitive]rd :<C-u>Gread<CR>
+nnoremap [fugitive]rd :<C-u>Gread<CR>:GitGutterAll<CR>
 nnoremap [fugitive]g :<C-u>Ggrep
 nnoremap [fugitive]w :<C-u>Gbrowse<CR>
 
