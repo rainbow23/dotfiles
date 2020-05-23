@@ -328,6 +328,7 @@ nnoremap [fzf]m :<C-u>FZFMru<CR>
 nnoremap [fzf]f :<C-u>Files<CR>
 " git ls-files
 nnoremap [fzf]g :<C-u>GFiles<CR>
+nnoremap [fzf]gs :<C-u>GFiles?<CR>
 " git staus
 nnoremap [fzf]G :<C-u>GFiles?<CR>
 nnoremap [fzf]b :<C-u>Buffers<CR>
