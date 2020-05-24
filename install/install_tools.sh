@@ -69,9 +69,14 @@ for file in `\find $HOME/dotfiles/ctags_gitfiles -maxdepth 1 -type f`; do
     cp $file ~/.git_template/hooks/
 done
 
-# ZINIT
-ZINIT=$HOME/.zinit
-if [ ! -d $ZINIT ] ; then
-  mkdir $ZINIT
-  git clone https://github.com/zdharma/zinit.git $ZINIT/bin
+# tig
+TIG=$HOME/tig
+if [[ ! -e /usr/local/bin/tig ]]; then
+  CURRPATH=$(pwd)
+  git clone --depth 1 git clone git://github.com/jonas/tig.git $TIG
+  make prefix=/usr/local
+  sudo make install prefix=/usr/local
+  cd $CURRPATH
+  unset CURRPATH
+  rm -rf $TIG
 fi
