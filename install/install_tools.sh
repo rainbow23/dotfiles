@@ -35,12 +35,6 @@ if [ ! -f /usr/local/bin/diff-so-fancy ] ; then
   && sudo chmod +x /usr/local/bin/diff-so-fancy
 fi
 
-# fzf
-if [ ! -f $HOME/.fzf/bin/fzf ] ; then
-  git clone --depth 1 https://github.com/junegunn/fzf.git $HOME/.fzf
-  yes | $HOME/.fzf/install
-fi
-
 # the_silver_searcher
 SILVER_SEARCHER=$HOME/the_silver_searcher
 if [ ! -f /usr/local/bin/ag ] ; then
