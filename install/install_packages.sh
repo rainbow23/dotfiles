@@ -1,5 +1,5 @@
 #!/bin/sh
-ostype=$(bash -c "$(curl -L https://raw.githubusercontent.com/rainbow23/dotfiles/develop/ostype.sh)")
+ostype=$(bash -c "$(curl -L https://raw.githubusercontent.com/rainbow23/dotfiles/develop/etc/ostype.sh)")
 
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim

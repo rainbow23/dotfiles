@@ -17,7 +17,7 @@ fi
 
 vimpath="$HOME/vim8src/vim-${version}"
 
-ostype=$($HOME/dotfiles/ostype.sh)
+ostype=$($HOME/dotfiles/etc/ostype.sh)
 
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
   echo ""
