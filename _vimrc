@@ -216,7 +216,8 @@ Plug 'Yggdroot/indentLine'
 Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
-Plug 'rainbow23/vim-bookmarks', { 'branch': 'fzf' }
+" Plug 'rainbow23/vim-bookmarks', { 'branch': 'fzf' }
+Plug 'mg979/vim-bookmarks', { 'branch': 'fzf' }
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
 Plug 'airblade/vim-gitgutter'
