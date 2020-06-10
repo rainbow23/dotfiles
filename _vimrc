@@ -285,6 +285,8 @@ Plug 'lighttiger2505/sqls.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'prabirshrestha/async.vim'
 Plug 'lighttiger2505/deoplete-vim-lsp'
+Plug 'mattn/vim-lsp-settings' ":LspInstallServer"
+Plug 'mattn/vim-goimports'
 call plug#end()
 
 "FZF start ####################################################################
