@@ -281,6 +281,12 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'matze/vim-move'
 Plug 'mcchrish/nnn.vim'
 Plug 't9md/vim-quickhl'
+Plug 'lighttiger2505/sqls.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/async.vim'
+Plug 'lighttiger2505/deoplete-vim-lsp'
+Plug 'mattn/vim-lsp-settings' ":LspInstallServer"
+Plug 'mattn/vim-goimports'
 call plug#end()
 
 "FZF start ####################################################################
@@ -724,7 +730,7 @@ nnoremap [fugitive]s  :<C-u>Gstatus<CR>
 nnoremap [fugitive]d :<C-u>Gvdiff<CR>
 nnoremap [fugitive]l  :<C-u>Glog<CR>
 nnoremap [fugitive]b :<C-u>Gblame<CR>
-nnoremap [fugitive]rd :<C-u>Gread<CR>
+nnoremap [fugitive]rd :<C-u>Gread<CR>:GitGutterAll<CR>
 nnoremap [fugitive]g :<C-u>Ggrep
 nnoremap [fugitive]w :<C-u>Gbrowse<CR>
 
@@ -766,7 +772,7 @@ nnoremap [gitgutter]n :call NextHunkAllBuffers()<cr>
 nnoremap [gitgutter]p :call PrevHunkAllBuffers()<cr>
 "カーソル行だけステージングに追加する、Git diffで表示されなくなる
 nnoremap [gitgutter]s :<C-u>GitGutterStageHunk<CR>
-nnoremap [gitgutter]u :<C-u>GitGutterUndoHunk<CR>
+nnoremap [gitgutter]u :<C-u>GitGutterUndoHunk<CR>:<C-u>GitGutterAll<CR>
 nnoremap [gitgutter]v :<C-u>GitGutterPreviewHunk<CR>
 nnoremap [gitgutter]a :<C-u>GitGutterAll<CR>
 "バッファで次のハンクがあれば移動する
@@ -1062,3 +1068,41 @@ nmap <Space>] <Plug>(quickhl-tag-toggle)
 " map H <Plug>(operator-quickhl-manual-this-motion)
 " Plug t9md/vim-quickhl ###############################################################################
 
+" lighttiger2505/sqls ##############################################################
+nnoremap seq :SqlsExecuteQuery<CR>
+nnoremap ssc :SqlsShowConnections<CR>
+nnoremap ssd :SqlsSwitchDatabase<CR>
+" localにsqlサーバたてる方法
+" go get github.com/lighttiger2505/sqls
+" cd $GOPATH/src/github.com/lighttiger2505/sqls
+" docker-compse up -d
+
+if executable('sqls')
+    augroup LspSqls
+        autocmd!
+        autocmd User lsp_setup call lsp#register_server({
+        \   'name': 'sqls',
+        \   'cmd': {server_info->['sqls']},
+        \   'whitelist': ['sql'],
+        \   'workspace_config': {
+        \     'sqls': {
+        \       'connections': [
+        \         {
+        \           'driver': 'mysql',
+        \           'dataSourceName': 'root:root@tcp(127.0.0.1:13306)/world',
+        \         },
+        \         {
+        \           'driver': 'mysql',
+        \           'dataSourceName': 'root:root@tcp(127.0.0.1:43306)/todo',
+        \         },
+        \         {
+        \           'driver': 'postgresql',
+        \           'dataSourceName': 'host=127.0.0.1 port=15432 user=postgres password=mysecretpassword1234 dbname=dvdrental sslmode=disable',
+        \         },
+        \       ],
+        \     },
+        \   },
+        \ })
+    augroup END
+endif
+" lighttiger2505/sqls ##############################################################
