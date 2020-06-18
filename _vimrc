@@ -287,6 +287,8 @@ Plug 'prabirshrestha/async.vim'
 Plug 'lighttiger2505/deoplete-vim-lsp'
 Plug 'mattn/vim-lsp-settings' ":LspInstallServer"
 Plug 'mattn/vim-goimports'
+Plug 'iberianpig/tig-explorer.vim'
+Plug 'rbgrouleff/bclose.vim'
 call plug#end()
 
 "FZF start ####################################################################
