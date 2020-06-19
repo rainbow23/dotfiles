@@ -57,14 +57,6 @@ nnoremap <silent> uss :<C-u>Uss<CR>
 nnoremap <silent> usos :call <SID>Unite_session_override_save()<CR>
 nnoremap src :<C-u>source ~/.vimrc<CR>
 nnoremap setp :<C-u>set paste<CR>
-nnoremap tn :tabnew<CR>
-nnoremap tk :tabnext<CR>
-nnoremap tj :tabprev<CR>
-nnoremap th :tabfirst<CR>
-nnoremap tl :tablast<CR>
-
-nnoremap tmk :tabmove +1<CR>
-nnoremap tmj :tabmove -1<CR>
 
 noremap ter :100VTerm<CR>
 noremap tert :TTerm<CR>
@@ -289,6 +281,7 @@ Plug 'mattn/vim-lsp-settings' ":LspInstallServer"
 Plug 'mattn/vim-goimports'
 Plug 'iberianpig/tig-explorer.vim'
 Plug 'rbgrouleff/bclose.vim'
+Plug 'bagrat/vim-buffet'
 call plug#end()
 
 "FZF start ####################################################################
@@ -397,6 +390,7 @@ let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 set laststatus=2
 set t_Co=256 "vim-air-line-themeを反映させる
+let g:airline#extensions#tabline#enabled = 0
 "vim-airline end  #####################################################################
 
 "neosnippets start #################################################################
@@ -1108,3 +1102,39 @@ if executable('sqls')
     augroup END
 endif
 " lighttiger2505/sqls ##############################################################
+"bagrat/vim-buffet" ##############################################################
+nmap <leader>1 <Plug>BuffetSwitch(1)
+nmap <leader>2 <Plug>BuffetSwitch(2)
+nmap <leader>3 <Plug>BuffetSwitch(3)
+nmap <leader>4 <Plug>BuffetSwitch(4)
+nmap <leader>5 <Plug>BuffetSwitch(5)
+nmap <leader>6 <Plug>BuffetSwitch(6)
+nmap <leader>7 <Plug>BuffetSwitch(7)
+nmap <leader>8 <Plug>BuffetSwitch(8)
+nmap <leader>9 <Plug>BuffetSwitch(9)
+nmap <leader>0 <Plug>BuffetSwitch(10)
+noremap tk :bn<CR>
+noremap tj :bp<CR>
+noremap <Leader><Tab> :Bw<CR>
+noremap <Leader><S-Tab> :Bw!<CR>
+noremap tn :tabnew split<CR>
+let g:buffet_separator = "|"
+let g:buffet_show_index = 1
+let g:buffet_tab_icon = "#"
+let g:buffet_new_buffer_name = "*"
+let g:buffet_modified_icon = "+"
+let g:buffet_left_trunc_icon = "<"
+let g:buffet_right_trunc_icon = ">"
+
+noremap <Tab>   :tabnext<CR>
+noremap <S-Tab> :tabprev<CR>
+
+let g:buffet_tab_icon = "tab"
+function! g:BuffetSetCustomColors()
+    hi! BuffetCurrentBuffer cterm=bold ctermbg=Darkred  ctermfg=White
+    hi! BuffetBuffer        cterm=NONE ctermbg=Darkgrey ctermfg=White
+    hi! BuffetTab           cterm=NONE ctermbg=Yellow   ctermfg=8
+    " hi! BuffetTrunc         cterm=bold ctermbg=66  ctermfg=8   guibg=#458588 guifg=#000000
+    " hi! BuffetActiveBuffer  cterm=NONE ctermbg=10  ctermfg=239 guibg=#999999 guifg=#504945
+endfunction
+"bagrat/vim-buffet" ##############################################################
