@@ -754,8 +754,13 @@ nmap     <Leader>t [tagbar]
 nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
 
 "airblade/vim-gitgutter   start  ###################################################################
-highlight DiffText         cterm=bold ctermfg=none ctermbg=54 gui=none
-highlight GitGutterAddLine cterm=bold ctermfg=none ctermbg=18 gui=none
+highlight clear SignColumn
+highlight GitGutterAdd        cterm=bold ctermfg=2    ctermbg=18
+highlight GitGutterChange     cterm=bold ctermfg=7    ctermbg=54
+highlight GitGutterDelete     cterm=bold ctermfg=164  ctermbg=53
+highlight DiffText            cterm=bold ctermfg=none ctermbg=54 gui=none
+highlight GitGutterAddLine    cterm=bold ctermfg=none ctermbg=18 gui=none
+highlight GitGutterDeleteLine cterm=bold ctermfg=none ctermbg=52 gui=none
 highlight link GitGutterChangeLine DiffText
 let g:gitgutter_preview_win_floating = 0
 
