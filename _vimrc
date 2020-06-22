@@ -282,6 +282,7 @@ Plug 'mattn/vim-goimports'
 Plug 'iberianpig/tig-explorer.vim'
 Plug 'rbgrouleff/bclose.vim'
 Plug 'bagrat/vim-buffet'
+Plug 'machakann/vim-highlightedyank'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1143,3 +1144,5 @@ function! g:BuffetSetCustomColors()
     " hi! BuffetActiveBuffer  cterm=NONE ctermbg=10  ctermfg=239 guibg=#999999 guifg=#504945
 endfunction
 "bagrat/vim-buffet" ##############################################################
+highlight HighlightedyankRegion cterm=reverse gui=reverse
+let g:highlightedyank_highlight_duration = 500
