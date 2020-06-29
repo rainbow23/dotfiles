@@ -290,6 +290,7 @@ Plug 'mattn/vim-goimports'
 Plug 'iberianpig/tig-explorer.vim'
 Plug 'rbgrouleff/bclose.vim'
 Plug 'alvan/vim-closetag'
+Plug 'machakann/vim-highlightedyank'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1152,3 +1153,7 @@ let g:closetag_filetypes = 'html,xhtml,phtml'
 let g:closetag_xhtml_filetypes = 'xhtml,jsx'
 " Plug 'alvan/vim-closetag' #########################################################
 
+" Plug 'machakann/vim-highlightedyank' ##############################################
+highlight HighlightedyankRegion cterm=reverse gui=reverse
+let g:highlightedyank_highlight_duration = 500
+" Plug 'machakann/vim-highlightedyank' ##############################################
