@@ -276,7 +276,6 @@ Plug 'yuttie/comfortable-motion.vim'
 Plug 'mileszs/ack.vim'
 Plug 'thinca/vim-qfreplace'
 Plug 'vimlab/split-term.vim'
-Plug 'vim-scripts/YankRing.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'matze/vim-move'
 Plug 'mcchrish/nnn.vim'
@@ -979,6 +978,12 @@ let &statusline .= ' [%{cfi#format("%s", "")}]'
 
 " Plug 'leafcage/yankround.vim' ######################################################################
 nnoremap <leader>y :<C-u>Unite yankround<CR>
+nmap p <Plug>(yankround-p)
+xmap p <Plug>(yankround-p)
+nmap P <Plug>(yankround-P)
+nmap gp <Plug>(yankround-gp)
+xmap gp <Plug>(yankround-gp)
+nmap gP <Plug>(yankround-gP)
 " Plug 'leafcage/yankround.vim' ######################################################################
 
 " Plug 'ujihisa/unite-colorscheme' ###################################################################
