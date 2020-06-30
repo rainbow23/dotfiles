@@ -360,15 +360,15 @@ command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 
 command! -bang -nargs=* Search
-  \ call fzf#vim#grep(
-  \   'ag --nogroup --column --nocolor ^ $(git rev-parse --show-toplevel)', 1,
-  \   <bang>0 ? fzf#vim#with_preview('up:60%')
-  \           : fzf#vim#with_preview('right:hidden', '?'),
-  \   <bang>0)
+      \ call fzf#vim#grep(
+      \   'rg --column --line-number --no-heading  ^ $(git rev-parse --show-toplevel) --color=always --ignore-case '.shellescape(<q-args>), 1,
+      \   <bang>0 ? fzf#vim#with_preview('up:60%')
+      \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+      \   <bang>0)
 
 command! -bang -nargs=* SearchFromCurrDir
   \ call fzf#vim#grep(
-  \   'ag --nogroup --column --nocolor ^ $(pwd)', 1,
+  \   'rg --column --line-number --no-heading ^ $(pwd) --color=always --ignore-case '.shellescape(<q-args>), 1,
   \   <bang>0 ? fzf#vim#with_preview('up:60%')
   \           : fzf#vim#with_preview('right:hidden', '?'),
   \   <bang>0)
@@ -565,8 +565,8 @@ nnoremap <silent> [unite]cg :<C-u>Unite grep:. -buffer-name=search-buffer<CR><C-
 " grep検索結果の再呼出
 nnoremap <silent> [unite]r  :<C-u>UniteResume search-buffer<CR>
 " unite grep に ag(The Silver Searcher) を使う
-if executable('ag')
-  let g:unite_source_grep_command = 'ag'
+if executable('rg')
+  let g:unite_source_grep_command = 'rg'
   let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
   let g:unite_source_grep_recursive_opt = ''
 endif
@@ -1062,8 +1062,8 @@ nnoremap <silent> <C-b> :call comfortable_motion#flick(g:comfortable_motion_impu
 " Plug 'yuttie/comfortable-motion.vim' ###############################################################
 
 " Plug 'mileszs/ack.vim' #############################################################################
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
+if executable("rg")
+  let g:ackprg = 'rg --vimgrep --no-heading'
 endif
 " Plug 'mileszs/ack.vim' #############################################################################
 
