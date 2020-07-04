@@ -347,9 +347,36 @@ nnoremap [fzf]h :<C-u>History<CR>
 nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]a :<C-u>Ag<CR>
 nnoremap [fzf]l :<C-u>BLines<CR>
-nnoremap [fzf]s :<C-u>Search<CR>
+nnoremap [fzf]s :<C-u>RgGitRoot<CR>
 nnoremap [fzf]S :<C-u>SearchFromCurrDir<CR>
 nnoremap [fzf]k :<C-u>FzfBookmarks!<CR>
+
+let g:fzf_layout = { 'down': '~30%' }
+let s:fzf_base_options = extend({'options': ''}, g:fzf_layout)
+
+function! s:with_git_root()
+  let root = systemlist('git rev-parse --show-toplevel')[0]
+  return v:shell_error ? {} : {'dir': root}
+endfunction
+
+function! s:rg_raw(command_suffix, ...)
+  if !executable('rg')
+    return s:warn('rg is not found')
+  endif
+  let s:cmd='rg --column --line-number --no-heading --color=always --smart-case -- ' .
+    \ a:command_suffix
+  return call('fzf#vim#grep', extend([s:cmd, 1], a:000))
+endfunction
+
+function! s:rg(query, ...)
+  let query = empty(a:query) ? '' : a:query
+  let args  = copy(a:000)
+  " echo a:000 >> [{'options': '', 'dir': '/Users/goodscientist1023/dotfiles', 'down': '~30%'}]
+  return call('s:rg_raw', insert(args, fzf#shellescape(query), 0))
+endfunction
+
+command! -bang -nargs=* RgGitRoot call
+  \ s:rg(<q-args>, extend(s:with_git_root(), s:fzf_base_options))
 
 command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview())
 
