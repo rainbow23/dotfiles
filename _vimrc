@@ -1174,3 +1174,8 @@ let g:closetag_xhtml_filetypes = 'xhtml,jsx'
 highlight HighlightedyankRegion cterm=reverse gui=reverse
 let g:highlightedyank_highlight_duration = 500
 " Plug 'machakann/vim-highlightedyank' ##############################################
+
+" Plug 'christoomey/vim-tmux-navigator' #############################################
+" Disable tmux navigator when zooming the Vim pane
+let g:tmux_navigator_disable_when_zoomed = 1
+" Plug 'christoomey/vim-tmux-navigator' #############################################
