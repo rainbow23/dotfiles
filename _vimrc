@@ -213,6 +213,7 @@ Plug 'thinca/vim-quickrun'
 Plug 'osyo-manga/unite-quickfix'
 Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
+Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
 " Plug 'rainbow23/vim-bookmarks', { 'branch': 'fzf' }
@@ -783,6 +784,19 @@ autocmd BufWritePost *
       \   call system('"'.b:git_dir.'/hooks/ctags" &') |
       \ endif
 "tpope/vim-fugitive end      ###################################################################
+
+"osyo-manga/vim-anzu' start  ###################################################################
+" mapping
+nmap n <Plug>(anzu-n-with-echo)
+nmap N <Plug>(anzu-N-with-echo)
+nmap * <Plug>(anzu-star-with-echo)
+nmap # <Plug>(anzu-sharp-with-echo)
+
+" clear status
+nmap <Esc><Esc> <Plug>(anzu-clear-search-status)
+" statusline
+set statusline=%{anzu#search_status()}
+"osyo-manga/vim-anzu' end    ###################################################################
 
 nnoremap [tagbar]    <Nop>
 nmap     <Leader>t [tagbar]
