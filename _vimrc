@@ -26,7 +26,7 @@ hi Visual ctermfg=DarkBlue
 hi Comment ctermfg=Cyan
 set encoding=utf-8
 
-autocmd BufEnter *.yml,*.yaml,*.sh,*.zsh,_zshrc,_vimrc set shiftwidth=2
+autocmd BufEnter *.yml,*.yaml,*.sh,*.zsh,_zshrc,_vimrc,*.vim set shiftwidth=2
 autocmd BufEnter *.php set noexpandtab " Use tabs, not spaces
 autocmd BufEnter *.php set tabstop=4
 " %retab!            "spaceをtabに変換
@@ -216,8 +216,7 @@ Plug 'Yggdroot/indentLine'
 Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
 Plug 'rhysd/clever-f.vim'
-" Plug 'rainbow23/vim-bookmarks', { 'branch': 'fzf' }
-Plug 'mg979/vim-bookmarks', { 'branch': 'fzf' }
+Plug 'rainbow23/vim-bookmarks', { 'branch': 'fzf' }
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
 Plug 'airblade/vim-gitgutter'
@@ -578,6 +577,7 @@ let g:bookmark_highlight_lines = 1
 let g:bookmark_center = 1
 let g:bookmark_prefer_fzf = 1
 let g:bookmark_fzf_preview_layout = ['right', '80%']
+let g:bookmark_auto_save = 1
 " 'rainbow23/vim-bookmarks.git' start ****************************************************
 
 nnoremap <silent> [unite]kk :<C-u>Unite -auto-resize vim_bookmarks<CR>
