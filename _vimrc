@@ -346,7 +346,7 @@ nnoremap [fzf]h :<C-u>History<CR>
 nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]a :<C-u>Ag<CR>
 nnoremap [fzf]l :<C-u>BLines<CR>
-nnoremap [fzf]s :<C-u>RgGitRoot<CR>
+nnoremap [fzf]s :<C-u>Search<CR>
 nnoremap [fzf]S :<C-u>SearchFromCurrDir<CR>
 nnoremap [fzf]k :<C-u>FzfGitRootDirBookmarks!<CR>
 nnoremap [fzf]K :<C-u>FzfCurrFileBookmarks!<CR>
@@ -376,9 +376,6 @@ function! s:rg(query, ...)
   return call('s:rg_raw', insert(args, fzf#shellescape(query), 0))
 endfunction
 
-command! -bang -nargs=* RgGitRoot call
-  \ s:rg(<q-args>, extend(s:with_git_root(), s:fzf_base_options))
-
 command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview())
 
 command! -bang -nargs=? GFiles
@@ -387,18 +384,19 @@ command! -bang -nargs=? GFiles
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 
+ " Make Ripgrep ONLY search file contents and not filenames
 command! -bang -nargs=* Search
-      \ call fzf#vim#grep(
-      \   'rg --column --line-number --no-heading  ^ $(git rev-parse --show-toplevel) --color=always --ignore-case '.shellescape(<q-args>), 1,
-      \   <bang>0 ? fzf#vim#with_preview('up:60%')
-      \           : fzf#vim#with_preview('right:50%:hidden', '?'),
-      \   <bang>0)
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --hidden --smart-case --no-heading --color=always ^ $(git rev-parse --show-toplevel) '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
+  \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
+  \   <bang>0)
 
 command! -bang -nargs=* SearchFromCurrDir
   \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading ^ $(pwd) --color=always --ignore-case '.shellescape(<q-args>), 1,
-  \   <bang>0 ? fzf#vim#with_preview('up:60%')
-  \           : fzf#vim#with_preview('right:hidden', '?'),
+  \   'rg --column --line-number --hidden --smart-case --no-heading --color=always ^ $(pwd) '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
+  \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
   \   <bang>0)
 
 command! -bang -nargs=* Ag
