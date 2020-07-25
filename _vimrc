@@ -348,7 +348,9 @@ nnoremap [fzf]a :<C-u>Ag<CR>
 nnoremap [fzf]l :<C-u>BLines<CR>
 nnoremap [fzf]s :<C-u>RgGitRoot<CR>
 nnoremap [fzf]S :<C-u>SearchFromCurrDir<CR>
-nnoremap [fzf]k :<C-u>FzfBookmarks!<CR>
+nnoremap [fzf]k :<C-u>FzfGitRootDirBookmarks!<CR>
+nnoremap [fzf]K :<C-u>FzfCurrFileBookmarks!<CR>
+nnoremap [fzf]ka :<C-u>FzfAllBookmarks!<CR>
 
 let g:fzf_layout = { 'down': '~30%' }
 let s:fzf_base_options = extend({'options': ''}, g:fzf_layout)
@@ -576,9 +578,9 @@ highlight BookmarkAnnotationLine ctermbg=238 ctermfg=none
 let g:bookmark_highlight_lines = 1
 let g:bookmark_center = 1
 let g:bookmark_prefer_fzf = 1
-let g:bookmark_fzf_preview_layout = ['right', '80%']
+let g:bookmark_fzf_preview_layout = ['down', '40%']
 let g:bookmark_auto_save = 1
-" 'rainbow23/vim-bookmarks.git' start ****************************************************
+" 'rainbow23/vim-bookmarks.git' end ******************************************************
 
 nnoremap <silent> [unite]kk :<C-u>Unite -auto-resize vim_bookmarks<CR>
 "Unite bookmarkを開く
