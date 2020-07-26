@@ -350,7 +350,7 @@ nnoremap [fzf]s :<C-u>Search<CR>
 nnoremap [fzf]S :<C-u>SearchFromCurrDir<CR>
 nnoremap [fzf]k :<C-u>FzfGitRootDirBookmarks!<CR>
 nnoremap [fzf]K :<C-u>FzfCurrFileBookmarks!<CR>
-nnoremap [fzf]ka :<C-u>FzfAllBookmarks!<CR>
+" nnoremap [fzf]ka :<C-u>FzfAllBookmarks!<CR>
 
 let g:fzf_layout = { 'down': '~30%' }
 let s:fzf_base_options = extend({'options': ''}, g:fzf_layout)
