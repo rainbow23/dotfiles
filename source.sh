@@ -114,16 +114,6 @@ fi
 source $SUPERCRABTREE_K/k.sh
 
 ## -------------------------------------
-# ZSH_SYNTAX_HIGHLIGHTING
-## -------------------------------------
-ZSH_SYNTAX_HIGHLIGHTING=$HOME/.zsh/zsh-syntax-highlighting
-if [ ! -d $ZSH_SYNTAX_HIGHLIGHTING ] ; then
-  mkdir -p $ZSH_SYNTAX_HIGHLIGHTING
-  git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_SYNTAX_HIGHLIGHTING
-fi
-source $ZSH_SYNTAX_HIGHLIGHTING/zsh-syntax-highlighting.zsh
-
-## -------------------------------------
 # ZSH_COMPLETIONS
 # -------------------------------------
 ZSHCOMPLETION=$HOME/.zsh/completion
@@ -178,16 +168,62 @@ if [ ! -d $FZF_TAB ] ; then
 fi
 
 if [ -f $FZF_TAB/fzf-tab.plugin.zsh ] ; then
-  ostype=$($HOME/dotfiles/etc/ostype.sh)
-
-  # macで動作するコミットに移動
-  if [ $ostype = 'darwin' ]; then
-    CURRPATH=$(pwd)
-    cd $FZF_TAB
-    git checkout 1738f67018c48b7a1a3f8ce378264e88404d4e79
-    cd $CURRPATH
-    unset CURRPATH
-  fi
-
   source $FZF_TAB/fzf-tab.plugin.zsh
+
+  # (experimental, may change in the future)
+  # some boilerplate code to define the variable `extract` which will be used later
+  # please remember to copy them
+  local extract="
+  # trim input(what you select)
+  local in=\${\${\"\$(<{f})\"%\$'\0'*}#*\$'\0'}
+  # get ctxt for current completion(some thing before or after the current word)
+  local -A ctxt=(\"\${(@ps:\2:)CTXT}\")
+  # real path
+  local realpath=\${ctxt[IPREFIX]}\${ctxt[hpre]}\$in
+  realpath=\${(Qe)~realpath}
+  "
+
+  FZF_TAB_GROUP_COLORS=(
+      $'\033[94m' $'\033[32m' $'\033[33m' $'\033[35m' $'\033[31m' $'\033[38;5;27m' $'\033[36m' \
+      $'\033[38;5;100m' $'\033[38;5;98m' $'\033[91m' $'\033[38;5;80m' $'\033[92m' \
+      $'\033[38;5;214m' $'\033[38;5;165m' $'\033[38;5;124m' $'\033[38;5;120m'
+  )
+  zstyle ':fzf-tab:*' group-colors $FZF_TAB_GROUP_COLORS
+
+  # Component: fzf-tab
+  # Purpose: disable default command keybinding (I use tab for `accept` action)
+  # Reference: https://github.com/Aloxaf/fzf-tab#command
+  FZF_TAB_COMMAND=(
+    fzf
+    --ansi
+    --expect='$continuous_trigger' # For continuous completion
+    '--color=hl:$(( $#headers == 0 ? 108 : 255 ))'
+    --nth=2,3 --delimiter='\x00'  # Don't search prefix
+    --layout=reverse --height='${FZF_TMUX_HEIGHT:=75%}'
+    --tiebreak=begin -m --cycle
+    '--query=$query'
+    '--header-lines=$#headers'
+  )
+  zstyle ":fzf-tab:*" command $FZF_TAB_COMMAND
+  zstyle ':fzf-tab:*' continuous-trigger '/'
+  local sanitized_in='${~ctxt[hpre]}"${${in//\\ / }/#\~/$HOME}"'
+  zstyle ':fzf-tab:complete:vim:*' extra-opts --preview=$extract'[ -d $realpath ] && exa -1 --color=always $realpath || bat -p --theme=base16 --color=always $realpath'
+  zstyle ':fzf-tab:complete:nvim:*' extra-opts --preview=$extract'[ -d $realpath ] && exa -1 --color=always $realpath || bat -p --theme=base16 --color=always $realpath'
+  zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps --pid=$in[(w)1] -o cmd --no-headers -w -w' --preview-window=down:3:wrap
+  zstyle ':fzf-tab:complete:ls:*' extra-opts --preview=$extract'exa  --color=always $realpath || bat -p --theme=base16 --color=always $realpath'
+  zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+  # disable sort when completing options of any command
+  zstyle ':completion:complete:*:options' sort false
+  # give a preview of commandline arguments when completing `kill`
+  zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm,cmd -w -w"
 fi
+
+## -------------------------------------
+# ZSH_SYNTAX_HIGHLIGHTING
+## -------------------------------------
+ZSH_SYNTAX_HIGHLIGHTING=$HOME/.zsh/zsh-syntax-highlighting
+if [ ! -d $ZSH_SYNTAX_HIGHLIGHTING ] ; then
+  mkdir -p $ZSH_SYNTAX_HIGHLIGHTING
+  git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_SYNTAX_HIGHLIGHTING
+fi
+source $ZSH_SYNTAX_HIGHLIGHTING/zsh-syntax-highlighting.zsh
