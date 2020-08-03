@@ -818,9 +818,27 @@ nmap <Esc><Esc> <Plug>(anzu-clear-search-status)
 set statusline=%{anzu#search_status()}
 "osyo-manga/vim-anzu' end    ###################################################################
 
+" Plug 'majutsushi/tagbar' start ###################################################################
 nnoremap [tagbar]    <Nop>
 nmap     <Leader>t [tagbar]
 nnoremap [tagbar]t :<C-u>TagbarToggle<CR>
+
+let g:tagbar_type_kotlin = {
+  \ 'ctagstype': 'kotlin',
+  \ 'kinds' : [
+    \ 'c:Classes',
+    \ 'dc:DataClasses',
+    \ 'co:Constants',
+    \ 'i:Interfaces',
+    \ 'm:Methods',
+    \ 'o:Objects',
+    \ 'p:Imports:1',
+    \ 'T:Types',
+    \ 'va:Variables:1'
+  \ ],
+  \ 'sort' : 0
+\ }
+" Plug 'majutsushi/tagbar' end   ###################################################################
 
 "airblade/vim-gitgutter   start  ###################################################################
 highlight clear SignColumn
