@@ -196,7 +196,7 @@ endif
 
 call plug#begin('~/.vim/plugged')
 Plug 'junegunn/vim-easy-align'
-Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf.vim', { 'commit': '9cc54fb3d3bfb44d7c6d549c78f0a125ec3281aa' }
 Plug 'junegunn/vim-peekaboo'
 Plug 'Shougo/unite.vim'
 Plug 'rainbow23/unite-session'
