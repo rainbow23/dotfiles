@@ -289,6 +289,7 @@ Plug 'iberianpig/tig-explorer.vim'
 Plug 'rbgrouleff/bclose.vim'
 Plug 'alvan/vim-closetag'
 Plug 'machakann/vim-highlightedyank'
+Plug 'ctrlpvim/ctrlp.vim'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1231,3 +1232,7 @@ let g:highlightedyank_highlight_duration = 500
 " Disable tmux navigator when zooming the Vim pane
 let g:tmux_navigator_disable_when_zoomed = 1
 " Plug 'christoomey/vim-tmux-navigator' #############################################
+
+" Plug 'ctrlpvim/ctrlp.vim' #########################################################
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
+" Plug 'ctrlpvim/ctrlp.vim' #########################################################
