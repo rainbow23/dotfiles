@@ -290,6 +290,7 @@ Plug 'rbgrouleff/bclose.vim'
 Plug 'alvan/vim-closetag'
 Plug 'machakann/vim-highlightedyank'
 Plug 'ctrlpvim/ctrlp.vim'
+Plug 'mattn/ctrlp-matchfuzzy'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1236,3 +1237,7 @@ let g:tmux_navigator_disable_when_zoomed = 1
 " Plug 'ctrlpvim/ctrlp.vim' #########################################################
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
 " Plug 'ctrlpvim/ctrlp.vim' #########################################################
+
+" Plug 'mattn/ctrlp-matchfuzzy' #####################################################
+let g:ctrlp_match_func = {'match': 'ctrlp_matchfuzzy#matcher'}
+" Plug 'mattn/ctrlp-matchfuzzy' #####################################################

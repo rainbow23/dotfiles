@@ -3,12 +3,6 @@
 alias hsn='hostname'
 alias ez='exec zsh -l'
 
-if [ -f /usr/local/bin/nvim ] ; then
-  alias vim='/usr/local/bin/nvim'
-elif [ -f /usr/bin/vim ] ; then
-  alias vim='/usr/bin/vim'
-fi
-
 alias et='exit'
 alias cl='clear'
 
