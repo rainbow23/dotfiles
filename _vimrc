@@ -209,9 +209,9 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'kana/vim-fakeclip'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'thinca/vim-quickrun'
+" Plug 'thinca/vim-quickrun'
 Plug 'osyo-manga/unite-quickfix'
-Plug 'osyo-manga/shabadou.vim'
+" Plug 'osyo-manga/shabadou.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'rainbow23/vim-anzu'
 Plug 'majutsushi/tagbar'
@@ -291,6 +291,8 @@ Plug 'alvan/vim-closetag'
 Plug 'machakann/vim-highlightedyank'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'mattn/ctrlp-matchfuzzy'
+Plug 'kana/vim-operator-replace'
+Plug 'kana/vim-operator-user'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1241,3 +1243,7 @@ set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
 " Plug 'mattn/ctrlp-matchfuzzy' #####################################################
 let g:ctrlp_match_func = {'match': 'ctrlp_matchfuzzy#matcher'}
 " Plug 'mattn/ctrlp-matchfuzzy' #####################################################
+
+" Plug 'kana/vim-operator-replace'###################################################
+nmap s <Plug>(operator-replace)
+" Plug 'kana/vim-operator-replace'###################################################
