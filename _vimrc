@@ -28,7 +28,7 @@ hi Visual ctermfg=DarkBlue
 hi Comment ctermfg=Cyan
 set encoding=utf-8
 
-autocmd BufEnter *.yml,*.yaml,*.sh,*.zsh,_zshrc,_vimrc,*.vim set shiftwidth=2
+autocmd BufEnter *.html,*.vue,*.yml,*.yaml,*.sh,*.zsh,_zshrc,_vimrc,*.vim set shiftwidth=2
 autocmd BufEnter *.php set noexpandtab " Use tabs, not spaces
 autocmd BufEnter *.php set tabstop=4
 " %retab!            "spaceをtabに変換
