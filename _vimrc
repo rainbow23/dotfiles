@@ -10,6 +10,8 @@ set noshowmode
 set tags+=.git/tags
 set pumheight=10
 set splitright
+" git :: 「No newline at end of file」の対処
+set binary noeol
 " 開いたファイルにワーキングディレクトリを移動する
 if 1 == exists("+autochdir")
     set autochdir
