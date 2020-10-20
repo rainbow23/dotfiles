@@ -857,6 +857,7 @@ highlight GitGutterDeleteLine cterm=bold ctermfg=none ctermbg=52 gui=none
 highlight link GitGutterChangeLine DiffText
 let g:gitgutter_preview_win_floating = 0
 
+autocmd BufEnter * :GitGutterAll
 autocmd TextChanged * GitGutterAll
 nnoremap [gitgutter]    <Nop>
 nmap     <Leader>g [gitgutter]
