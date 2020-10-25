@@ -46,21 +46,9 @@ elif [ $ostype = 'darwin' ]; then
   echo ""
   echo "configure ostype $ostype ****************************************"
   echo ""
-  # `brew --prefix` >> /usr/local
-  cd $vimpath && ./configure\
-    --prefix=`brew --prefix`\
-    --enable-fail-if-missing\
-    --with-features=huge\
-    --disable-selinux\
-    --enable-python3interp=yes\
-    # --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3.7\
-    --with-python3-command=python3\
-    # --with-python3-config-dir=/usr/local/Cellar/python3/3.7.2/Frameworks/Python.framework/Versions/3.7/lib/python3.7/config-3.7m-darwin\ #deprecated
-    --enable-luainterp\
-    --enable-perlinterp\
-    --enable-cscope\
-    --enable-fontset\
-    --enable-multibyte
+  brew remove vim
+  brew cleanup
+  brew install vim
 fi
 
 cd $vimpath
