@@ -30,7 +30,7 @@ git-add-files() {
     if [ "$q" = ctrl-d ] || [ "$q" = enter ] ; then
       git diff --color=always -u $addfiles | diff-so-fancy | less -R
     elif [ "$q" = ctrl-e ] ; then
-      ${EDITOR:-vim} $addfiles
+      vim $addfiles
     elif [ "$q" = ctrl-a ] ; then
       git add $addfiles
     fi
