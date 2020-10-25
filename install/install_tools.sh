@@ -2,6 +2,11 @@
 
 #go
 if [ ! -d /usr/local/go/bin ]; then
+
+  if [ ! -d /usr/local/src ]; then
+    sudo mkdir /usr/local/src
+  fi
+
   cd /usr/local/src
   sudo wget https://dl.google.com/go/go1.12.4.linux-amd64.tar.gz
   sudo tar -C /usr/local -xzf go1.12.4.linux-amd64.tar.gz
@@ -52,6 +57,7 @@ fi
 
 # ctags
 if [[ ! -e /usr/local/bin/ctags ]]; then
+  mkdir $HOME/ctags
   git clone --depth 1 https://github.com/universal-ctags/ctags.git $HOME/ctags
   cd $HOME/ctags
   ./autogen.sh
