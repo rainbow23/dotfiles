@@ -36,9 +36,5 @@ elif [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
   sudo ln -s /usr/local/Python36/bin/pip3.6 /usr/local/bin/pip3
 fi
 
-pip3 --no-cache-dir install --user --upgrade pip
-pip3 --no-cache-dir install --user neovim
-pip3 --no-cache-dir install --user pynvim
-
 # vim error support
 # pip install -U msgpack
