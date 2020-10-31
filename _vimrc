@@ -1240,7 +1240,14 @@ let g:tmux_navigator_disable_when_zoomed = 1
 " Plug 'christoomey/vim-tmux-navigator' #############################################
 
 " Plug 'ctrlpvim/ctrlp.vim' #########################################################
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
+let g:ctrlp_custom_ignore = '\v'
+let g:ctrlp_custom_ignore .= '%('
+let g:ctrlp_custom_ignore .= '\.%(git|hg|svn)$|'
+let g:ctrlp_custom_ignore .= '\.%(o|obj|so|pyc|png|jpeg|jpg|bmp|ogg|odt|pdf|ttf|jar)$|'
+let g:ctrlp_custom_ignore .= '[\/]*build'
+let g:ctrlp_custom_ignore .= ')'
+nnoremap <Leader>fe :CtrlP .<CR>
+nnoremap <Leader>fb :CtrlPBuffer<CR>
 " Plug 'ctrlpvim/ctrlp.vim' #########################################################
 
 " Plug 'mattn/ctrlp-matchfuzzy' #####################################################
