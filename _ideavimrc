@@ -1,9 +1,39 @@
-"idea settings
+let mapleader = "\<Space>"
+nmap <Leader>f [fzf]
+
 set surround
-nnoremap tk :action VimMotionNextTab<CR>
-nnoremap tj :action VimMotionPreviousTab<CR>
-" nnoremap x :close<CR>
-"KJump
-nnoremap ju :action KJumpAction<CR>
-" nnoremap w :action KJumpAction.Word0<CR>
-" nnoremap l :action KJumpAction.Line<CR>
+set ignorecase
+set showmatch
+set visualbell
+set noswapfile
+set surround
+
+"カーソル位置から画面移動
+nnoremap .t zt
+nnoremap .m zz
+nnoremap .b zb
+nnoremap src :<C-u>source ~/.ideavimrc<CR>
+" nnoremap sn :<C-u>set number<CR>
+" nnoremap snn :<C-u>set nonumber<CR>
+" nnoremap srn :<C-u>setlocal relativenumber!<CR>
+" nnoremap swp :<C-u>set nowrap!<CR>
+" nnoremap <Leader>p :echo expand('%:p') <CR>
+
+nnoremap x "_x
+nnoremap dd "_dd
+nnoremap dw "_dw
+nnoremap d$ "_d$
+nnoremap diw "_diw
+nnoremap ; :
+nnoremap : ;
+nnoremap / :<C-u>action Find<CR>
+" nnoremap n :action FindNext<CR>
+" nnoremap N :action FindPrevious<CR>
+nnoremap <c-w>q :close<CR>
+nnoremap tk :action NextTab<CR>
+nnoremap tj :action PreviousTab<CR>
+
+nnoremap [fzf]m :action RecentFiles<CR>
+nnoremap [fzf]s :action FindInPath<CR>
+nnoremap <leader>ff :action GotoFile<CR>
+nnoremap [fzf]r :action RenameFile<CR>
