@@ -340,7 +340,7 @@ command! MyUniteSessionLoad  call fzf#run({
       \ 'right': '40%'})
 
 nnoremap [fzf]m :<C-u>FZFMru<CR>
-nnoremap [fzf]f :<C-u>Files<CR>
+" nnoremap [fzf]f :<C-u>Files<CR>
 " git ls-files
 nnoremap [fzf]g :<C-u>GFiles<CR>
 nnoremap [fzf]gs :<C-u>GFiles?<CR>
@@ -1248,6 +1248,22 @@ let g:ctrlp_custom_ignore .= '[\/]*build'
 let g:ctrlp_custom_ignore .= ')'
 nnoremap <Leader>fe :CtrlP .<CR>
 nnoremap <Leader>fb :CtrlPBuffer<CR>
+
+
+
+" The Silver Searcher
+if executable('ag')
+  " Use ag over grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+endif
+
+
 " Plug 'ctrlpvim/ctrlp.vim' #########################################################
 
 " Plug 'mattn/ctrlp-matchfuzzy' #####################################################
@@ -1257,3 +1273,39 @@ let g:ctrlp_match_func = {'match': 'ctrlp_matchfuzzy#matcher'}
 " Plug 'kana/vim-operator-replace'###################################################
 nmap s <Plug>(operator-replace)
 " Plug 'kana/vim-operator-replace'###################################################
+
+nnoremap <Leader>fn :echo WhatFunctionAreWeIn()<CR>
+
+function! WhatFunctionAreWeIn()
+  let strList = ["while", "foreach", "ifelse", "if else", "for", "if", "else", "try", "catch", "case", "switch"]
+  let foundcontrol = 1
+  let position = ""
+  let pos=getpos(".")          " This saves the cursor position
+  let view=winsaveview()       " This saves the window view
+  while (foundcontrol)
+    let foundcontrol = 0
+    normal [{
+    call search('\S','bW')
+    let tempchar = getline(".")[col(".") - 1]
+    if (match(tempchar, ")") >=0 )
+      normal %
+      call search('\S','bW')
+    endif
+    let tempstring = getline(".")
+    for item in strList
+      if( match(tempstring,item) >= 0 )
+        let position = item . " - " . position
+        let foundcontrol = 1
+        break
+      endif
+    endfor
+    if(foundcontrol == 0)
+      call cursor(pos)
+      call winrestview(view)
+      return tempstring.position
+    endif
+  endwhile
+  call cursor(pos)
+  call winrestview(view)
+  return tempstring.position
+endfunction
