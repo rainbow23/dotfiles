@@ -52,6 +52,7 @@ elif [ $ostype = 'darwin' ]; then
           "rg" \
           "bat" \
           "go" \
+          "git-delta" \
           )
 fi
 

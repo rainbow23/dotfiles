@@ -3,22 +3,33 @@
 ## -------------------------------------
 # git
 # -------------------------------------
-if [ -f /usr/local/bin/diff-so-fancy ] ; then
-  git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
-  git config --global color.diff-highlight.oldNormal    "red bold"
-  git config --global color.diff-highlight.oldHighlight "red bold 52"
-  git config --global color.diff-highlight.newNormal    "green bold"
-  git config --global color.diff-highlight.newHighlight "green bold 22"
-  git config --global color.diff.meta       "yellow"
-  git config --global color.diff.frag       "magenta bold"
-  git config --global color.diff.commit     "yellow bold"
-  git config --global color.diff.old        "red bold"
-  git config --global color.diff.new        "green bold"
-  git config --global color.diff.whitespace "red reverse"
-  # git status の表示で、日本語のファイル名が文字化け対応
-  git config --global core.quotepath false
+if [ -f /usr/local/bin/delta ] ; then
+  git config --global core.pager "delta"
+  git config --global interactive.diffFilter                    "delta --color-only"
+  git config --global delta.features                            "side-by-side line-numbers decorations"
+  git config --global delta.whitespace-error-style              "22 reverse"
+  git config --global delta.navigate                            "true"
+  git config --global delta.side-by-side                        "true"
+  git config --global delta.line-numbers                        "true"
+  git config --global delta.decorations.commit-decoration-style "bold yellow box ul"
+  git config --global delta.decorations.file-style              "bold yellow ul"
+  git config --global delta.decorations.file-decoration-style   "none"
 fi
 
+git config --global color.diff.whitespace             "red reverse"
+git config --global color.diff-highlight.oldNormal    "red bold"
+git config --global color.diff-highlight.oldHighlight "red bold 52"
+git config --global color.diff-highlight.newNormal    "green bold"
+git config --global color.diff-highlight.newHighlight "green bold 22"
+git config --global color.diff.meta                   "yellow"
+git config --global color.diff.frag                   "magenta bold"
+git config --global color.diff.commit                 "yellow bold"
+git config --global color.diff.old                    "red bold"
+git config --global color.diff.new                    "green bold"
+git config --global color.diff.whitespace             "red reverse"
+
+# git status の表示で、日本語のファイル名が文字化け対応
+git config --global core.quotepath false
 #ctags settings
 git config --global init.templatedir '~/.git_template'
 git config --global alias.ctags '!~/dotfiles/etc/copy_ctags_files && .git/hooks/ctags'
