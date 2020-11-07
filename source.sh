@@ -4,12 +4,10 @@
 # git
 # -------------------------------------
 if [ -f /usr/local/bin/delta ] ; then
-  git config --global core.pager "delta"
+  git config --global core.pager "delta --diff-so-fancy"
   git config --global interactive.diffFilter                    "delta --color-only"
-  git config --global delta.features                            "side-by-side line-numbers decorations"
   git config --global delta.whitespace-error-style              "22 reverse"
   git config --global delta.navigate                            "true"
-  git config --global delta.side-by-side                        "true"
   git config --global delta.line-numbers                        "true"
   git config --global delta.decorations.commit-decoration-style "bold yellow box ul"
   git config --global delta.decorations.file-style              "bold yellow ul"
