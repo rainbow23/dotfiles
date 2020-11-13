@@ -110,9 +110,8 @@ noremap w= <C-w>= <C-g><CR>
 
 " Plug 'regedarek/ZoomWin' ###########################################################################
 " 選択したパネルの最大化
-nnoremap <silent> zwo :<C-u>ZoomWin<CR>
+nnoremap <silent> ,, :<C-u>ZoomWin<CR>
 
-set stl=Normal
 let g:zoomWinActive = 0
 
 fun! s:MyZoomWin()
