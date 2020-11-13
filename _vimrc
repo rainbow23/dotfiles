@@ -279,7 +279,6 @@ Plug 'thinca/vim-qfreplace'
 Plug 'vimlab/split-term.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'matze/vim-move'
-Plug 'mcchrish/nnn.vim'
 Plug 't9md/vim-quickhl'
 Plug 'lighttiger2505/sqls.vim'
 Plug 'prabirshrestha/vim-lsp'
@@ -1149,14 +1148,6 @@ vmap <C-j> <Plug>MoveBlockDown
 vmap <C-k> <Plug>MoveBlockUp
 " Plug 'matze/vim-move' ###############################################################################
 
-" Plug 'mcchrish/nnn.vim' #############################################################################
-let g:nnn#set_default_mappings = 0
-nnoremap <silent> <leader>nn :NnnPicker<CR>
-let g:nnn#action = {
-      \ '<c-t>': 'tab split',
-      \ '<c-x>': 'split',
-      \ '<c-v>': 'vsplit' }
-" Plug 'mcchrish/nnn.vim' #############################################################################
 " Plug t9md/vim-quickhl ###############################################################################
 nmap <Space>m <Plug>(quickhl-manual-this)
 xmap <Space>m <Plug>(quickhl-manual-this)
