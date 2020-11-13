@@ -114,24 +114,20 @@ nnoremap <silent> ,, :<C-u>ZoomWin<CR>
 
 let g:zoomWinActive = 0
 
-fun! s:MyZoomWin()
-
-    if g:zoomWinActive == 1
-      " :TagbarClose
-      let g:zoomWinActive = 0
-    endif
-    :ZoomWin
-endfun
-
 " ZoomWin()の後に呼ばれる
 fun! ZWStatline(state)
   if a:state
     let g:zoomWinActive = 1
     " Unite session loadでレイアウトが崩れる場合があるので今はtagbarを開かない
     " :TagbarOpen
-    set stl=ZoomWin
+
+    let g:airline_disable_statusline = 1
+    set stl=ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin
+    hi statusline ctermfg=14 ctermbg=57
   else
-    set stl=Normal
+    let g:airline_disable_statusline = 0
+    set stl=Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal
+    hi statusline ctermfg=242 ctermbg=black
   endif
 endfun
 
@@ -418,7 +414,6 @@ nmap ga <Plug>(EasyAlign)
 "EasyAlign end  #####################################################################
 
 "vim-airline start ##################################################################
-let g:airline#extensions#tabline#enabled = 1
 " タブに表示する名前（fnamemodifyの第二引数）
 let g:airline#extensions#tabline#fnamemod = ':t'
 let g:airline_powerline_fonts = 1
