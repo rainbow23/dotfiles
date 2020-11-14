@@ -88,3 +88,12 @@ zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' '+m:{A-Z}={a-z}'
 zstyle ':completion:*:default' menu select=2
 # kill コマンドのようなものに関しては候補をタブで選択できるようにする
 zstyle ':completion:*:processes' menu yes select=2
+
+# -------------------------------------
+#  AWS
+# -------------------------------------
+# 入力補完設定
+# AWS CLI の設定 https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-chap-configure.html
+autoload bashcompinit && bashcompinit
+# which aws_completer < コマンドからパスを特定する
+complete -C '/usr/local/bin/aws_completer' aws

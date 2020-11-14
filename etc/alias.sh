@@ -11,6 +11,11 @@ alias cl='clear'
 ## -------------------------------------
 : "略語展開(iab)" && {
   ## ------------------------------------
+  # aws operation
+  # -------------------------------------
+  abbrev-alias a="aws"
+
+  ## ------------------------------------
   # git operation
   # -------------------------------------
   abbrev-alias g="git"
@@ -39,6 +44,11 @@ alias cl='clear'
   abbrev-alias gch='git checkout'
   abbrev-alias gr='git rebase '
   abbrev-alias gri='git rebase -i'
+
+  ## ------------------------------------
+  # zsh operation
+  # -------------------------------------
+  abbrev-alias z='zsh'
 
   ## ------------------------------------
   # docker operation
