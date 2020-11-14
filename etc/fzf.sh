@@ -28,7 +28,7 @@ git-add-files() {
     addfiles=(`echo $(tail "-$n" <<< "$out")`)
     [[ -z "$addfiles" ]] && continue
     if [ "$q" = ctrl-d ] || [ "$q" = enter ] ; then
-      git diff --color=always -u $addfiles | diff-so-fancy | less -R
+      git diff --color=always -u $addfiles | delta --diff-so-fancy | less -R
     elif [ "$q" = ctrl-e ] ; then
       vim $addfiles
     elif [ "$q" = ctrl-a ] ; then
@@ -68,14 +68,14 @@ git-commit-show(){
       --bind "q:execute()+abort" \
       --bind "ctrl-m:execute:
                 (grep -o '[a-f0-9]\{7\}' | head -1 |
-                xargs -I % sh -c 'git show --color=always % | diff-so-fancy' | less -R) << 'FZF-EOF'
+                xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy' | less -R) << 'FZF-EOF'
                 {}
 FZF-EOF"
 }
 
 alias glNoGraph='git log --graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
 _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
-_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | diff-so-fancy'"
+_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy'"
 
 # show_preview - git commit browser with previews
 git-commit-show-preview() {
