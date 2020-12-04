@@ -40,7 +40,7 @@ git-add-files() {
 gcb() {
   local brh cbrh
   IFS=$'\n'
-  brh=$(git branch --all \
+  brh=$(git branch --all --sort=-authordate\
       | fzf +m \
       | sed -e 's/ //g' \
             -e 's/*//g' \
@@ -61,8 +61,11 @@ glf() {
   fi
 }
 
+targetBranch=""
 git-commit-show(){
-  git log --graph --color=always \
+  clear
+  echo "$targetBranch <<  branch"
+  git log --graph --color=always $targetBranch \
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
   fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
       --bind "q:execute()+abort" \
@@ -73,7 +76,27 @@ git-commit-show(){
 FZF-EOF"
 }
 
-alias glNoGraph='git log --graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
+git-commit-show-multi-branch(){
+  local out q n targetBranch
+  while out=$(
+    git branch --all --sort=-authordate  | fzf-tmux  --exit-0 --border --header "select branch and show git log" \
+        --expect=enter --expect=ctrl-c --expect=ctrl-q | sed -e 's/*//g'
+  ); do
+    q=$(head -1 <<< "$out")
+    n=$[$(wc -l <<< "$out") - 1]
+    targetBranch=(`echo $(tail "-$n" <<< "$out")`)
+    if [ "$q" = enter ] ; then
+      git-commit-show
+      # git-commit-show-preview
+    elif [ "$q" = ctrl-c ] ; then
+      break
+    elif [ "$q" = ctrl-q ] ; then
+      break
+    fi
+  done
+}
+
+alias glNoGraph='git log --graph --color=always $targetBranch --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
 _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
 _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy'"
 
@@ -81,12 +104,12 @@ _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always 
 git-commit-show-preview() {
     glNoGraph |
         fzf --no-sort --reverse --tiebreak=index --no-multi \
-            --ansi --preview="$_viewGitLogLine" \
-                --header "enter to view, alt-y to copy hash" \
-                --bind "enter:execute:$_viewGitLogLine   | less -R" \
-                --bind "ctrl-y:execute:$_gitLogLineToHash | xclip" \
-                --bind "q:execute()+abort" \
-                --bind='ctrl-f:toggle-preview'
+            --ansi --preview="$_viewGitLogLine" --bind '?:toggle-preview' \
+            --header "enter to view, alt-y to copy hash" \
+            --bind "enter:execute:$_viewGitLogLine   | less -R" \
+            --bind "ctrl-y:execute:$_gitLogLineToHash | xclip" \
+            --bind "q:execute()+abort" \
+            --bind='ctrl-f:toggle-preview'
 }
 
 gsd() {
