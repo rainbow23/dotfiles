@@ -1,23 +1,23 @@
 let mapleader = "\<Space>"
-nmap <Leader>f [fzf]
 
 set surround
 set ignorecase
 set showmatch
 set visualbell
 set noswapfile
-set surround
+set commentary
+" 検索するときに大文字小文字を区別しない
+set ignorecase
+" 検索時に大文字を含んでいたら大/小を区別
+set smartcase
+" 行末のスペースを可視化
+set listchars=tab:^\ ,trail:~
 
 "カーソル位置から画面移動
 nnoremap .t zt
 nnoremap .m zz
 nnoremap .b zb
 nnoremap src :<C-u>source ~/.ideavimrc<CR>
-" nnoremap sn :<C-u>set number<CR>
-" nnoremap snn :<C-u>set nonumber<CR>
-" nnoremap srn :<C-u>setlocal relativenumber!<CR>
-" nnoremap swp :<C-u>set nowrap!<CR>
-" nnoremap <Leader>p :echo expand('%:p') <CR>
 
 nnoremap x "_x
 nnoremap dd "_dd
@@ -26,14 +26,36 @@ nnoremap d$ "_d$
 nnoremap diw "_diw
 nnoremap ; :
 nnoremap : ;
+"x キー削除でデフォルトレジスタに入れない
+nnoremap x "_x
+vnoremap x "_x
+" ヤンクでクリップボードにコピー
+noremap "+y "*y
+noremap "+Y "*Y
+noremap "+p "*p
+noremap "+P "*P
+noremap <C-S-c> "*y
+noremap <C-S-v> "*P"
+
+nnoremap <C-o> :<C-u>action Back<CR>
+nnoremap <C-i> :<C-u>action Forward<CR>
+
 nnoremap / :<C-u>action Find<CR>
-" nnoremap n :action FindNext<CR>
-" nnoremap N :action FindPrevious<CR>
 nnoremap <c-w>q :close<CR>
 nnoremap tk :action NextTab<CR>
 nnoremap tj :action PreviousTab<CR>
 
+nmap <Leader>f [fzf]
 nnoremap [fzf]m :action RecentFiles<CR>
 nnoremap [fzf]s :action FindInPath<CR>
-nnoremap <leader>ff :action GotoFile<CR>
+nnoremap [fzf]g :action GotoFile<CR>
 nnoremap [fzf]r :action RenameFile<CR>
+
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+nnoremap ,, :action HideAllWindows<CR>
+nnoremap ,t :action HideSideWindows<CR>
+
+nnoremap gor  :action MakeGradleProject<CR>
+nnoremap vnew :action SplitVertically<CR>
+nnoremap alw  :action ActivateLogcatToolWindow<CR>
