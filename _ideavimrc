@@ -30,6 +30,13 @@ nnoremap : ;
 nnoremap x "_x
 vnoremap x "_x
 
+"改行後INSERT MODEにしない
+nnoremap O :<ESC>$a<CR><ESC>
+
+" 次の行からインサードモードで始める
+nnoremap nl $a<CR>
+inoremap nl <ESC>$a<CR>
+
 nnoremap <C-o> :<C-u>action Back<CR>
 nnoremap <C-i> :<C-u>action Forward<CR>
 
@@ -57,10 +64,4 @@ nnoremap npw :action NextProjectWindow<CR>
 
 nnoremap rnf   :action RenameFile<CR>
 nnoremap rne   :action RenameElement<CR>
-
-"改行後INSERT MODEにしない
-nnoremap O :<ESC>$a<CR><ESC>
-
-" 次の行からインサードモードで始める
-nnoremap nl $a<CR>
-inoremap nl <ESC>$a<CR>
+nnoremap opi   :action OptimizeImports<CR>
