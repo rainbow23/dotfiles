@@ -227,31 +227,7 @@ Plug 'jistr/vim-nerdtree-tabs'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
-"exmodeから確認  call deoplete#enable()
-if has("mac")
-    let g:python3_host_prog = expand('/usr/local/bin/python3')
-elseif has("unix")
-    let g:python3_host_prog = expand('/usr/local/bin/python3')
-endif
-
-if has('pythonx')
-    set pyxversion=3
-endif
-if has('python3')
-:python3 import neovim
-endif
-Plug 'Shougo/neosnippet.vim'
-Plug 'Shougo/neosnippet-snippets'
 Plug 'rainbow23/vim-snippets'
-Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
-Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'fatih/vim-go', { 'tag': 'v1.19', 'do': ':GoUpdateBinaries' }
 Plug 'mdempsky/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'Shougo/neco-syntax'
@@ -278,7 +254,7 @@ Plug 't9md/vim-quickhl'
 Plug 'lighttiger2505/sqls.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'prabirshrestha/async.vim'
-Plug 'lighttiger2505/deoplete-vim-lsp'
+" Plug 'lighttiger2505/deoplete-vim-lsp'
 Plug 'mattn/vim-lsp-settings' ":LspInstallServer"
 Plug 'mattn/vim-goimports'
 Plug 'iberianpig/tig-explorer.vim'
@@ -289,6 +265,7 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'mattn/ctrlp-matchfuzzy'
 Plug 'kana/vim-operator-replace'
 Plug 'kana/vim-operator-user'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 
 "FZF start ####################################################################
@@ -437,90 +414,33 @@ let g:airline#extensions#tabline#show_splits       = 0   " disables the buffer n
 let g:airline#extensions#tabline#show_tab_nr       = 0   " disable tab numbers
 let g:airline#extensions#tabline#show_tab_type     = 0   " disables the weird ornage arrow on the tabline
 let g:airline#extensions#tabline#show_buffers      = 1   " dont show buffers in the tabline
-
 "vim-airline end  #####################################################################
 
-"neosnippets start #################################################################
-" which disables all runtime snippets
-" let g:neosnippet#disable_runtime_snippets = {
-" \   '_' : 1,
-" \ }
-" Enable snipMate compatibility feature.
-let g:neosnippet#enable_snipmate_compatibility = 1
-" Tell Neosnippet about the other snippets
-let g:neosnippet#snippets_directory='~/.vim/plugged/vim-snippets/snippets/'
-" ~/.vim/bundle/vim-snippets/snippets'
-
-" Plugin key-mappings.
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-" use together neosnippet and deoplete
-imap <expr><C-o>
-\ pumvisible() ? neosnippet#expandable_or_jumpable() ?
-\    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#close_popup() :
-\    "\<Plug>(neosnippet_expand_or_jump)" "neosnippetの２回目以降で移動する場合に使用する
-smap <expr><C-o>
-\ pumvisible() ? neosnippet#expandable_or_jumpable() ?
-\    "\<Plug>(neosnippet_expand_or_jump)" : deoplete#close_popup() :
-\    "\<Plug>(neosnippet_expand_or_jump)" "neosnippetの２回目以降で移動する場合に使用する
-xmap <C-o>     <Plug>(neosnippet_expand_target)
-
-" SuperTab like snippets behavior.
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-"imap <expr><TAB>
-" \ pumvisible() ? "\<C-n>" :
-" \ neosnippet#expandable_or_jumpable() ?
-" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-
-" For conceal markers.
-if has('conceal')
-  set conceallevel=2 concealcursor=niv
-endif
-"neosnippets end ###################################################################
-
-" deoplete start ###################################################################
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-
-"ノーマルモード＋ビジュアルモード
-noremap <C-j> <Esc>
-"コマンドラインモード＋インサートモード
-noremap! <C-j> <Esc>
-
-inoremap <silent> <expr> <CR>  pumvisible() ? deoplete#close_popup() : "\n"
-inoremap <silent> <expr> <C-j> pumvisible() ? "\<C-n>" : ""
-inoremap <silent> <expr> <C-k> pumvisible() ? "\<C-p>" : ""
-
-" <CR>: close popup.
-" <C-r>=  used to insert the result of an expression at the cursor
-" https://stackoverflow.com/questions/10862457/what-does-c-r-means-in-vim/10863134
-" inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-" inoremap <silent> <C-j> <C-r>=<SID>my_cj_function()<CR>
-" inoremap <silent> <C-k> <C-r>=<SID>my_ck_function()<CR>
-
-" function! s:my_cr_function()
-"     return pumvisible() ? deoplete#mappings#close_popup() : "\n"
-" endfunction
-
-" function! s:my_cj_function()
-"     return pumvisible() ? "\<C-n>" : ""
-" endfunction
-
-" function! s:my_ck_function()
-"     return pumvisible() ? "\<C-p>" : ""
-" endfunction
-
+" coc.nvim ############################################################################
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
 inoremap <silent><expr> <TAB>
-\ pumvisible() ? "\<C-n>" :
-\ <SID>check_back_space() ? "\<TAB>" :
-\ deoplete#mappings#manual_complete()
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-function! s:check_back_space() abort "{{{
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
-endfunction"}}}
-" deoplete end #####################################################################
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+" Use <c-space> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
+" Make <CR> auto-select the first completion item and notify coc.nvim to
+" format on enter, <cr> could be remapped by other vim plugin
+" https://qiita.com/maguro_tuna/items/70814d99aef8f1ddc8e9
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 "unite start ##################################################################
 let g:unite_data_directory = expand('~/.vim/etc/unite')
@@ -698,24 +618,6 @@ let g:multi_cursor_skip_key='<C-x>'
 let g:multi_cursor_quit_key='<Esc>'
 let g:multi_cursor_start_key='<C-n>'
 let g:multi_cursor_start_word_key='g<C-n>'
-
-" Disable Deoplete when selecting multiple cursors starts
-function! Multiple_cursors_before()
-  let g:cursorword = 0
-  if exists('*deoplete#disable')
-    exe 'call deoplete#disable()'
-  elseif exists(':NeoCompleteLock') == 2
-    exe 'NeoCompleteLock'
-  endif
-endfunction
-function! Multiple_cursors_after()
-  let g:cursorword = 1
- if exists('*deoplete#enable')
-   exe 'call deoplete#enable()'
- elseif exists(':NeoCompleteUnlock') == 2
-   exe 'NeoCompleteUnlock'
- endif
-endfunction
 
 "vim-multiple-cursors end ######################################################
 
