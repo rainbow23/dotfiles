@@ -1,9 +1,4 @@
 #!/bin/sh
-if [ ! -e /usr/local/bin/python3 ]; then
-  echo "python3がインストールされていません"
-  exit 1
-fi
-
 ostype=$($HOME/dotfiles/etc/ostype.sh)
 if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
   echo ""
@@ -26,9 +21,6 @@ if [ $ostype = 'redhat' ] || [ $ostype = 'amazonlinux' ]; then
     --enable-fail-if-missing\
     --with-features=huge\
     --disable-selinux\
-    --enable-python3interp vi_cv_path_python3=/usr/local/bin/python3\
-    # --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m-x86_64-linux-gnu\
-    --with-python3-config-dir=/usr/local/Python35/lib/python3.5/config-3.5m\
     --enable-luainterp\
     --enable-perlinterp\
     --enable-cscope\
@@ -53,13 +45,3 @@ vim  +UpdateRemotePlugin +qall
 if [ -d $vimpath ]; then
   sudo rm -rf $vimpath
 fi
-
-pip3 --no-cache-dir install --user --upgrade pip
-pip3 --no-cache-dir install --user pynvim
-
-# エラー対応 > ModuleNotFoundError: No module named 'neovim'
-# reference https://github.com/roxma/vim-hug-neovim-rpc/issues/47
-# ↓ To check what Python your Vim is using you can run:
-# :pythonx import sys; print(sys.path)
-# python3.9と紐づけてると分かったのでpython3.9でpynvimをインストールする
-# /usr/local/opt/python@3.9/bin/pip3 install pynvim

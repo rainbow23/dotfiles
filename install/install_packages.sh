@@ -43,8 +43,6 @@ elif [ $ostype = 'darwin' ]; then
           "cmake" \
           "git" \
           "zsh" \
-          "python" \
-          "python3" \
           "autoconf" \
           "automake" \
           "wget" \

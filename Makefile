@@ -7,7 +7,6 @@ deploy:
 install:
 	@./install/install_packages.sh
 	@./install/install_tools.sh
-	@./install/install_python.sh
 	@./install/install_vim.sh
 	@./install/install_nvim.sh
 	@zsh

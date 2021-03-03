@@ -442,6 +442,19 @@ endif
 " https://qiita.com/maguro_tuna/items/70814d99aef8f1ddc8e9
 inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
+let g:coc_global_extensions = [
+      \ 'coc-tsserver',
+      \ 'coc-html',
+      \ 'coc-css',
+      \ 'coc-python',
+      \ 'coc-phpls',
+      \ 'coc-yaml',
+      \ 'coc-json',
+      \ 'coc-vimlsp',
+      \ 'coc-emmet',
+      \ 'coc-tag',
+      \ 'coc-kotlin',
+      \ ]
 "unite start ##################################################################
 let g:unite_data_directory = expand('~/.vim/etc/unite')
 "ヒストリー/ヤンク機能を有効化
