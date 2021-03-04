@@ -266,6 +266,7 @@ Plug 'mattn/ctrlp-matchfuzzy'
 Plug 'kana/vim-operator-replace'
 Plug 'kana/vim-operator-user'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'svermeulen/vim-easyclip'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1209,3 +1210,36 @@ function! WhatFunctionAreWeIn()
   call winrestview(view)
   return tempstring.position
 endfunction
+" Plug 'svermeulen/vim-easyclip' ##################################################
+" クリップボードにコピーしたものを履歴として残す。vim再起動時に復元
+let g:EasyClipShareYanks = 1
+
+" easycilpからコピーした一覧を取得
+function! s:yank_list()
+  redir => ys
+  silent Yanks
+  redir END
+  return split(ys, '\n')[1:]
+endfunction
+
+" 引数からPasteコマンドで貼り付け
+function! s:yank_handler(reg)
+  if empty(a:reg)
+    echo "aborted register paste"
+  else
+    let token = split(a:reg, ' ')
+    execute 'Paste' . token[0]
+  endif
+endfunction
+
+" fzfを使って一覧を呼び出して貼り付け
+command! FZFYank call fzf#run({
+\ 'source': <sid>yank_list(),
+\ 'sink': function('<sid>yank_handler'),
+\ 'options': '-m --prompt="FZFYank> "',
+\ 'down':    '40%'
+\ })
+" マッピングはお好みで
+nnoremap <C-Y><C-Y> :<C-U>FZFYank<CR>
+inoremap <C-Y><C-Y> <C-O>:<C-U>FZFYank<CR>
+" Plug 'svermeulen/vim-easyclip' ##################################################
