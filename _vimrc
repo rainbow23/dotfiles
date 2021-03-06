@@ -1240,6 +1240,6 @@ command! FZFYank call fzf#run({
 \ 'down':    '40%'
 \ })
 " マッピングはお好みで
-nnoremap <C-Y><C-Y> :<C-U>FZFYank<CR>
-inoremap <C-Y><C-Y> <C-O>:<C-U>FZFYank<CR>
+nnoremap [fzf]y :<C-U>FZFYank<CR>
+inoremap [fzf]y <C-O>:<C-U>FZFYank<CR>
 " Plug 'svermeulen/vim-easyclip' ##################################################
