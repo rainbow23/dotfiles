@@ -63,10 +63,13 @@ glf() {
 
 export NESTEDPREVIEW="echo {} | grep -o '[a-f0-9]\{7\}' | xargs -I %  sh -c 'git show --color=always % | delta --diff-so-fancy'"
 git-log-selected-files() {
- git ls-files $(git rev-parse --show-toplevel) |
- fzf --height=100 --bind "enter:execute[echo {} \
-   | xargs git log --oneline \
-   | fzf --height=100 --preview \"\$NESTEDPREVIEW\"]"
+  git ls-files $(git rev-parse --show-toplevel) |
+  fzf --height=100 \
+    --bind "enter:execute[echo {} \
+     | xargs git log --oneline \
+     | fzf --height=100 --preview \"\$NESTEDPREVIEW\"]" \
+    --bind "ctrl-e:execute[echo {} \
+     | grep -o '[a-f0-9]\{7\}' | head -1 | xargs less -R"
 }
 
 targetBranch=""
