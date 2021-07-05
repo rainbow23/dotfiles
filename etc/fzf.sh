@@ -23,8 +23,8 @@ git-add-files() {
       git status --short --untracked-files=no |
       awk '{if (substr($0,2,1) !~ / /) print $2}' |
       fzf-tmux --multi --exit-0 --border -d 100 --preview $NESTED_GIT_DIFF_PREVIEW \
-      --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a --expect=ctrl-r --expect=ctrl-m \
-      --header "ctrl-d=git diff, enter=git diff, ctrl-e=edit, ctrl-a=git add, ctrl-r=git checkout, ctrl-m=zsh"); do
+      --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a --expect=ctrl-r --expect=ctrl-t \
+      --header "ctrl-d=git diff, enter=git diff, ctrl-e=edit, ctrl-a=git add, ctrl-r=git checkout, ctrl-t=zsh"); do
     q=$(head -1 <<< "$out")
     n=$[$(wc -l <<< "$out") - 1]
     addfiles=(`echo $(tail "-$n" <<< "$out")`)
@@ -37,7 +37,7 @@ git-add-files() {
       git add $addfiles
     elif [ "$q" = ctrl-r ] ; then
       git checkout $addfiles
-    elif [ "$q" = ctrl-m ] ; then
+    elif [ "$q" = ctrl-t ] ; then
       tmux popup  -w90% -h90% -E "zsh"
     fi
   done
