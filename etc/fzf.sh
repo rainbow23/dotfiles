@@ -13,6 +13,8 @@ ftags() {
 ## -------------------------------------
 # fzf git
 # -------------------------------------
+export NESTEDPREVIEW="echo {} | grep -o '[a-f0-9]\{7\}' | xargs -I %  sh -c 'git show --color=always % | delta --diff-so-fancy'"
+export NESTED_GIT_DIFF_PREVIEW="echo {} | xargs -I %  sh -c 'git diff --color=always % | delta --diff-so-fancy'"
 
 # https://qiita.com/reviry/items/e798da034955c2af84c5
 git-add-files() {
@@ -20,9 +22,9 @@ git-add-files() {
   while out=$(
       git status --short --untracked-files=no |
       awk '{if (substr($0,2,1) !~ / /) print $2}' |
-      fzf-tmux --multi --exit-0 --border \
-      --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a \
-      --header "ctrl-d=git diff, enter=git diff, ctrl-e=edit, ctrl-a=git add"); do
+      fzf-tmux --multi --exit-0 --border -d 100 --preview $NESTED_GIT_DIFF_PREVIEW \
+      --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a --expect=ctrl-r \
+      --header "ctrl-d=git diff, enter=git diff, ctrl-e=edit, ctrl-a=git add, ctrl-r=git checkout "); do
     q=$(head -1 <<< "$out")
     n=$[$(wc -l <<< "$out") - 1]
     addfiles=(`echo $(tail "-$n" <<< "$out")`)
@@ -33,6 +35,8 @@ git-add-files() {
       vim $addfiles
     elif [ "$q" = ctrl-a ] ; then
       git add $addfiles
+    elif [ "$q" = ctrl-r ] ; then
+      git checkout $addfiles
     fi
   done
 }
@@ -61,7 +65,6 @@ glf() {
   fi
 }
 
-export NESTEDPREVIEW="echo {} | grep -o '[a-f0-9]\{7\}' | xargs -I %  sh -c 'git show --color=always % | delta --diff-so-fancy'"
 git-log-selected-files() {
   git ls-files $(git rev-parse --show-toplevel) |
   fzf --height=100 \
