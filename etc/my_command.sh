@@ -5,5 +5,7 @@ go-to-git-root-dir() {
   rootDir=$(git rev-parse --show-toplevel)
   currDir=$(pwd)
 
-  cd "$rootDir" && echo "$currDir >> $rootDir"
+  cd "$rootDir"
+  # cyan
+  printf "\e[36m%s\n\e[m" "$currDir >> $rootDir"
 }
