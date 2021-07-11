@@ -112,7 +112,7 @@ alias cl='clear'
   # ls
   # -------------------------------------
   abbrev-alias -g ll="ls -latr"
-
+  abbrev-alias -g rt="go-to-git-root-dir"
   abbrev-alias -g c='browse-chrome-history'
   # abbrev-alias -g rm='gomi'
 }

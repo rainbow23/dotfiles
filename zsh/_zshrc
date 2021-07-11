@@ -88,6 +88,7 @@ source $HOME/dotfiles/source.sh
 source $HOME/dotfiles/etc/alias.sh
 source $HOME/dotfiles/etc/fzf.sh
 source $HOME/dotfiles/mru.sh
+source $HOME/dotfiles/etc/my_command.sh
  # source $HOME/dotfiles/zsh/_zplugin.sh
 
 ## 補完機能の強化
