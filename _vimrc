@@ -267,6 +267,7 @@ Plug 'kana/vim-operator-replace'
 Plug 'kana/vim-operator-user'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'svermeulen/vim-easyclip'
+Plug 'wfxr/minimap.vim'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1243,3 +1244,9 @@ command! FZFYank call fzf#run({
 nnoremap [fzf]y :<C-U>FZFYank<CR>
 inoremap [fzf]y <C-O>:<C-U>FZFYank<CR>
 " Plug 'svermeulen/vim-easyclip' ##################################################
+
+" Plug 'wfxr/minimap.vim' ########################################################
+let g:minimap_width = 20
+let g:minimap_auto_start = 1
+let g:minimap_auto_start_win_enter = 1
+" Plug 'wfxr/minimap.vim' ########################################################
