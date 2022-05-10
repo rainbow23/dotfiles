@@ -42,4 +42,5 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 export PATH=$PATH:/Applications/"Android Studio.app"/Contents/jre/jdk/Contents/Home/bin
 export JAVA_HOME=/Applications/"Android Studio.app"/Contents/jre/jdk/Contents/Home
 
+export PATH="$PATH:/Users/rainbow/Documents/flutter/flutter/bin"
 
