@@ -10,7 +10,7 @@ jobs:
       #deploy
       - run: ./symlink.sh
       # install
-      - run: ./install_tools.sh
-      - run: ./install_python.sh
-      - run: ./install_vim.sh
-      - run: ./gitclone_list.sh
+      - run: ./install/install_packages.sh
+      - run: ./install/install_tools.sh
+      - run: ./install/install_vim.sh
+      - run: ./install/install_nvim.sh

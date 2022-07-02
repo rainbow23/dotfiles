@@ -1,20 +1,21 @@
 # .PHONY: d.txt
-.PHONY: install
-install:
-	@./install_tools.sh
-	@./install_python.sh
-	@./install_vim.sh
-	@/usr/bin/zsh
-	@./gitclone_list.sh
-
 .PHONY: deploy
 deploy:
 	@./symlink.sh
 
-.PHONY: testbuild
-testbuild:
+.PHONY: install
+install:
+	@./install/install_packages.sh
+	@./install/install_tools.sh
+	@./install/install_vim.sh
+	@./install/install_nvim.sh
+	@zsh
+	@./etc/gitclone_list.sh
+
+.PHONY: build
+build:
 	docker-compose build
 
-.PHONY: testrun
-testrun:
-	docker-compose run test
+.PHONY: run
+run:
+	docker-compose run publish

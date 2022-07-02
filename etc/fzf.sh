@@ -1,3 +1,4 @@
+#!/bin/zsh
 # ftags - search ctags
 ftags() {
   local line
@@ -12,10 +13,40 @@ ftags() {
 ## -------------------------------------
 # fzf git
 # -------------------------------------
+export NESTEDPREVIEW="echo {} | grep -o '[a-f0-9]\{7\}' | xargs -I %  sh -c 'git show --color=always % | delta --diff-so-fancy'"
+export NESTED_GIT_DIFF_PREVIEW="echo {} | xargs -I %  sh -c 'git diff --color=always % | delta --diff-so-fancy'"
+
+# https://qiita.com/reviry/items/e798da034955c2af84c5
+git-add-files() {
+  local out q n addfiles
+  while out=$(
+      git status --short --untracked-files=no |
+      awk '{if (substr($0,2,1) !~ / /) print $2}' |
+      fzf-tmux --multi --exit-0 --border -d 100 --preview $NESTED_GIT_DIFF_PREVIEW \
+      --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a --expect=ctrl-r --expect=ctrl-t \
+      --header "ctrl-r=git checkout, ctrl-t=tmux popup, enter=git diff, ctrl-e=edit, ctrl-a=git add"); do
+    q=$(head -1 <<< "$out")
+    n=$[$(wc -l <<< "$out") - 1]
+    addfiles=(`echo $(tail "-$n" <<< "$out")`)
+    [[ -z "$addfiles" ]] && continue
+    if [ "$q" = ctrl-d ] || [ "$q" = enter ] ; then
+      git diff --color=always -u $addfiles | delta --diff-so-fancy | less -R
+    elif [ "$q" = ctrl-e ] ; then
+      vim $addfiles
+    elif [ "$q" = ctrl-a ] ; then
+      git add $addfiles
+    elif [ "$q" = ctrl-r ] ; then
+      git checkout $addfiles
+    elif [ "$q" = ctrl-t ] ; then
+      tmux popup  -w90% -h90% -E "zsh"
+    fi
+  done
+}
+
 gcb() {
   local brh cbrh
   IFS=$'\n'
-  brh=$(git branch --all \
+  brh=$(git branch --all --sort=-authordate\
       | fzf +m \
       | sed -e 's/ //g' \
             -e 's/*//g' \
@@ -36,31 +67,65 @@ glf() {
   fi
 }
 
-gsh() {
-  git log --graph --color=always \
+git-log-selected-files() {
+  git ls-files $(git rev-parse --show-toplevel) |
+  fzf --height=100 \
+    --bind "enter:execute[echo {} \
+     | xargs git log --oneline \
+     | fzf --height=100 --preview \"\$NESTEDPREVIEW\"]" \
+    --bind "ctrl-e:execute[echo {} \
+     | grep -o '[a-f0-9]\{7\}' | head -1 | xargs less -R"
+}
+
+targetBranch=""
+git-commit-show(){
+  clear
+  echo "$targetBranch <<  branch"
+  git log --graph --color=always $targetBranch \
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
   fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
       --bind "q:execute()+abort" \
       --bind "ctrl-m:execute:
                 (grep -o '[a-f0-9]\{7\}' | head -1 |
-                xargs -I % sh -c 'git show --color=always % | diff-so-fancy' | less -R) << 'FZF-EOF'
+                xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy' | less -R) << 'FZF-EOF'
                 {}
 FZF-EOF"
 }
 
-alias glNoGraph='git log --graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
-_gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
-_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | diff-so-fancy'"
+git-commit-show-multi-branch(){
+  local out q n targetBranch
+  while out=$(
+    git branch --all --sort=-authordate  | fzf-tmux  --exit-0 --border --header "select branch and show git log" \
+        --expect=enter --expect=ctrl-c --expect=ctrl-q | sed -e 's/*//g'
+  ); do
+    q=$(head -1 <<< "$out")
+    n=$[$(wc -l <<< "$out") - 1]
+    targetBranch=(`echo $(tail "-$n" <<< "$out")`)
+    if [ "$q" = enter ] ; then
+      git-commit-show
+      # git-commit-show-preview
+    elif [ "$q" = ctrl-c ] ; then
+      break
+    elif [ "$q" = ctrl-q ] ; then
+      break
+    fi
+  done
+}
 
-# fshow_preview - git commit browser with previews
-fsh() {
+alias glNoGraph='git log --graph --color=always $targetBranch --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
+_gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
+_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy'"
+
+# show_preview - git commit browser with previews
+git-commit-show-preview() {
     glNoGraph |
         fzf --no-sort --reverse --tiebreak=index --no-multi \
-            --ansi --preview="$_viewGitLogLine" \
-                --header "enter to view, alt-y to copy hash" \
-                --bind "enter:execute:$_viewGitLogLine   | less -R" \
-                --bind "ctrl-y:execute:$_gitLogLineToHash | xclip" \
-                --bind "q:execute()+abort"
+            --ansi --preview="$_viewGitLogLine" --bind '?:toggle-preview' \
+            --header "enter to view, alt-y to copy hash" \
+            --bind "enter:execute:$_viewGitLogLine   | less -R" \
+            --bind "ctrl-y:execute:$_gitLogLineToHash | xclip" \
+            --bind "q:execute()+abort" \
+            --bind='ctrl-f:toggle-preview'
 }
 
 gsd() {
@@ -70,10 +135,10 @@ gsd() {
   git diff $out
 }
 
-gsts() {
+git-stash-list() {
   IFS=$'\n'
   local stash key stashfullpath
-  stash=$(git stash list | fzf --ansi +m --exit-0 \
+  stash=$(git stash list --color=always --pretty="%C(auto)%h %gs %C(black)%C(bold)%cr" | fzf --ansi +m --exit-0 \
         --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
         --expect=enter --expect=ctrl-d --expect=ctrl-a)
 
@@ -121,8 +186,7 @@ do_enter() {
 zle -N do_enter
 bindkey '^m' do_enter
 
-# fdg - ghq
-fdg() {
+cd-to-ghq-selected-directory() {
   local selected
   selected=$(ghq list | fzf)
 
@@ -148,17 +212,21 @@ fkill() {
 # ts [FUZZY PATTERN] - Select selected tmux session
 #   - Bypass fuzzy finder if there's only one match (--select-1)
 #   - Exit if there's no match (--exit-0)
-ts() {
+tmux-select-session() {
   local session
   session=$(tmux list-sessions -F "#{session_name}" | \
     fzf --query="$1" --select-1 --exit-0) &&
   tmux switch-client -t "$session"
 }
 
+_fzf_complete_tmux-select-session() {
+  tmux-select-session
+}
+
 # tm - create new tmux session, or switch to existing one. Works from within tmux too. (@bag-man)
 # `tm` will allow you to select your tmux session via fzf.
 # `tm irc` will attach to the irc session (if it exists), else it will create it.
-tm() {
+tmux-session() {
   [[ -n "$TMUX" ]] && change="switch-client" || change="attach-session"
   if [ $1 ]; then
     tmux $change -t "$1" 2>/dev/null || (tmux new-session -d -s $1 && tmux $change -t "$1"); return
@@ -166,9 +234,24 @@ tm() {
   session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --exit-0) &&  tmux $change -t "$session" || echo "No sessions found."
 }
 
+_fzf_complete_tmux-session() {
+  tmux-session
+}
+
 # tmux-kill-session
-tks() {
+tmux-kill-session() {
   tmux ls | fzf-tmux --query="$1" | awk '{print $1}' | sed "s/:$//g" | xargs tmux kill-session -t
+}
+_fzf_complete_tmux-kill-session() {
+  tmux-kill-session
+}
+
+# tmux-list-panes
+tmux-list-panes() {
+  tmux list-panes -s -F '#I:#W' | fzf +m | sed -e 's/:.*//g' | xargs tmux select-window -t
+}
+_fzf_complete_tmux-list-panes() {
+  tmux-list-panes
 }
 
 ## -------------------------------------
@@ -176,7 +259,7 @@ tks() {
 # -------------------------------------
 
 # fd - cd to selected directory
-fd() {
+fd-selected-directory() {
   local dir
   dir=$(find ${1:-.} -path '*/\.*' -prune \
                   -o -type d -print 2> /dev/null | fzf +m) &&
@@ -186,13 +269,13 @@ fd() {
 # Another fd - cd into the selected directory
 # This one differs from the above, by only showing the sub directories and not
 #  showing the directories within those.
-fdo() {
+fd-selected-sub-directory() {
   DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf-tmux` \
     && cd "$DIR"
 }
 
 # fdp - cd to selected parent directory
-fdp() {
+fd-selected-parent-directory() {
   local declare dirs=()
   get_parent_dirs() {
     if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
@@ -236,8 +319,7 @@ ftpane() {
 #     cd "$(autojump -s | sed '/_____/Q; s/^[0-9,.:]*\s*//' |  fzf --height 40% --nth 1.. --reverse --inline-info +s --tac --query "${*##-* }" )"
 # }
 
-# c - browse chrome history
-c() {
+browse-chrome-history() {
   local cols sep google_history open
   cols=$(( COLUMNS / 3 ))
   sep='{::}'

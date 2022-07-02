@@ -1,0 +1,67 @@
+let mapleader = "\<Space>"
+
+set surround
+set ignorecase
+set showmatch
+set visualbell
+set noswapfile
+set commentary
+" 検索するときに大文字小文字を区別しない
+set ignorecase
+" 検索時に大文字を含んでいたら大/小を区別
+set smartcase
+" 行末のスペースを可視化
+set listchars=tab:^\ ,trail:~
+
+"カーソル位置から画面移動
+nnoremap .t zt
+nnoremap .m zz
+nnoremap .b zb
+nnoremap src :<C-u>source ~/.ideavimrc<CR>
+
+nnoremap x "_x
+nnoremap dd "_dd
+nnoremap dw "_dw
+nnoremap d$ "_d$
+nnoremap diw "_diw
+nnoremap ; :
+nnoremap : ;
+"x キー削除でデフォルトレジスタに入れない
+nnoremap x "_x
+vnoremap x "_x
+
+"改行後INSERT MODEにしない
+nnoremap O :<ESC>$a<CR><ESC>
+
+" 次の行からインサードモードで始める
+nnoremap nl $a<CR>
+inoremap nl <ESC>$a<CR>
+
+nnoremap <C-o> :<C-u>action Back<CR>
+nnoremap <C-i> :<C-u>action Forward<CR>
+
+nnoremap / :<C-u>action Find<CR>
+nnoremap <c-w>q :close<CR>
+nnoremap tk :action NextTab<CR>
+nnoremap tj :action PreviousTab<CR>
+
+nmap <Leader>f [fzf]
+nnoremap <space>fm :action RecentFiles<CR>
+nnoremap <space>fs :action FindInPath<CR>
+nnoremap <space>fg :action GotoFile<CR>
+
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+nnoremap ,, :action HideAllWindows<CR>
+nnoremap ,t :action HideSideWindows<CR>
+
+nnoremap gor  :action MakeGradleProject<CR>
+nnoremap vnew :action SplitVertically<CR>
+nnoremap alw  :action ActivateLogcatToolWindow<CR>
+
+" 次のプロジェクトを最前面に表示する
+nnoremap npw :action NextProjectWindow<CR>
+
+nnoremap rnf   :action RenameFile<CR>
+nnoremap rne   :action RenameElement<CR>
+nnoremap opi   :action OptimizeImports<CR>

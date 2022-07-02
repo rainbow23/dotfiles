@@ -6,10 +6,6 @@ ARG USERPASSWORD=rainbow23
 ADD . /home/${USERNAME}/dotfiles
 
 RUN echo ${USERPASSWORD} | sudo -S chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dotfiles && \
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim && \
-cd /home/rainbow23/dotfiles && \
-make deploy && \
-make install
 
+bash -c "$(curl -L https://raw.githubusercontent.com/rainbow23/dotfiles/develop/init.sh)"
 CMD ["zsh"]

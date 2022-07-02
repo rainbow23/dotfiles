@@ -1,0 +1,52 @@
+#!/bin/zsh
+
+LANG=ja_JP.utf8
+export LANG
+
+# -------------------------------------
+# パス
+# -------------------------------------
+# 重複する要素を自動的に削除
+typeset -U path cdpath fpath manpath
+
+path=(
+    $HOME/bin(N-/)
+    /usr/local/bin(N-/)
+    /usr/local/sbin(N-/)
+    $path
+)
+
+# -------------------------------------
+# 環境変数
+# -------------------------------------
+# SSHで接続した先で日本語が使えるようにする
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# エディタ
+if [ -f /usr/local/bin/nvim ] ; then
+  export EDITOR='/usr/local/bin/nvim'
+elif [ -f /usr/bin/vim ] ; then
+  export EDITOR='/usr/bin/vim'
+fi
+
+# ページャ
+export MANPAGER="less -"
+# export PAGER=/usr/local/bin/vimpager
+
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+
+export PATH=$PATH:/Applications/"Android Studio.app"/Contents/jre/jdk/Contents/Home/bin
+export JAVA_HOME=/Applications/"Android Studio.app"/Contents/jre/jdk/Contents/Home
+
+export PATH=$PATH:/Users/rainbow/Library/Android/sdk
+# export PATH=$PATH:/Applications/Android Studio.app/Contents/jre/Contents/Home/bin
+# export JAVA_HOME=/Applications/Android Studio.app/Contents/jre/Contents/Home
+# export JAVA_HOME=/Applications/Android Studio4.2.2.app/Contents/jre/Contents/Home
+# export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+
+export PATH="$PATH:/Users/rainbow/Documents/flutter/flutter/bin"
+
