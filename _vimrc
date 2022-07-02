@@ -221,7 +221,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'rhysd/accelerated-jk'
 Plug 'easymotion/vim-easymotion'
 Plug 'elzr/vim-json'
-Plug 'scrooloose/nerdcommenter'
+Plug 'preservim/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'Xuyuanp/nerdtree-git-plugin'
@@ -894,19 +894,19 @@ map [easymotion]h <Plug>(easymotion-linebackward)
 let g:vim_json_syntax_conceal = 0
 "Plug 'elzr/vim-json' end ##################################################
 
-"Plug 'scrooloose/nerdcommenter' start ##################################################
+"Plug 'preservim/nerdcommenter' start ##################################################
 let g:NERDCreateDefaultMappings = 0
-let g:NERDSpaceDelims =1
-let g:NERDDefaultAlign ='left'
+let g:NERDSpaceDelims = 1
+let g:NERDDefaultAlign = 'left'
+
 nnoremap [nerdcommenter]    <Nop>
 nmap <Leader>, [nerdcommenter]
 vmap <Leader>, [nerdcommenter]
-
-nnoremap [nerdcommenter]<space> :call NERDComment(0,"toggle")<CR>
-vnoremap [nerdcommenter]<space> :call NERDComment(0,"toggle")<CR>
-nnoremap [nerdcommenter]s :call NERDComment(0,"Sexy")<CR>
-vnoremap [nerdcommenter]s :call NERDComment(0,"Sexy")<CR>
-"Plug 'scrooloose/nerdcommenter' end ##################################################
+nmap [nerdcommenter]<space> <plug>NERDCommenterToggle<CR>
+vmap [nerdcommenter]<space> <plug>NERDCommenterToggle<CR>
+nmap [nerdcommenter]s <plug>NERDCommenterSexy<CR>
+vmap [nerdcommenter]s <plug>NERDCommenterSexy<CR>
+"Plug 'preservim/nerdcommenter' end ##################################################
 
 
 " Plug 'scrooloose/nerdtree' start ####################################################
