@@ -42,5 +42,11 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 export PATH=$PATH:/Applications/"Android Studio.app"/Contents/jre/jdk/Contents/Home/bin
 export JAVA_HOME=/Applications/"Android Studio.app"/Contents/jre/jdk/Contents/Home
 
+export PATH=$PATH:/Users/rainbow/Library/Android/sdk
+# export PATH=$PATH:/Applications/Android Studio.app/Contents/jre/Contents/Home/bin
+# export JAVA_HOME=/Applications/Android Studio.app/Contents/jre/Contents/Home
+# export JAVA_HOME=/Applications/Android Studio4.2.2.app/Contents/jre/Contents/Home
+# export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+
 export PATH="$PATH:/Users/rainbow/Documents/flutter/flutter/bin"
 
