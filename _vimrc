@@ -709,7 +709,7 @@ nmap     <Leader>v [fugitive]
 nnoremap [fugitive]s  :<C-u>Gstatus<CR>
 nnoremap [fugitive]d :<C-u>Gvdiff<CR>
 nnoremap [fugitive]l  :<C-u>Glog<CR>
-nnoremap [fugitive]b :<C-u>Gblame<CR>
+nnoremap [fugitive]b :<C-u>Git blame<CR>
 nnoremap [fugitive]rd :<C-u>Gread<CR>:GitGutterAll<CR>
 nnoremap [fugitive]g :<C-u>Ggrep
 nnoremap [fugitive]w :<C-u>Gbrowse<CR>
