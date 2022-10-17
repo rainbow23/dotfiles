@@ -272,7 +272,7 @@ fd-selected-directory() {
 # This one differs from the above, by only showing the sub directories and not
 #  showing the directories within those.
 fd-selected-sub-directory() {
-  DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf-tmux` \
+  DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf` \
     && cd "$DIR"
 }
 
@@ -287,7 +287,7 @@ fd-selected-parent-directory() {
       get_parent_dirs $(dirname "$1")
     fi
   }
-  local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf-tmux --tac)
+  local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf --tac)
   cd "$DIR"
 }
 
