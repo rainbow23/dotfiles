@@ -17,7 +17,7 @@ if 1 == exists("+autochdir")
     set autochdir
 endif
 syntax on
-colorscheme peachpuff
+colorscheme elflord
 filetype on
 set hlsearch
 hi Search ctermbg=Gray
