@@ -40,6 +40,15 @@ if [ ! -f /usr/local/bin/diff-so-fancy ] ; then
   && sudo chmod +x /usr/local/bin/diff-so-fancy
 fi
 
+# bookmark-of-chrome
+if [ ! -f $HOME/bookmark_of_chrome.rb ] ; then
+  echo "install bookmark-of-chrome"
+  echo ""
+  mkdir $HOME/bookmark_of_chrome
+  git clone https://gist.github.com/73236d896399ca7ee68b8b3900ae39e0.git $HOME/bookmark_of_chrome\
+  && sudo chmod +x $HOME/bookmark_of_chrome/b.rb
+fi
+
 # the_silver_searcher
 SILVER_SEARCHER=$HOME/the_silver_searcher
 if [ ! -f /usr/local/bin/ag ] ; then

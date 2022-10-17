@@ -15,6 +15,7 @@ alias cl='clear'
   # shell operation
   # -------------------------------------
   abbrev-alias et='exit'
+  abbrev-alias bk='$HOME/bookmark_of_chrome/b.rb'
 
   ## ------------------------------------
   # aws operation
