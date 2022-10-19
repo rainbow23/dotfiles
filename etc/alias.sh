@@ -3,14 +3,12 @@
 alias hsn='hostname'
 alias ez='exec zsh -l'
 alias cl='clear'
+alias vim=/usr/local/Cellar/vim/9.0.0100/bin/vim
 
 ## -------------------------------------
 # abbrev-alias
 ## -------------------------------------
 : "略語展開(iab)" && {
-
-  abbrev-alias vim=/usr/local/Cellar/vim/9.0.0100/bin/vim
-
   ## ------------------------------------
   # shell operation
   # -------------------------------------
