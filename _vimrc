@@ -17,7 +17,7 @@ set binary noeol
 "     set autochdir
 " endif
 syntax on
-colorscheme elflord
+colorscheme torte
 filetype on
 set hlsearch
 hi Search ctermbg=Gray
@@ -1056,7 +1056,6 @@ nnoremap <silent> <C-b> :call comfortable_motion#flick(g:comfortable_motion_impu
 
 " Plug 'mileszs/ack.vim' #############################################################################
 command! -nargs=1 Rg execute "Ack! <args> " . Find_git_root()
-
 if executable("rg")
   let g:ackprg = 'rg --vimgrep --no-heading'
 endif
