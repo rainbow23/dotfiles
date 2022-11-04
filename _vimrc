@@ -13,9 +13,9 @@ set splitright
 " git :: 「No newline at end of file」の対処
 set binary noeol
 " 開いたファイルにワーキングディレクトリを移動する
-" if 1 == exists("+autochdir")
-"     set autochdir
-" endif
+if 1 == exists("+autochdir")
+    set autochdir
+endif
 syntax on
 colorscheme torte
 filetype on
@@ -332,9 +332,6 @@ nnoremap [fzf]f :<C-u>FzfGitDiffFiles<CR>
 let g:fzf_layout = { 'down': '~30%' }
 let s:fzf_base_options = extend({'options': ''}, g:fzf_layout)
 
-function! Find_git_root()
-  return system('git rev-parse --show-toplevel 2> /dev/null')[:-2]
-endfunction
 
 function! s:rg_raw(command_suffix, ...)
   if !executable('rg')
@@ -1055,10 +1052,14 @@ nnoremap <silent> <C-b> :call comfortable_motion#flick(g:comfortable_motion_impu
 " Plug 'yuttie/comfortable-motion.vim' ###############################################################
 
 " Plug 'mileszs/ack.vim' #############################################################################
+function! Find_git_root()
+    return system('git rev-parse --show-toplevel 2> /dev/null')[:-2]
+endfunction
 command! -nargs=1 Rg execute "Ack! <args> " . Find_git_root()
 if executable("rg")
   let g:ackprg = 'rg --vimgrep --no-heading'
 endif
+
 " Plug 'mileszs/ack.vim' #############################################################################
 
 " Plug 'thinca/vim-qfreplace' ########################################################################
