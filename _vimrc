@@ -102,7 +102,9 @@ nnoremap <silent> <Right> :vertical resize +10<CR>
 nnoremap <silent> <Up> :resize +10<CR>
 nnoremap <silent> <Down> :resize -10<CR>
 nnoremap <C-s> :split <C-g><CR>
+" 左右のパネル入れ替える
 nnoremap exg <C-w>x <C-g><CR>
+" パネルを均等に配置する
 noremap w= <C-w>= <C-g><CR>
 " panel size end  #################################
 
