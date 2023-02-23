@@ -120,14 +120,17 @@ _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always 
 
 # show_preview - git commit browser with previews
 git-commit-show-preview() {
-    glNoGraph |
-        fzf --no-sort --reverse --tiebreak=index --no-multi \
-            --ansi --preview="$_viewGitLogLine" --bind '?:toggle-preview' \
-            --header "enter to view, alt-y to copy hash" \
-            --bind "enter:execute:$_viewGitLogLine   | less -R" \
-            --bind "ctrl-y:execute:$_gitLogLineToHash | xclip" \
-            --bind "q:execute()+abort" \
-            --bind='ctrl-f:toggle-preview'
+  glNoGraph |
+    fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi --ansi \
+      --preview="$_viewGitLogLine" \
+      --header "ctrl-f, ctrl-p to toggle preview, ctrl-g to copy message, ctrl-h to copy hash" \
+      --bind "enter:execute:$_viewGitLogLine   | less -R" \
+      --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \
+      --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s | pbcopy)" \
+      --bind "q:execute()+abort" \
+      --bind '?:toggle-preview' \
+      --bind='ctrl-f:toggle-preview' \
+      --bind='ctrl-p:toggle-preview'
 }
 
 gsd() {
