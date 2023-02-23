@@ -80,20 +80,6 @@ git-log-selected-files() {
 
 targetBranch=""
 
-git-commit-show(){
-  clear
-  echo "$targetBranch <<  branch"
-  git log --graph --color=always $targetBranch \
-      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
-  fzf --height=100 --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
-      --bind "q:execute()+abort" \
-      --bind "ctrl-m:execute:
-                (grep -o '[a-f0-9]\{7\}' | head -1 |
-                xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy' | less -R) << 'FZF-EOF'
-                {}
-FZF-EOF"
-}
-
 git-commit-show-multi-branch(){
   local out q n targetBranch
   while out=$(
@@ -117,6 +103,17 @@ git-commit-show-multi-branch(){
 alias glNoGraph='git log --graph --color=always $targetBranch --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
 _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
 _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy'"
+
+# show_commit - git commit browser 
+git-commit-show() {
+  glNoGraph |
+    fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi --ansi \
+      --header "ctrl-g to copy message,  ctrl-h to copy hash" \
+      --bind "enter:execute:($_viewGitLogLine | less -R)" \
+      --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \
+      --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s | pbcopy)" \
+      --bind "q:execute()+abort"
+}
 
 # show_preview - git commit browser with previews
 git-commit-show-preview() {
