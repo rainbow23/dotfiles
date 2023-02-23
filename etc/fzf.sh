@@ -108,7 +108,7 @@ _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always 
 git-commit-show() {
   glNoGraph |
     fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi --ansi \
-      --header "ctrl-g to copy message,  ctrl-h to copy hash" \
+      --header "ctrl-g to copy git message,  ctrl-h to copy hash" \
       --bind "enter:execute:($_viewGitLogLine | less -R)" \
       --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \
       --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s | pbcopy)" \
@@ -120,7 +120,7 @@ git-commit-show-preview() {
   glNoGraph |
     fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi --ansi \
       --preview="$_viewGitLogLine" \
-      --header "ctrl-f, ctrl-p to toggle preview, ctrl-g to copy message, ctrl-h to copy hash" \
+      --header "ctrl-f, ctrl-p to toggle preview, ctrl-g to copy git message, ctrl-h to copy hash" \
       --bind "enter:execute:$_viewGitLogLine   | less -R" \
       --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \
       --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s | pbcopy)" \
@@ -348,4 +348,4 @@ lp() {
 }
 
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
-export FZF_DEFAULT_OPTS='--height 70% --reverse '
+export FZF_DEFAULT_OPTS='--height 70% --reverse --color=header:#fa8787'
