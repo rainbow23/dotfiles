@@ -106,6 +106,7 @@ _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always 
 
 # show_commit - git commit browser 
 git-commit-show() {
+clear
   glNoGraph |
     fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi --ansi \
       --header "ctrl-g to copy git message,  ctrl-h to copy hash" \
@@ -117,6 +118,7 @@ git-commit-show() {
 
 # show_preview - git commit browser with previews
 git-commit-show-preview() {
+clear
   glNoGraph |
     fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi --ansi \
       --preview="$_viewGitLogLine" \
