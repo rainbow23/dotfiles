@@ -145,8 +145,8 @@ git-stash-list() {
   clear
   _gitStashGraph |
     fzf --ansi +m --exit-0 --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
-      --bind "enter:execute:$_gitLogLineToHash | xargs git stash show" \
-      --bind "ctrl-a:abort+execute:($_gitLogLineToHash | git stash apply )" \
+      --bind "enter:execute:$_gitLogLineToHash | xargs git stash show -p" \
+      --bind "ctrl-a:abort+execute:($_gitLogLineToHash | xargs git stash apply )" \
       --bind "q:execute()+abort" \
 }
 
