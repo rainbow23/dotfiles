@@ -139,34 +139,15 @@ gsd() {
   git diff $out
 }
 
+alias _gitStashGraph='git stash list --color=always --pretty="%C(auto)%h %gs %C(black)%C(bold)%cr"'
+
 git-stash-list() {
-  IFS=$'\n'
-  local stash key stashfullpath
-  stash=$(git stash list --color=always --pretty="%C(auto)%h %gs %C(black)%C(bold)%cr" | fzf --ansi +m --exit-0 \
-        --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
-        --expect=enter --expect=ctrl-d --expect=ctrl-a)
-
-  key=$(head -1 <<< "$stash")
-  stashfullpath=$(head -2 <<< $stash | tail -1)
-  file=$(head -2 <<< $stash | awk '{print $1}' | sed -e 's/://g' | tail -1)
-  # echo $stash
-  # echo "$file"
-  # echo $key
-
-  if [ -n "$file" ]; then
-      if [ "$key" = ctrl-d ] ; then
-        echo "git stash show $stashfullpath"
-        git stash show $file
-      elif [ "$key" = enter ] ; then
-        echo "git stash show $stashfullpath"
-        git stash show $file
-        echo "git stash show -p $stashfullpath"
-        git stash show -p $file
-      elif [ "$key" = ctrl-a ] ; then
-        echo "git stash apply $stashfullpath"
-        git stash apply $file
-      fi
-  fi
+  clear
+  _gitStashGraph |
+    fzf --ansi +m --exit-0 --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
+      --bind "enter:execute:$_gitLogLineToHash | xargs git stash show" \
+      --bind "ctrl-a:abort+execute:($_gitLogLineToHash | git stash apply )" \
+      --bind "q:execute()+abort" \
 }
 
 do_enter() {
