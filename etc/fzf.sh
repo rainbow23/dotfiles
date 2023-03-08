@@ -144,7 +144,7 @@ alias _gitStashGraph='git stash list --color=always --pretty="%C(auto)%h %gs %C(
 git-stash-list() {
   clear
   _gitStashGraph |
-    fzf --ansi +m --exit-0 --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
+    fzf --height=100 --ansi +m --exit-0 --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
       --bind "enter:execute:$_gitLogLineToHash | xargs git stash show -p" \
       --bind "ctrl-a:abort+execute:($_gitLogLineToHash | xargs git stash apply )" \
       --bind "q:execute()+abort" \
