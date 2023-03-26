@@ -34,6 +34,7 @@ alias vim=/usr/local/Cellar/vim/9.0.0900/bin/vim
   abbrev-alias gv='git --no-pager branch -vv'
   abbrev-alias gc="git commit"
   abbrev-alias gcm="git commit -m"
+  abbrev-alias gcmt="git-commit-with-tmp-message"
   abbrev-alias gca="git commit --amend"
   abbrev-alias gau="git add -u"
   abbrev-alias ga='git-add-files'
