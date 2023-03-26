@@ -129,11 +129,16 @@ clear
       --header "ctrl-f, ctrl-p to toggle preview, ctrl-g to copy git message, ctrl-h to copy hash" \
       --bind "enter:execute:$_viewGitLogLine   | less -R" \
       --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \
-      --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s | pbcopy)" \
+      --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)" \
       --bind "q:execute()+abort" \
       --bind '?:toggle-preview' \
       --bind='ctrl-f:toggle-preview' \
       --bind='ctrl-p:toggle-preview'
+
+  #ファイルサイズが0でない場合
+  if [ -s /tmp/git_commit_message ]; then
+    git-commit-with-tmp-message
+  fi
 }
 
 gsd() {
