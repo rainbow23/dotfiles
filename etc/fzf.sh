@@ -112,7 +112,7 @@ clear
       --header "ctrl-g to copy git message,  ctrl-h to copy hash" \
       --bind "enter:execute:($_viewGitLogLine | less -R)" \
       --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \
-      --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s | pbcopy)" \
+      --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)" \
       --bind "q:execute()+abort"
 }
 
