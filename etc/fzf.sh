@@ -114,6 +114,10 @@ clear
       --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \
       --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)" \
       --bind "q:execute()+abort"
+  #ファイルサイズが0でない場合
+  if [ -s /tmp/git_commit_message ]; then
+    git-commit-with-tmp-message
+  fi
 }
 
 # show_preview - git commit browser with previews
