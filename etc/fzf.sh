@@ -104,28 +104,13 @@ alias glNoGraph='git log --graph --color=always $targetBranch --format="%C(auto)
 _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
 _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy'"
 
-# show_commit - git commit browser 
+# show_preview - git commit browser with previews
 git-commit-show() {
 clear
   glNoGraph |
     fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi --ansi \
-      --header "ctrl-g to copy git message,  ctrl-h to copy hash" \
-      --bind "enter:execute:($_viewGitLogLine | less -R)" \
-      --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \
-      --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)" \
-      --bind "q:execute()+abort"
-  #ファイルサイズが0でない場合
-  if [ -s /tmp/git_commit_message ]; then
-    git-commit-with-tmp-message
-  fi
-}
-
-# show_preview - git commit browser with previews
-git-commit-show-preview() {
-clear
-  glNoGraph |
-    fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi --ansi \
       --preview="$_viewGitLogLine" \
+      --preview-window=right:hidden \
       --header "ctrl-f, ctrl-p to toggle preview, ctrl-g to copy git message, ctrl-h to copy hash" \
       --bind "enter:execute:$_viewGitLogLine   | less -R" \
       --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \

@@ -46,8 +46,6 @@ alias vim=/usr/local/Cellar/vim/9.0.0900/bin/vim
   abbrev-alias gss='git stash save'
   abbrev-alias gsl='git-stash-list'
   # 押しやすいキーにしている
-  abbrev-alias gsu='git-commit-show-preview'
-  # 押しやすいキーにしている
   abbrev-alias gsh='git-commit-show' 
   abbrev-alias gshm='git-commit-show-multi-branch'
   abbrev-alias gch='git checkout'
