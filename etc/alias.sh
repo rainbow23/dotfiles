@@ -48,6 +48,8 @@ alias vim=/usr/local/Cellar/vim/9.0.0900/bin/vim
   # 押しやすいキーにしている
   abbrev-alias gsh='git-commit-show' 
   abbrev-alias gshm='git-commit-show-multi-branch'
+  # 特定の１ファイルのgit logを表示する
+  abbrev-alias gshf='git-file-log-show'
   abbrev-alias gch='git checkout'
   abbrev-alias gr='git rebase '
   abbrev-alias gri='git rebase -i'
