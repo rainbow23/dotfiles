@@ -127,17 +127,18 @@ clear
 }
 
 targetFile=""
-alias gitLogFile='git log --oneline --color=always $targetFile  | delta --diff-so-fancy | less -R'
+alias gitLogFile='git log --follow --oneline --color=always $targetFile  | delta --diff-so-fancy | less -R'
+_viewGitLogFileLine="$_gitLogLineToHash | xargs -I % sh -c 'git log --follow -p --color=always % | delta --diff-so-fancy'"
 
 git-file-log-show() {
   # local selected_file
   targetFile=$(git ls-files | fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi)
   gitLogFile |
     fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi --ansi \
-      --preview="$_viewGitLogLine" \
+      --preview="$_viewGitLogFileLine" \
       --preview-window=right:hidden \
       --header "ctrl-f, ctrl-p to toggle preview, ctrl-g to copy git message, ctrl-h to copy hash" \
-      --bind "enter:execute:$_viewGitLogLine   | less -R" \
+      --bind "enter:execute:$_viewGitLogFileLine | less -R" \
       --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \
       --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)" \
       --bind "q:execute()+abort" \
