@@ -220,6 +220,7 @@ Plug 'airblade/vim-gitgutter'
 " Plug 'deris/vim-gothrough-jk'
 Plug 'rhysd/accelerated-jk'
 Plug 'easymotion/vim-easymotion'
+Plug 'yuki-yano/fuzzy-motion.vim'
 Plug 'elzr/vim-json'
 Plug 'preservim/nerdcommenter'
 Plug 'scrooloose/nerdtree'
@@ -1270,3 +1271,6 @@ inoremap [fzf]y <C-O>:<C-U>FZFYank<CR>
 " ユーザーが以下のように <CR> に対して <Plug>(kensaku-search-replace) を割り当てる必要があります。
 cnoremap <CR> <Plug>(kensaku-search-replace)<CR>
 " Plug 'lambdalisue/kensaku-search.vim' start #####################################
+
+nnoremap S :FuzzyMotion<CR>
+let g:fuzzy_motion_matchers = ['kensaku', 'fzf']
