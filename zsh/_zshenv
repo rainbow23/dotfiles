@@ -24,9 +24,10 @@ export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 # エディタ
-if [ -f /usr/local/Cellar/vim/9.0.0900/bin/vim ] ; then
-  export EDITOR='/usr/local/Cellar/vim/9.0.0900/bin/vim'
-  export VIMRUNTIME=/usr/local/Cellar/vim/9.0.0900/share/vim/vim90/
+
+if [ -f /usr/local/Cellar/vim/9.0.1950/bin/vim ] ; then
+  export EDITOR='/usr/local/Cellar/vim/9.0.1950/bin/vim'
+  export VIMRUNTIME=/usr/local/Cellar/vim/9.0.1950/share/vim/vim90/
 elif [ -f /usr/local/bin/nvim ] ; then
   export EDITOR='/usr/local/bin/nvim'
 elif [ -f /usr/bin/vim ] ; then
