@@ -267,6 +267,10 @@ Plug 'kana/vim-operator-replace'
 Plug 'kana/vim-operator-user'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'svermeulen/vim-easyclip'
+Plug 'vim-denops/denops.vim'
+Plug 'vim-denops/denops-helloworld.vim'
+Plug 'lambdalisue/kensaku.vim'
+Plug 'lambdalisue/kensaku-search.vim'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1259,3 +1263,8 @@ command! FZFYank call fzf#run({
 nnoremap [fzf]y :<C-U>FZFYank<CR>
 inoremap [fzf]y <C-O>:<C-U>FZFYank<CR>
 " Plug 'svermeulen/vim-easyclip' ##################################################
+" Plug 'lambdalisue/kensaku-search.vim' start #####################################
+" kensaku-search.vim はデフォルトマッピングを提供していないため、
+" ユーザーが以下のように <CR> に対して <Plug>(kensaku-search-replace) を割り当てる必要があります。
+cnoremap <CR> <Plug>(kensaku-search-replace)<CR>
+" Plug 'lambdalisue/kensaku-search.vim' start #####################################
