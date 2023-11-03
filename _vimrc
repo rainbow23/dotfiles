@@ -1082,6 +1082,7 @@ vmap <C-k> <Plug>MoveBlockUp
 " Plug 'matze/vim-move' ###############################################################################
 
 " Plug t9md/vim-quickhl ###############################################################################
+" 選択文字をハイライトする
 nmap <Space>m <Plug>(quickhl-manual-this)
 xmap <Space>m <Plug>(quickhl-manual-this)
 nmap <F9>     <Plug>(quickhl-manual-toggle)
