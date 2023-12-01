@@ -3,7 +3,7 @@
 alias hsn='hostname'
 alias ez='exec zsh -l'
 alias cl='clear'
-alias vim=/usr/local/Cellar/vim/9.0.1950/bin/vim
+alias vim=/usr/local/Cellar/vim/9.0.2100/bin/vim
 ## -------------------------------------
 # abbrev-alias
 ## -------------------------------------
