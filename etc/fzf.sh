@@ -104,7 +104,9 @@ alias glNoGraph='git log --graph --color=always $targetBranch --format="%C(auto)
 _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
 _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy'"
 
+
 # show_preview - git commit browser with previews
+
 git-commit-show() {
 clear
   glNoGraph |
@@ -148,9 +150,13 @@ git-stash-list() {
   clear
   _gitStashGraph |
     fzf --height=100 --ansi +m --exit-0 --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
+      --preview="$_viewGitLogLine" \
+      --preview-window=right:hidden \
       --bind "enter:execute:$_gitLogLineToHash | xargs git stash show -p" \
       --bind "ctrl-a:abort+execute:($_gitLogLineToHash | xargs git stash apply )" \
       --bind "q:execute()+abort" \
+      --bind='ctrl-f:toggle-preview' \
+      --bind='ctrl-p:toggle-preview'
 }
 
 do_enter() {
