@@ -476,6 +476,8 @@ highlight CocWarningSign ctermfg=0 ctermbg=172
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)"
 
+" Show all diagnostics
+nnoremap <silent><nowait> coca  :<C-u>CocList diagnostics<cr>
 "unite start ##################################################################
 let g:unite_data_directory = expand('~/.vim/etc/unite')
 "ヒストリー/ヤンク機能を有効化
