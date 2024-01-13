@@ -226,7 +226,6 @@ Plug 'preservim/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
 Plug 'rainbow23/vim-snippets'
 Plug 'fatih/vim-go', { 'tag': 'v1.19', 'do': ':GoUpdateBinaries' }
@@ -953,17 +952,6 @@ function! NERDTreeToggleBookmark(node)
   " call a:node.putCursorHece(1, 1)
 endfunction
 " Plug 'sccooloose/nerdtree' #########################################################
-
-"vim-syntastic/syntastic start ####################################################################
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
-"vim-syntastic/syntastic end  ####################################################################
 
 "Plug 'tyru/current-func-info.vim' ###################################################################
 nnoremap <C-g>j :echo cfi#format("%s", "")<CR>
