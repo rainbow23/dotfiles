@@ -467,9 +467,21 @@ let g:coc_global_extensions = [
       \ 'coc-kotlin',
       \ ]
 
-" Diagnosticsの、左横のアイコンの色設定
-highlight CocErrorSign ctermfg=15 ctermbg=196
-highlight CocWarningSign ctermfg=0 ctermbg=172
+" 診断のエラーを赤色に設定
+hi CocErrorHighlight guifg=#FF0000
+hi link CocErrorSign CocErrorHighlight
+
+" 診断の警告を黄色に設定
+hi CocWarningHighlight guifg=#FFFF00
+hi link CocWarningSign CocWarningHighlight
+
+" 診断の情報を青色に設定
+hi CocInfoHighlight guifg=#FFFF00
+hi link CocInfoSign CocInfoHighlight
+
+" 診断のヒントを緑色に設定
+hi CocHintHighlight guifg=#00FF00
+hi link CocHintSign CocHintHighlight
 
 " Use `[g` and `]g` to navigate diagnostics
 " " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
