@@ -1265,8 +1265,17 @@ call ddc#custom#patch_global({
 \       'vim-lsp',
 \       'around',
 \       'buffer',
+\       'skkeleton',
 \   ],
 \   'sourceOptions': {
+\       'skkeleton': {
+\           'mark': 'skkeleton',
+\           'matchers': [],
+\           'sorters': [],
+\           'converters': [],
+\           'isVolatile': v:true,
+\           'minAutoCompleteLength': 1,
+\       },
 \       '_': {
 \           'matchers'  : ['matcher_fuzzy'],
 \           'sorters'   : ['sorter_fuzzy'],
