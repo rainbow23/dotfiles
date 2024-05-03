@@ -1251,9 +1251,9 @@ augroup skkeleton-initialize-pre
  autocmd User skkeleton-initialize-pre call s:skkeleton_init()
 augroup END
 
-imap <C-j> <Plug>(skkeleton-toggle)
-cmap <C-j> <Plug>(skkeleton-toggle)
-tmap <C-j> <Plug>(skkeleton-toggle)
+imap <C-k> <Plug>(skkeleton-toggle)
+cmap <C-k> <Plug>(skkeleton-toggle)
+tmap <C-k> <Plug>(skkeleton-toggle)
 
 " Plug 'Shougo/ddc.vim' start #####################################################
 "===================================
