@@ -271,7 +271,7 @@ Plug 'vim-denops/denops.vim'
 Plug 'vim-denops/denops-helloworld.vim'
 Plug 'lambdalisue/kensaku.vim'
 Plug 'lambdalisue/kensaku-search.vim'
-"Plug 'vim-skk/skkeleton'
+Plug 'vim-skk/skkeleton'
 call plug#end()
 
 "FZF start ####################################################################
