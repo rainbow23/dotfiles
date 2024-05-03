@@ -28,10 +28,11 @@ source $HOME/dotfiles/export.sh
 
 if [ -f "/usr/local/Cellar/vim/${vim_version}/bin/vim" ] ; then
   export EDITOR="/usr/local/Cellar/vim/${vim_version}/bin/vim"
-  export VIMRUNTIME="/usr/local/Cellar/vim/${vim_version}/share/vim/vim90/"
+  export VIMRUNTIME="/usr/local/Cellar/vim/${vim_version}/share/vim/vim91/"
 elif [ -f /usr/local/bin/nvim ] ; then
   export EDITOR='/usr/local/bin/nvim'
-  export VIMRUNTIME='/usr/local/bin/vim/share/vim/vim90/'
+  export VIMRUNTIME="/usr/local/Cellar/vim/${vim_version}/share/vim/vim91/"
+  # export VIMRUNTIME='/usr/local/bin/vim/share/vim/vim91/'
 elif [ -f /usr/bin/vim ] ; then
   export EDITOR='/usr/bin/vim'
 fi
