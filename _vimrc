@@ -202,6 +202,13 @@ Plug 'Shougo/neomru.vim'
 Plug 'Shougo/unite-outline'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'Shougo/deol.nvim'
+Plug 'Shougo/ddc.vim'
+Plug 'Shougo/ddc-ui-native'
+Plug 'Shougo/ddc-around'
+Plug 'matsui54/ddc-buffer'
+Plug 'shun/ddc-source-vim-lsp'
+Plug 'tani/ddc-fuzzy'
+
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'kana/vim-fakeclip'
@@ -1247,3 +1254,43 @@ augroup END
 imap <C-j> <Plug>(skkeleton-toggle)
 cmap <C-j> <Plug>(skkeleton-toggle)
 tmap <C-j> <Plug>(skkeleton-toggle)
+
+" Plug 'Shougo/ddc.vim' start #####################################################
+"===================================
+" Ddc Settings
+"===================================
+call ddc#custom#patch_global({
+\   'ui': 'native',
+\   'sources': [
+\       'vim-lsp',
+\       'around',
+\       'buffer',
+\   ],
+\   'sourceOptions': {
+\       '_': {
+\           'matchers'  : ['matcher_fuzzy'],
+\           'sorters'   : ['sorter_fuzzy'],
+\           'converters': ['converter_fuzzy'],
+\           'ignoreCase': v:true,
+\       },
+\       'around': {
+\           'mark': '[Arround]',
+\       },
+\       'buffer': {
+\           'mark': '[Buffer]',
+\       },
+\       'vim-lsp': {
+\           'mark': '[LSP]',
+\           'forceCompletionPattern': '\.\w*|:\w*|->\w*',
+\       },
+\   },
+\   'sourceParams': {
+\       'around': { 'maxSize': 500 },
+\       'buffer': {
+\           'limitBytes': 5000000,
+\           'forceCollect': v:true,
+\           'fromAltBuf': v:true,
+\       },
+\    },
+\})
+call ddc#enable()
