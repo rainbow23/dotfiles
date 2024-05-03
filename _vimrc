@@ -265,7 +265,6 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'mattn/ctrlp-matchfuzzy'
 Plug 'kana/vim-operator-replace'
 Plug 'kana/vim-operator-user'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'svermeulen/vim-easyclip'
 Plug 'vim-denops/denops.vim'
 Plug 'vim-denops/denops-helloworld.vim'
@@ -428,69 +427,6 @@ let g:airline#extensions#tabline#show_tab_type     = 0   " disables the weird or
 let g:airline#extensions#tabline#show_buffers      = 1   " dont show buffers in the tabline
 "vim-airline end  #####################################################################
 
-" coc.nvim ############################################################################
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-" Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
-
-" Make <CR> auto-select the first completion item and notify coc.nvim to
-" format on enter, <cr> could be remapped by other vim plugin
-" https://qiita.com/maguro_tuna/items/70814d99aef8f1ddc8e9
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-let g:coc_global_extensions = [
-      \ 'coc-tsserver',
-      \ 'coc-html',
-      \ 'coc-css',
-      \ 'coc-python',
-      \ 'coc-phpls',
-      \ 'coc-yaml',
-      \ 'coc-json',
-      \ 'coc-vimlsp',
-      \ 'coc-emmet',
-      \ 'coc-tag',
-      \ 'coc-kotlin',
-      \ ]
-
-" 診断のエラーを赤色に設定
-hi CocErrorHighlight guifg=#FF0000
-hi link CocErrorSign CocErrorHighlight
-
-" 診断の警告を黄色に設定
-hi CocWarningHighlight guifg=#FFFF00
-hi link CocWarningSign CocWarningHighlight
-
-" 診断の情報を青色に設定
-hi CocInfoHighlight guifg=#FFFF00
-hi link CocInfoSign CocInfoHighlight
-
-" 診断のヒントを緑色に設定
-hi CocHintHighlight guifg=#00FF00
-hi link CocHintSign CocHintHighlight
-
-" Use `[g` and `]g` to navigate diagnostics
-" " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)"
-
-" Show all diagnostics
-nnoremap <silent><nowait> coca  :<C-u>CocList diagnostics<cr>
 "unite start ##################################################################
 let g:unite_data_directory = expand('~/.vim/etc/unite')
 "ヒストリー/ヤンク機能を有効化
