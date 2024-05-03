@@ -1293,7 +1293,12 @@ let g:fuzzy_motion_matchers = ['kensaku', 'fzf']
 function! s:skkeleton_init() abort
   call skkeleton#config({
     \ 'eggLikeNewline': v:true,
-    \ 'globalDictionaries': [['~/.skk/SKK-JISYO.M', 'euc-jp']]
+    \ 'globalDictionaries': [
+    \  ['~/.skk/SKK-JISYO.L', 'euc-jp'],
+    \  ['~/.skk/SKK-JISYO.fullname', 'euc-jp'],
+    \  ['~/.skk/SKK-JISYO.geo', 'euc-jp'],
+    \  ['~/.skk/SKK-JISYO.jinmei', 'euc-jp'],
+    \ ]
     \ })
   call skkeleton#register_kanatable('rom', {
     \ "z\<Space>": ["\u3000", ''],
