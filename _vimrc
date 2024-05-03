@@ -1292,7 +1292,8 @@ let g:fuzzy_motion_matchers = ['kensaku', 'fzf']
 
 function! s:skkeleton_init() abort
   call skkeleton#config({
-    \ 'eggLikeNewline': v:true
+    \ 'eggLikeNewline': v:true,
+    \ 'globalDictionaries': [['~/.skk/SKK-JISYO.M', 'euc-jp']]
     \ })
   call skkeleton#register_kanatable('rom', {
     \ "z\<Space>": ["\u3000", ''],
