@@ -271,6 +271,7 @@ Plug 'vim-denops/denops.vim'
 Plug 'vim-denops/denops-helloworld.vim'
 Plug 'lambdalisue/kensaku.vim'
 Plug 'lambdalisue/kensaku-search.vim'
+"Plug 'vim-skk/skkeleton'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1290,3 +1291,21 @@ cnoremap <CR> <Plug>(kensaku-search-replace)<CR>
 nnoremap S :FuzzyMotion<CR>
 let g:fuzzy_motion_matchers = ['kensaku', 'fzf']
 " Plug 'lambdalisue/kensaku-search.vim' start #####################################
+
+function! s:skkeleton_init() abort
+  call skkeleton#config({
+    \ 'eggLikeNewline': v:true
+    \ })
+  call skkeleton#register_kanatable('rom', {
+    \ "z\<Space>": ["\u3000", ''],
+    \ })
+endfunction
+augroup skkeleton-initialize-pre
+  autocmd!
+ autocmd User skkeleton-initialize-pre call s:skkeleton_init()
+augroup END
+
+call skkeleton#config({ 'globalJisyo': '~/.skk/SKK-JISYO.M'  })
+imap <C-j> <Plug>(skkeleton-enable)
+cmap <C-j> <Plug>(skkeleton-enable)
+tmap <C-j> <Plug>(skkeleton-enable)
