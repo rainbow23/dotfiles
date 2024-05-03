@@ -1305,7 +1305,6 @@ augroup skkeleton-initialize-pre
  autocmd User skkeleton-initialize-pre call s:skkeleton_init()
 augroup END
 
-call skkeleton#config({ 'globalJisyo': '~/.skk/SKK-JISYO.M'  })
 imap <C-j> <Plug>(skkeleton-enable)
 cmap <C-j> <Plug>(skkeleton-enable)
 tmap <C-j> <Plug>(skkeleton-enable)
