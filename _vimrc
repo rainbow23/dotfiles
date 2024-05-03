@@ -271,6 +271,7 @@ Plug 'vim-denops/denops.vim'
 Plug 'vim-denops/denops-helloworld.vim'
 Plug 'lambdalisue/kensaku.vim'
 Plug 'lambdalisue/kensaku-search.vim'
+Plug 'vim-skk/skkeleton'
 call plug#end()
 
 "FZF start ####################################################################
@@ -1284,9 +1285,30 @@ inoremap [fzf]y <C-O>:<C-U>FZFYank<CR>
 " kensaku-search.vim はデフォルトマッピングを提供していないため、
 " ユーザーが以下のように <CR> に対して <Plug>(kensaku-search-replace) を割り当てる必要があります。
 cnoremap <CR> <Plug>(kensaku-search-replace)<CR>
-" Plug 'lambdalisue/kensaku-search.vim' start #####################################
 
-" Plug 'lambdalisue/kensaku-search.vim' start #####################################
 nnoremap S :FuzzyMotion<CR>
 let g:fuzzy_motion_matchers = ['kensaku', 'fzf']
 " Plug 'lambdalisue/kensaku-search.vim' start #####################################
+
+function! s:skkeleton_init() abort
+  call skkeleton#config({
+    \ 'eggLikeNewline': v:true,
+    \ 'globalDictionaries': [
+    \  ['~/.skk/SKK-JISYO.L', 'euc-jp'],
+    \  ['~/.skk/SKK-JISYO.fullname', 'euc-jp'],
+    \  ['~/.skk/SKK-JISYO.geo', 'euc-jp'],
+    \  ['~/.skk/SKK-JISYO.jinmei', 'euc-jp'],
+    \ ]
+    \ })
+  call skkeleton#register_kanatable('rom', {
+    \ "z\<Space>": ["\u3000", ''],
+    \ })
+endfunction
+augroup skkeleton-initialize-pre
+  autocmd!
+ autocmd User skkeleton-initialize-pre call s:skkeleton_init()
+augroup END
+
+imap <C-j> <Plug>(skkeleton-toggle)
+cmap <C-j> <Plug>(skkeleton-toggle)
+tmap <C-j> <Plug>(skkeleton-toggle)
