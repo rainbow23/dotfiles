@@ -1,11 +1,8 @@
 #!/bin/sh
 
-source $HOME/dotfiles/export.sh
-
 alias hsn='hostname'
 alias ez='exec zsh -l'
 alias cl='clear'
-alias vim=/usr/local/Cellar/vim/${vim_version}/bin/vim
 ## -------------------------------------
 # abbrev-alias
 ## -------------------------------------

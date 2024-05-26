@@ -23,20 +23,6 @@ path=(
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# エディタ
-source $HOME/dotfiles/export.sh
-
-if [ -f "/usr/local/Cellar/vim/${vim_version}/bin/vim" ] ; then
-  export EDITOR="/usr/local/Cellar/vim/${vim_version}/bin/vim"
-  export VIMRUNTIME="/usr/local/Cellar/vim/${vim_version}/share/vim/vim91/"
-elif [ -f /usr/local/bin/nvim ] ; then
-  export EDITOR='/usr/local/bin/nvim'
-  export VIMRUNTIME="/usr/local/Cellar/vim/${vim_version}/share/vim/vim91/"
-  # export VIMRUNTIME='/usr/local/bin/vim/share/vim/vim91/'
-elif [ -f /usr/bin/vim ] ; then
-  export EDITOR='/usr/bin/vim'
-fi
-
 # ページャ
 export MANPAGER="less -"
 # export PAGER=/usr/local/bin/vimpager
