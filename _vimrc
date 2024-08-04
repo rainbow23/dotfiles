@@ -28,6 +28,13 @@ hi Visual ctermfg=DarkBlue
 hi Comment ctermfg=Cyan
 set encoding=utf-8
 
+let &t_ti.="\e[1 q"
+" 挿入モード時に非点滅の縦棒タイプのカーソル
+let &t_SI.="\e[5 q"
+" 挿入モード時に非点滅の縦棒タイプのカーソル
+let &t_EI.="\e[1 q"
+let &t_te.="\e[0 q"
+
 autocmd BufEnter *.html,*.vue,*.yml,*.yaml,*.sh,*.zsh,_zshrc,_vimrc,*.vim set shiftwidth=2
 " %retab!            "spaceをtabに変換
 
