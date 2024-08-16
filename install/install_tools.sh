@@ -2,6 +2,8 @@
 
 #go
 if [ ! -d /usr/local/go/bin ]; then
+  echo "install go "
+  echo ""
 
   if [ ! -d /usr/local/src ]; then
     sudo mkdir /usr/local/src
@@ -19,6 +21,8 @@ fi
 
 # tmux
 if [ ! -f /usr/local/bin/tmux ]; then
+  echo "install tmux "
+  echo ""
   git clone --depth 1 https://github.com/tmux/tmux.git $HOME/tmux
   cd $HOME/tmux
   # checkout latest tag
@@ -31,18 +35,34 @@ fi
 
 TMUX_PLUGIN=$HOME/.tmux/plugins/tpm
 if [[ ! -d $TMUX_PLUGIN ]]; then
+  echo "install TMUX_PLUGIN "
+  echo ""
   git clone https://github.com/tmux-plugins/tpm $TMUX_PLUGIN
 fi
 
-
+# diff-so-fancy
 if [ ! -f /usr/local/bin/diff-so-fancy ] ; then
+  echo "install diff-so-fancy "
+  echo ""
+
   sudo curl -L https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -o /usr/local/bin/diff-so-fancy \
   && sudo chmod +x /usr/local/bin/diff-so-fancy
+fi
+
+# bookmark-of-chrome
+if [ ! -f $HOME/bookmark_of_chrome.rb ] ; then
+  echo "install bookmark-of-chrome"
+  echo ""
+  mkdir $HOME/bookmark_of_chrome
+  git clone https://gist.github.com/73236d896399ca7ee68b8b3900ae39e0.git $HOME/bookmark_of_chrome\
+  && sudo chmod +x $HOME/bookmark_of_chrome/b.rb
 fi
 
 # the_silver_searcher
 SILVER_SEARCHER=$HOME/the_silver_searcher
 if [ ! -f /usr/local/bin/ag ] ; then
+  echo "install SILVER_SEARCHER"
+  echo ""
   if [ ! -d $SILVER_SEARCHER ]; then
     git clone --depth 1 https://github.com/ggreer/the_silver_searcher.git $HOME/the_silver_searcher
   fi
@@ -57,6 +77,8 @@ fi
 
 # ctags
 if [[ ! -e /usr/local/bin/ctags ]]; then
+  echo "install ctags"
+  echo ""
   mkdir $HOME/ctags
   git clone --depth 1 https://github.com/universal-ctags/ctags.git $HOME/ctags
   cd $HOME/ctags
@@ -78,6 +100,8 @@ done
 # tig
 TIG=$HOME/tig
 if [[ ! -e /usr/local/bin/tig ]]; then
+  echo "install tig"
+  echo ""
   CURRPATH=$(pwd)
   git clone --depth 1 git clone git://github.com/jonas/tig.git $TIG
   make prefix=/usr/local

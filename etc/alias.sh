@@ -2,14 +2,17 @@
 
 alias hsn='hostname'
 alias ez='exec zsh -l'
-
-alias et='exit'
 alias cl='clear'
-
 ## -------------------------------------
 # abbrev-alias
 ## -------------------------------------
 : "略語展開(iab)" && {
+  ## ------------------------------------
+  # shell operation
+  # -------------------------------------
+  abbrev-alias et='exit'
+  abbrev-alias bk='$HOME/bookmark_of_chrome/b.rb'
+
   ## ------------------------------------
   # aws operation
   # -------------------------------------
@@ -29,6 +32,7 @@ alias cl='clear'
   abbrev-alias gv='git --no-pager branch -vv'
   abbrev-alias gc="git commit"
   abbrev-alias gcm="git commit -m"
+  abbrev-alias gcmt="git-commit-with-tmp-message"
   abbrev-alias gca="git commit --amend"
   abbrev-alias gau="git add -u"
   abbrev-alias ga='git-add-files'
@@ -39,9 +43,11 @@ alias cl='clear'
   abbrev-alias gs='git status'
   abbrev-alias gss='git stash save'
   abbrev-alias gsl='git-stash-list'
-  abbrev-alias gsp='git-commit-show-preview'
-  abbrev-alias gsh='git-commit-show'
+  # 押しやすいキーにしている
+  abbrev-alias gsh='git-commit-show' 
   abbrev-alias gshm='git-commit-show-multi-branch'
+  # 特定の１ファイルのgit logを表示する
+  abbrev-alias gshf='git-file-log-show'
   abbrev-alias gch='git checkout'
   abbrev-alias gr='git rebase '
   abbrev-alias gri='git rebase -i'

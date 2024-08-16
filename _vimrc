@@ -17,7 +17,7 @@ if 1 == exists("+autochdir")
     set autochdir
 endif
 syntax on
-colorscheme peachpuff
+colorscheme torte
 filetype on
 set hlsearch
 hi Search ctermbg=Gray
@@ -28,9 +28,14 @@ hi Visual ctermfg=DarkBlue
 hi Comment ctermfg=Cyan
 set encoding=utf-8
 
+let &t_ti.="\e[1 q"
+" 挿入モード時に非点滅の縦棒タイプのカーソル
+let &t_SI.="\e[5 q"
+" 挿入モード時に非点滅の縦棒タイプのカーソル
+let &t_EI.="\e[1 q"
+let &t_te.="\e[0 q"
+
 autocmd BufEnter *.html,*.vue,*.yml,*.yaml,*.sh,*.zsh,_zshrc,_vimrc,*.vim set shiftwidth=2
-autocmd BufEnter *.php set noexpandtab " Use tabs, not spaces
-autocmd BufEnter *.php set tabstop=4
 " %retab!            "spaceをtabに変換
 
 "ヤンクをクリップボードに保存　kana/vim-fakeclipと連動
@@ -104,7 +109,9 @@ nnoremap <silent> <Right> :vertical resize +10<CR>
 nnoremap <silent> <Up> :resize +10<CR>
 nnoremap <silent> <Down> :resize -10<CR>
 nnoremap <C-s> :split <C-g><CR>
+" 左右のパネル入れ替える
 nnoremap exg <C-w>x <C-g><CR>
+" パネルを均等に配置する
 noremap w= <C-w>= <C-g><CR>
 " panel size end  #################################
 
@@ -202,6 +209,13 @@ Plug 'Shougo/neomru.vim'
 Plug 'Shougo/unite-outline'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'Shougo/deol.nvim'
+Plug 'Shougo/ddc.vim'
+Plug 'Shougo/ddc-ui-native'
+Plug 'Shougo/ddc-around'
+Plug 'matsui54/ddc-buffer'
+Plug 'shun/ddc-source-vim-lsp'
+Plug 'tani/ddc-fuzzy'
+
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'kana/vim-fakeclip'
@@ -220,12 +234,12 @@ Plug 'airblade/vim-gitgutter'
 " Plug 'deris/vim-gothrough-jk'
 Plug 'rhysd/accelerated-jk'
 Plug 'easymotion/vim-easymotion'
+Plug 'yuki-yano/fuzzy-motion.vim'
 Plug 'elzr/vim-json'
 Plug 'preservim/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'vim-syntastic/syntastic'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
 Plug 'rainbow23/vim-snippets'
 Plug 'fatih/vim-go', { 'tag': 'v1.19', 'do': ':GoUpdateBinaries' }
@@ -265,8 +279,12 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'mattn/ctrlp-matchfuzzy'
 Plug 'kana/vim-operator-replace'
 Plug 'kana/vim-operator-user'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'svermeulen/vim-easyclip'
+Plug 'vim-denops/denops.vim'
+Plug 'vim-denops/denops-helloworld.vim'
+Plug 'lambdalisue/kensaku.vim'
+Plug 'lambdalisue/kensaku-search.vim'
+Plug 'vim-skk/skkeleton'
 call plug#end()
 
 "FZF start ####################################################################
@@ -328,15 +346,12 @@ nnoremap [fzf]s :<C-u>Search<CR>
 nnoremap [fzf]S :<C-u>SearchFromCurrDir<CR>
 nnoremap [fzf]k :<C-u>FzfGitRootDirBookmarks!<CR>
 nnoremap [fzf]K :<C-u>FzfCurrFileBookmarks!<CR>
+nnoremap [fzf]f :<C-u>FzfGitDiffFiles<CR>
 " nnoremap [fzf]ka :<C-u>FzfAllBookmarks!<CR>
 
 let g:fzf_layout = { 'down': '~30%' }
 let s:fzf_base_options = extend({'options': ''}, g:fzf_layout)
 
-function! s:with_git_root()
-  let root = systemlist('git rev-parse --show-toplevel')[0]
-  return v:shell_error ? {} : {'dir': root}
-endfunction
 
 function! s:rg_raw(command_suffix, ...)
   if !executable('rg')
@@ -365,7 +380,7 @@ command! -bang -nargs=? -complete=dir Files
  " Make Ripgrep ONLY search file contents and not filenames
 command! -bang -nargs=* Search
   \ call fzf#vim#grep(
-  \   'rg --column --line-number --hidden --smart-case --no-heading --color=always ^ $(git rev-parse --show-toplevel) '.shellescape(<q-args>), 1,
+  \   'rg --column --line-number --hidden --smart-case -g !.git/ --no-heading --color=always ^ $(git rev-parse --show-toplevel) '.shellescape(<q-args>), 1,
   \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
   \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
   \   <bang>0)
@@ -382,6 +397,15 @@ command! -bang -nargs=* Ag
   \                 <bang>0 ? fzf#vim#with_preview('up:60%')
   \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
   \                 <bang>0)
+
+command! -bang FzfGitDiffFiles
+  \ call fzf#run({'source':
+  \   "git diff --name-only $(git show-branch --sha1-name $(git symbolic-ref --short refs/remotes/origin/HEAD) $(git rev-parse --abbrev-ref HEAD) | tail -1 | awk -F'[]~^[]' '{print $2}')",
+  \   'sink': 'e',
+  \   'options': '-m --prompt "GitDiffFiles>" --preview "bat --color=always  {}"',
+  \   'window': { 'width': 0.92, 'height': 0.7, 'yoffset': 1 }
+  \   })
+
 "FZF end  ####################################################################
 
 "EasyAlign start ####################################################################
@@ -417,45 +441,6 @@ let g:airline#extensions#tabline#show_tab_type     = 0   " disables the weird or
 let g:airline#extensions#tabline#show_buffers      = 1   " dont show buffers in the tabline
 "vim-airline end  #####################################################################
 
-" coc.nvim ############################################################################
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-" Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
-
-" Make <CR> auto-select the first completion item and notify coc.nvim to
-" format on enter, <cr> could be remapped by other vim plugin
-" https://qiita.com/maguro_tuna/items/70814d99aef8f1ddc8e9
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-let g:coc_global_extensions = [
-      \ 'coc-tsserver',
-      \ 'coc-html',
-      \ 'coc-css',
-      \ 'coc-python',
-      \ 'coc-phpls',
-      \ 'coc-yaml',
-      \ 'coc-json',
-      \ 'coc-vimlsp',
-      \ 'coc-emmet',
-      \ 'coc-tag',
-      \ 'coc-kotlin',
-      \ ]
 "unite start ##################################################################
 let g:unite_data_directory = expand('~/.vim/etc/unite')
 "ヒストリー/ヤンク機能を有効化
@@ -709,7 +694,7 @@ nmap     <Leader>v [fugitive]
 nnoremap [fugitive]s  :<C-u>Gstatus<CR>
 nnoremap [fugitive]d :<C-u>Gvdiff<CR>
 nnoremap [fugitive]l  :<C-u>Glog<CR>
-nnoremap [fugitive]b :<C-u>Gblame<CR>
+nnoremap [fugitive]b :<C-u>Git blame<CR>
 nnoremap [fugitive]rd :<C-u>Gread<CR>:GitGutterAll<CR>
 nnoremap [fugitive]g :<C-u>Ggrep
 nnoremap [fugitive]w :<C-u>Gbrowse<CR>
@@ -848,6 +833,8 @@ endfunction
 
 "rhysd/clever-f.vim ##################################################
 let g:clever_f_smart_case = 1
+" 日本語検索できるようにする
+let clever_f_use_migemo = 1
 "rhysd/clever-f.vim ##################################################
 
 "deris/vim-gothrough-jk  ##################################################
@@ -941,17 +928,6 @@ function! NERDTreeToggleBookmark(node)
 endfunction
 " Plug 'sccooloose/nerdtree' #########################################################
 
-"vim-syntastic/syntastic start ####################################################################
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
-"vim-syntastic/syntastic end  ####################################################################
-
 "Plug 'tyru/current-func-info.vim' ###################################################################
 nnoremap <C-g>j :echo cfi#format("%s", "")<CR>
 let &statusline .= ' [%{cfi#format("%s", "")}]'
@@ -1031,8 +1007,13 @@ let g:loaded_matchparen = 1
 let g:comfortable_motion_no_default_key_mappings = 1
 let g:comfortable_motion_friction = 200.0
 let g:comfortable_motion_air_drag = 4.0
-
 let g:comfortable_motion_impulse_multiplier = 1.5  " Feel free to increase/decrease this value.
+let g:comfortable_motion_scroll_down_key = "j"
+let g:comfortable_motion_scroll_up_key = "k"
+nnoremap <silent> <C-d> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 2)<CR>
+nnoremap <silent> <C-u> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -2)<CR>
+nnoremap <silent> <C-f> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 4)<CR>
+nnoremap <silent> <C-b> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -4)<CR>"
 " nnoremap <Leader>j :call comfortable_motion#flick(100)<CR>
 nnoremap <silent> <Leader>j :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 2)<CR>
 nnoremap <silent> <Leader>k :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -2)<CR>
@@ -1043,9 +1024,14 @@ nnoremap <silent> <C-b> :call comfortable_motion#flick(g:comfortable_motion_impu
 " Plug 'yuttie/comfortable-motion.vim' ###############################################################
 
 " Plug 'mileszs/ack.vim' #############################################################################
+function! Find_git_root()
+    return system('git rev-parse --show-toplevel 2> /dev/null')[:-2]
+endfunction
+command! -nargs=1 Rg execute "Ack! <args> " . Find_git_root()
 if executable("rg")
   let g:ackprg = 'rg --vimgrep --no-heading'
 endif
+
 " Plug 'mileszs/ack.vim' #############################################################################
 
 " Plug 'thinca/vim-qfreplace' ########################################################################
@@ -1059,6 +1045,7 @@ vmap <C-k> <Plug>MoveBlockUp
 " Plug 'matze/vim-move' ###############################################################################
 
 " Plug t9md/vim-quickhl ###############################################################################
+" 選択文字をハイライトする
 nmap <Space>m <Plug>(quickhl-manual-this)
 xmap <Space>m <Plug>(quickhl-manual-this)
 nmap <F9>     <Plug>(quickhl-manual-toggle)
@@ -1243,3 +1230,83 @@ command! FZFYank call fzf#run({
 nnoremap [fzf]y :<C-U>FZFYank<CR>
 inoremap [fzf]y <C-O>:<C-U>FZFYank<CR>
 " Plug 'svermeulen/vim-easyclip' ##################################################
+
+" Plug 'lambdalisue/kensaku-search.vim' start #####################################
+" kensaku-search.vim はデフォルトマッピングを提供していないため、
+" ユーザーが以下のように <CR> に対して <Plug>(kensaku-search-replace) を割り当てる必要があります。
+cnoremap <CR> <Plug>(kensaku-search-replace)<CR>
+nnoremap S :FuzzyMotion<CR>
+let g:fuzzy_motion_matchers = ['kensaku', 'fzf']
+
+" Plug 'vim-skk/skkeleton' start ##################################################
+function! s:skkeleton_init() abort
+  call skkeleton#config({
+    \ 'eggLikeNewline': v:true,
+    \ 'globalDictionaries': [
+    \  ['~/.skk/SKK-JISYO.L', 'euc-jp'],
+    \  ['~/.skk/SKK-JISYO.fullname', 'euc-jp'],
+    \  ['~/.skk/SKK-JISYO.geo', 'euc-jp'],
+    \  ['~/.skk/SKK-JISYO.jinmei', 'euc-jp'],
+    \ ]
+    \ })
+  call skkeleton#register_kanatable('rom', {
+    \ "z\<Space>": ["\u3000", ''],
+    \ })
+endfunction
+augroup skkeleton-initialize-pre
+  autocmd!
+ autocmd User skkeleton-initialize-pre call s:skkeleton_init()
+augroup END
+
+imap <C-k> <Plug>(skkeleton-toggle)
+cmap <C-k> <Plug>(skkeleton-toggle)
+tmap <C-k> <Plug>(skkeleton-toggle)
+
+" Plug 'Shougo/ddc.vim' start #####################################################
+"===================================
+" Ddc Settings
+"===================================
+call ddc#custom#patch_global({
+\   'ui': 'native',
+\   'sources': [
+\       'vim-lsp',
+\       'around',
+\       'buffer',
+\       'skkeleton',
+\   ],
+\   'sourceOptions': {
+\       'skkeleton': {
+\           'mark': 'skkeleton',
+\           'matchers': [],
+\           'sorters': [],
+\           'converters': [],
+\           'isVolatile': v:true,
+\           'minAutoCompleteLength': 1,
+\       },
+\       '_': {
+\           'matchers'  : ['matcher_fuzzy'],
+\           'sorters'   : ['sorter_fuzzy'],
+\           'converters': ['converter_fuzzy'],
+\           'ignoreCase': v:true,
+\       },
+\       'around': {
+\           'mark': '[Arround]',
+\       },
+\       'buffer': {
+\           'mark': '[Buffer]',
+\       },
+\       'vim-lsp': {
+\           'mark': '[LSP]',
+\           'forceCompletionPattern': '\.\w*|:\w*|->\w*',
+\       },
+\   },
+\   'sourceParams': {
+\       'around': { 'maxSize': 500 },
+\       'buffer': {
+\           'limitBytes': 5000000,
+\           'forceCollect': v:true,
+\           'fromAltBuf': v:true,
+\       },
+\    },
+\})
+call ddc#enable()

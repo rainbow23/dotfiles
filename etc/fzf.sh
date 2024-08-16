@@ -17,12 +17,13 @@ export NESTEDPREVIEW="echo {} | grep -o '[a-f0-9]\{7\}' | xargs -I %  sh -c 'git
 export NESTED_GIT_DIFF_PREVIEW="echo {} | xargs -I %  sh -c 'git diff --color=always % | delta --diff-so-fancy'"
 
 # https://qiita.com/reviry/items/e798da034955c2af84c5
+
 git-add-files() {
   local out q n addfiles
   while out=$(
       git status --short --untracked-files=no |
       awk '{if (substr($0,2,1) !~ / /) print $2}' |
-      fzf-tmux --multi --exit-0 --border -d 100 --preview $NESTED_GIT_DIFF_PREVIEW \
+      fzf --multi --exit-0 --border -d 100 --preview $NESTED_GIT_DIFF_PREVIEW \
       --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a --expect=ctrl-r --expect=ctrl-t \
       --header "ctrl-r=git checkout, ctrl-t=tmux popup, enter=git diff, ctrl-e=edit, ctrl-a=git add"); do
     q=$(head -1 <<< "$out")
@@ -78,24 +79,11 @@ git-log-selected-files() {
 }
 
 targetBranch=""
-git-commit-show(){
-  clear
-  echo "$targetBranch <<  branch"
-  git log --graph --color=always $targetBranch \
-      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
-  fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
-      --bind "q:execute()+abort" \
-      --bind "ctrl-m:execute:
-                (grep -o '[a-f0-9]\{7\}' | head -1 |
-                xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy' | less -R) << 'FZF-EOF'
-                {}
-FZF-EOF"
-}
 
 git-commit-show-multi-branch(){
   local out q n targetBranch
   while out=$(
-    git branch --all --sort=-authordate  | fzf-tmux  --exit-0 --border --header "select branch and show git log" \
+    git branch --all --sort=-authordate  | fzf --exit-0 --border --header "select branch and show git log" \
         --expect=enter --expect=ctrl-c --expect=ctrl-q | sed -e 's/*//g'
   ); do
     q=$(head -1 <<< "$out")
@@ -116,16 +104,36 @@ alias glNoGraph='git log --graph --color=always $targetBranch --format="%C(auto)
 _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
 _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy'"
 
+
 # show_preview - git commit browser with previews
-git-commit-show-preview() {
-    glNoGraph |
-        fzf --no-sort --reverse --tiebreak=index --no-multi \
-            --ansi --preview="$_viewGitLogLine" --bind '?:toggle-preview' \
-            --header "enter to view, alt-y to copy hash" \
-            --bind "enter:execute:$_viewGitLogLine   | less -R" \
-            --bind "ctrl-y:execute:$_gitLogLineToHash | xclip" \
-            --bind "q:execute()+abort" \
-            --bind='ctrl-f:toggle-preview'
+
+git-commit-show() {
+clear
+  glNoGraph |
+    fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi --ansi \
+      --preview="$_viewGitLogLine" \
+      --preview-window=right:hidden \
+      --header "ctrl-f to toggle preview, ctrl-g to copy git message, ctrl-h to copy hash" \
+      --bind "enter:execute:$_viewGitLogLine   | less -R" \
+      --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \
+      --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)" \
+      --bind "q:execute()+abort" \
+      --bind '?:toggle-preview' \
+      --bind='ctrl-f:toggle-preview'
+
+  #ファイルサイズが0でない場合
+  if [ -s /tmp/git_commit_message ]; then
+    git-commit-with-tmp-message
+  fi
+}
+
+targetFile=""
+alias gitLogFile='git log -p --follow --color=always $targetFile  | delta --diff-so-fancy | less -R'
+
+git-file-log-show() {
+  # local selected_file
+  targetFile=$(git ls-files | fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi)
+  gitLogFile
 }
 
 gsd() {
@@ -135,34 +143,19 @@ gsd() {
   git diff $out
 }
 
+alias _gitStashGraph='git stash list --color=always --pretty="%C(auto)%h %gs %C(black)%C(bold)%cr"'
+
 git-stash-list() {
-  IFS=$'\n'
-  local stash key stashfullpath
-  stash=$(git stash list --color=always --pretty="%C(auto)%h %gs %C(black)%C(bold)%cr" | fzf --ansi +m --exit-0 \
-        --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
-        --expect=enter --expect=ctrl-d --expect=ctrl-a)
-
-  key=$(head -1 <<< "$stash")
-  stashfullpath=$(head -2 <<< $stash | tail -1)
-  file=$(head -2 <<< $stash | awk '{print $1}' | sed -e 's/://g' | tail -1)
-  # echo $stash
-  # echo "$file"
-  # echo $key
-
-  if [ -n "$file" ]; then
-      if [ "$key" = ctrl-d ] ; then
-        echo "git stash show $stashfullpath"
-        git stash show $file
-      elif [ "$key" = enter ] ; then
-        echo "git stash show $stashfullpath"
-        git stash show $file
-        echo "git stash show -p $stashfullpath"
-        git stash show -p $file
-      elif [ "$key" = ctrl-a ] ; then
-        echo "git stash apply $stashfullpath"
-        git stash apply $file
-      fi
-  fi
+  clear
+  _gitStashGraph |
+    fzf --height=100 --ansi +m --exit-0 --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
+      --preview="$_viewGitLogLine" \
+      --preview-window=right:hidden \
+      --bind "enter:execute:$_gitLogLineToHash | xargs git stash show -p" \
+      --bind "ctrl-a:abort+execute:($_gitLogLineToHash | xargs git stash apply )" \
+      --bind "q:execute()+abort" \
+      --bind='ctrl-f:toggle-preview' \
+      --bind='ctrl-p:toggle-preview'
 }
 
 do_enter() {
@@ -270,7 +263,7 @@ fd-selected-directory() {
 # This one differs from the above, by only showing the sub directories and not
 #  showing the directories within those.
 fd-selected-sub-directory() {
-  DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf-tmux` \
+  DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf` \
     && cd "$DIR"
 }
 
@@ -285,7 +278,7 @@ fd-selected-parent-directory() {
       get_parent_dirs $(dirname "$1")
     fi
   }
-  local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf-tmux --tac)
+  local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf --tac)
   cd "$DIR"
 }
 
@@ -346,4 +339,4 @@ lp() {
 }
 
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
-export FZF_DEFAULT_OPTS='--height 70% --reverse '
+export FZF_DEFAULT_OPTS='--height 70% --reverse --color=header:#fa8787'
