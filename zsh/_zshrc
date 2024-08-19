@@ -36,10 +36,6 @@ setopt ignoreeof
 ## バックグラウンドジョブが終了したらすぐに知らせる。
 setopt no_tify
 
-# Edit line in vim with ctrl-e:
-autoload edit-command-line; zle -N edit-command-line
-bindkey '^e' edit-command-line
-
 # -------------------------------------
 # キーバインド vi mode
 # -------------------------------------
@@ -68,6 +64,12 @@ function cdup() {
 zle -N cdup
 bindkey '^K' cdup
 bindkey "^R" history-incremental-search-backward
+
+# Edit line in vim with ctrl-e:
+# bindkey -v の後に設定しないと反映されない
+autoload edit-command-line
+zle -N edit-command-line
+bindkey '^e' edit-command-line
 
 # -------------------------------------
 # その他
