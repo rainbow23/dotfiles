@@ -44,13 +44,14 @@ alias cl='clear'
   abbrev-alias gss='git stash save'
   abbrev-alias gsl='git-stash-list'
   # 押しやすいキーにしている
-  abbrev-alias gsh='git-commit-show' 
+  abbrev-alias gsh='git-commit-show'
   abbrev-alias gshm='git-commit-show-multi-branch'
   # 特定の１ファイルのgit logを表示する
   abbrev-alias gshf='git-file-log-show'
   abbrev-alias gch='git checkout'
   abbrev-alias gr='git rebase '
   abbrev-alias gri='git rebase -i'
+  abbrev-alias grh='git reset --hard'
 
   ## ------------------------------------
   # zsh operation
