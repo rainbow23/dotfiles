@@ -897,6 +897,8 @@ vmap [nerdcommenter]s <plug>NERDCommenterSexy<CR>
 
 " Plug 'scrooloose/nerdtree' start ####################################################
 nnoremap ,t :NERDTreeTabsToggle<CR>
+" l:右パネルにファイルを表示、カーソルも右パネルに移動
+" gl:右パネルにファイルを表示、カーソルは左パネルから移動しない
 " Plug 'scrooloose/nerdtree' end ######################################################
 
 " Plug 'scrooloose/nerdtree' #########################################################
