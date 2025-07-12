@@ -13,17 +13,15 @@ ftags() {
 ## -------------------------------------
 # fzf git
 # -------------------------------------
-export NESTEDPREVIEW="echo {} | grep -o '[a-f0-9]\{7\}' | xargs -I %  sh -c 'git show --color=always % | delta --diff-so-fancy'"
-export NESTED_GIT_DIFF_PREVIEW="echo {} | xargs -I %  sh -c 'git diff --color=always % | delta --diff-so-fancy'"
-
-# https://qiita.com/reviry/items/e798da034955c2af84c5
+export NESTED_GIT_DIFF_PREVIEW='git diff --color=always {} | delta --diff-so-fancy'
+#export NESTED_GIT_DIFF_PREVIEW="echo {} | xargs -I %  sh -c 'git diff --color=always % | delta --diff-so-fancy'"
 
 git-add-files() {
   local out q n addfiles
   while out=$(
       git status --short --untracked-files=no |
       awk '{if (substr($0,2,1) !~ / /) print $2}' |
-      fzf --multi --exit-0 --border -d 100 --preview $NESTED_GIT_DIFF_PREVIEW \
+      fzf --multi --border -d 100 --preview "$NESTED_GIT_DIFF_PREVIEW" \
       --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a --expect=ctrl-r --expect=ctrl-t \
       --header "ctrl-r=git checkout, ctrl-t=tmux popup, enter=git diff, ctrl-e=edit, ctrl-a=git add"); do
     q=$(head -1 <<< "$out")
