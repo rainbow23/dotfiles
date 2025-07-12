@@ -14,7 +14,6 @@ ftags() {
 # fzf git
 # -------------------------------------
 export NESTED_GIT_DIFF_PREVIEW='git diff --color=always {} | delta --diff-so-fancy'
-#export NESTED_GIT_DIFF_PREVIEW="echo {} | xargs -I %  sh -c 'git diff --color=always % | delta --diff-so-fancy'"
 
 git-add-files() {
   local out q n addfiles
