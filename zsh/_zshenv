@@ -42,4 +42,5 @@ export JAVA_HOME=/Applications/"Android Studio.app"/Contents/jre/jdk/Contents/Ho
 # export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 
 export PATH="$PATH:/Users/rainbow/Documents/flutter/flutter/bin"
-
+# claude code
+export PATH="$HOME/.local/bin:$PATH"
