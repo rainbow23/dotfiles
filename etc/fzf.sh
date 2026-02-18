@@ -75,29 +75,30 @@ git-log-selected-files() {
      | grep -o '[a-f0-9]\{7\}' | head -1 | xargs less -R"
 }
 
-targetBranch=""
-
 git-commit-show-multi-branch(){
-  local out q n targetBranch
-  while out=$(
-    git branch --all --sort=-authordate  | fzf --exit-0 --border --header "select branch and show git log" \
-        --expect=enter --expect=ctrl-c --expect=ctrl-q | sed -e 's/*//g'
-  ); do
+  local out q n _target_branch
+  while true; do
+    out=$(
+      git branch --all --sort=-authordate \
+        | sed -e 's/*//g' \
+        | fzf --exit-0 --border --header "select branch and show git log" \
+            --expect=enter --expect=ctrl-c --expect=ctrl-q
+    )
+    [[ $? -ne 0 ]] && break
     q=$(head -1 <<< "$out")
     n=$[$(wc -l <<< "$out") - 1]
-    targetBranch=(`echo $(tail "-$n" <<< "$out")`)
-    if [ "$q" = enter ] ; then
-      git-commit-show
-      # git-commit-show-preview
-    elif [ "$q" = ctrl-c ] ; then
-      break
-    elif [ "$q" = ctrl-q ] ; then
+    _target_branch=$(echo $(tail "-$n" <<< "$out"))
+    if [ "$q" = enter ] && [[ -n "$_target_branch" ]] ; then
+      git-commit-show "$_target_branch"
+    elif [ "$q" = ctrl-c ] || [ "$q" = ctrl-q ] ; then
       break
     fi
   done
 }
 
-alias glNoGraph='git log --graph --color=always $targetBranch --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
+_glNoGraph() {
+  git log --graph --color=always ${1:+"$1"} --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an"
+}
 _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
 _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | delta --diff-so-fancy'"
 
@@ -105,16 +106,16 @@ _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always 
 # show_preview - git commit browser with previews
 
 git-commit-show() {
-clear
-  glNoGraph |
-    fzf --height=100 --no-sort --reverse --tiebreak=index --no-multi --ansi \
+  tput reset
+  _glNoGraph ${1:+"$1"} |
+    fzf --height=100% --no-sort --reverse --tiebreak=index --no-multi --ansi \
       --preview="$_viewGitLogLine" \
       --preview-window=right:hidden \
       --header "ctrl-f to toggle preview, ctrl-g to copy git message, ctrl-h to copy hash" \
       --bind "enter:execute:$_viewGitLogLine   | less -R" \
-      --bind "ctrl-h:abort+execute:($_gitLogLineToHash | pbcopy)" \
-      --bind "ctrl-g:abort+execute:($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)" \
-      --bind "q:execute()+abort" \
+      --bind "ctrl-h:execute:($_gitLogLineToHash | pbcopy)+abort" \
+      --bind "ctrl-g:execute:($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)+abort" \
+      --bind "q:abort" \
       --bind '?:toggle-preview' \
       --bind='ctrl-f:toggle-preview'
 
