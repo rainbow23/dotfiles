@@ -17,6 +17,9 @@ if 1 == exists("+autochdir")
     set autochdir
 endif
 syntax on
+if has('nvim')
+  set termguicolors
+endif
 colorscheme torte
 filetype on
 set hlsearch
@@ -28,12 +31,17 @@ hi Visual ctermfg=DarkBlue
 hi Comment ctermfg=Cyan
 set encoding=utf-8
 
-let &t_ti.="\e[1 q"
-" 挿入モード時に非点滅の縦棒タイプのカーソル
-let &t_SI.="\e[5 q"
-" 挿入モード時に非点滅の縦棒タイプのカーソル
-let &t_EI.="\e[1 q"
-let &t_te.="\e[0 q"
+if !has('nvim')
+  let &t_ti.="\e[1 q"
+  " 挿入モード時に非点滅の縦棒タイプのカーソル
+  let &t_SI.="\e[5 q"
+  " 挿入モード時に非点滅の縦棒タイプのカーソル
+  let &t_EI.="\e[1 q"
+  let &t_te.="\e[0 q"
+else
+  " nvim カーソル形状設定 (ノーマル:ブロック、挿入:縦棒、置換:下線)
+  set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+endif
 
 autocmd BufEnter *.html,*.vue,*.yml,*.yaml,*.sh,*.zsh,_zshrc,_vimrc,*.vim set shiftwidth=2
 " %retab!            "spaceをtabに変換
@@ -62,7 +70,7 @@ nnoremap snn :<C-u>set nonumber<CR>
 nnoremap srn :<C-u>setlocal relativenumber!<CR>
 nnoremap <silent> uss :<C-u>Uss<CR>
 nnoremap <silent> usos :call <SID>Unite_session_override_save()<CR>
-nnoremap src :<C-u>source ~/.vimrc<CR>
+nnoremap src :<C-u>source $MYVIMRC<CR>
 nnoremap setp :<C-u>set paste<CR>
 nnoremap tn :tabnew<CR>
 nnoremap tk :tabnext<CR>
@@ -192,13 +200,20 @@ nnoremap <Leader>. :<C-u>tabedit $HOME/dotfiles/_vimrc<CR>
 :set list lcs=tab:\|\ 
 
 
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+if has('nvim')
+  let s:plug_path = stdpath('data') . '/site/autoload/plug.vim'
+else
+  let s:plug_path = expand('~/.vim/autoload/plug.vim')
+endif
+" vim / nvim でプラグインディレクトリを共有する
+let s:plug_dir = expand('~/.vim/plugged')
+
+if empty(glob(s:plug_path))
+  silent execute '!curl -fLo ' . s:plug_path . ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-call plug#begin('~/.vim/plugged')
+call plug#begin(s:plug_dir)
 Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/fzf.vim', { 'commit': '9cc54fb3d3bfb44d7c6d549c78f0a125ec3281aa' }
 Plug 'junegunn/vim-peekaboo'
@@ -237,7 +252,7 @@ Plug 'easymotion/vim-easymotion'
 Plug 'yuki-yano/fuzzy-motion.vim'
 Plug 'elzr/vim-json'
 Plug 'preservim/nerdcommenter'
-Plug 'scrooloose/nerdtree'
+Plug 'preservim/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 " Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
@@ -281,11 +296,13 @@ Plug 'kana/vim-operator-replace'
 Plug 'kana/vim-operator-user'
 Plug 'svermeulen/vim-easyclip'
 Plug 'vim-denops/denops.vim'
+Plug 'vim-denops/denops-shared-server.vim'
 Plug 'vim-denops/denops-helloworld.vim'
 Plug 'lambdalisue/kensaku.vim'
 Plug 'lambdalisue/kensaku-search.vim'
 Plug 'vim-skk/skkeleton'
 call plug#end()
+
 
 "FZF start ####################################################################
 if has("mac")
@@ -424,7 +441,9 @@ let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 set laststatus=2
-set t_Co=256 "vim-air-line-themeを反映させる
+if !has('nvim')
+  set t_Co=256 "vim-air-line-themeを反映させる
+endif
 let g:airline_section_b = '%{getcwd()}' " in section B of the status line display the CWD
 
 let g:airline#extensions#tabline#enabled           = 1   " enable airline tabline
@@ -715,7 +734,7 @@ nmap # <Plug>(anzu-sharp-with-echo)
 " clear status
 nmap <Esc><Esc> <Plug>(anzu-clear-search-status)
 " statusline
-set statusline=%{anzu#search_status()}
+set statusline=%{exists('*anzu#search_status')?anzu#search_status():''}
 "osyo-manga/vim-anzu' end    ###################################################################
 
 " Plug 'majutsushi/tagbar' start ###################################################################
@@ -742,17 +761,17 @@ let g:tagbar_type_kotlin = {
 
 "airblade/vim-gitgutter   start  ###################################################################
 highlight clear SignColumn
-highlight GitGutterAdd        cterm=bold ctermfg=2    ctermbg=18
-highlight GitGutterChange     cterm=bold ctermfg=7    ctermbg=54
-highlight GitGutterDelete     cterm=bold ctermfg=164  ctermbg=53
-highlight DiffText            cterm=bold ctermfg=none ctermbg=54 gui=none
-highlight GitGutterAddLine    cterm=bold ctermfg=none ctermbg=18 gui=none
-highlight GitGutterDeleteLine cterm=bold ctermfg=none ctermbg=52 gui=none
+highlight GitGutterAdd        cterm=bold ctermfg=2   ctermbg=18 gui=bold guifg=#008000 guibg=#000087
+highlight GitGutterChange     cterm=bold ctermfg=7   ctermbg=54 gui=bold guifg=#c0c0c0 guibg=#5f0087
+highlight GitGutterDelete     cterm=bold ctermfg=164 ctermbg=53 gui=bold guifg=#d700d7 guibg=#5f005f
+highlight DiffText            cterm=bold ctermfg=none ctermbg=54 gui=bold guifg=NONE   guibg=#5f0087
+highlight GitGutterAddLine    cterm=bold ctermfg=none ctermbg=18 gui=bold guifg=NONE   guibg=#000087
+highlight GitGutterDeleteLine cterm=bold ctermfg=none ctermbg=52 gui=bold guifg=NONE   guibg=#5f0000
 highlight link GitGutterChangeLine DiffText
 let g:gitgutter_preview_win_floating = 0
 
-autocmd BufEnter * :GitGutterAll
-autocmd TextChanged * GitGutterAll
+autocmd BufEnter * if exists(':GitGutterAll') | GitGutterAll | endif
+autocmd TextChanged * if exists(':GitGutterAll') | GitGutterAll | endif
 nnoremap [gitgutter]    <Nop>
 nmap     <Leader>g [gitgutter]
 nnoremap [gitgutter]t :<C-u>GitGutterLineHighlightsToggle<CR>
@@ -906,11 +925,11 @@ let NERDTreeShowBookmarks=1
 let g:NERDTreeMapActivateNode ='l'
 let g:NERDTreeMapOpenVSplit ='v'
 
-autocmd VimEnter * call NERDTreeAddKeyMap({
+autocmd VimEnter * if exists('*NERDTreeAddKeyMap') | call NERDTreeAddKeyMap({
   \ 'key': 'b',
   \ 'callback': 'NERDTreeToggleBookmark',
   \ 'quickhelpText': 'Add/Remove Bookmark for Node.',
-  \ 'scope': 'Node' })
+  \ 'scope': 'Node' }) | endif
 
 function! NERDTreeToggleBookmark(node)
   let bookmarkName = a:node.path.getLastPathComponent(1)
@@ -932,7 +951,7 @@ endfunction
 
 "Plug 'tyru/current-func-info.vim' ###################################################################
 nnoremap <C-g>j :echo cfi#format("%s", "")<CR>
-let &statusline .= ' [%{cfi#format("%s", "")}]'
+let &statusline .= ' [%{exists("*cfi#format")?cfi#format("%s",""):""}]'
 "Plug 'tyru/current-func-info.vim' ###################################################################
 
 " Plug 'leafcage/yankround.vim' ######################################################################
@@ -957,7 +976,12 @@ nmap k <Plug>(accelerated_jk_gk)
 
 " Plug 'Shougo/deol.nvim'#############################################################################
 nnoremap dl :<C-u>Deol<CR>
-noremap <ESC>   <C-\><C-n>
+if has('nvim')
+  " nvim ターミナルモードでESCによりノーマルモードに戻る
+  tnoremap <Esc> <C-\><C-n>
+else
+  noremap <ESC>   <C-\><C-n>
+endif
 " Plug 'Shougo/deol.nvim'#############################################################################
 
 " Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } #################################################
@@ -1201,6 +1225,8 @@ function! WhatFunctionAreWeIn()
 endfunction
 " Plug 'svermeulen/vim-easyclip' ##################################################
 " クリップボードにコピーしたものを履歴として残す。vim再起動時に復元
+" pastetoggle は nvim で廃止されたため無効化
+let g:EasyClipUseGlobalPasteToggle = 0
 let g:EasyClipShareYanks = 1
 
 " easycilpからコピーした一覧を取得
@@ -1268,6 +1294,7 @@ tmap <C-k> <Plug>(skkeleton-toggle)
 "===================================
 " Ddc Settings
 "===================================
+if exists('*ddc#enable')
 call ddc#custom#patch_global({
 \   'ui': 'native',
 \   'sources': [
@@ -1312,3 +1339,4 @@ call ddc#custom#patch_global({
 \    },
 \})
 call ddc#enable()
+endif
