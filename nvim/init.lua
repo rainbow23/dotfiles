@@ -69,6 +69,7 @@ require('lazy').setup({
   {
     'heilgar/bookmarks.nvim',
     lazy = false,
+    dependencies = { 'kkharji/sqlite.lua' },
     config = function()
       require('bookmarks').setup({
         on_attach = function()
@@ -109,7 +110,7 @@ require('lazy').setup({
   { 'shun/ddc-source-vim-lsp',   lazy = false },
   { 'lighttiger2505/sqls.vim',   lazy = false },
   -- Go
-  { 'fatih/vim-go',        tag = 'v1.19', build = ':GoUpdateBinaries', lazy = false },
+  { 'fatih/vim-go',        build = ':GoUpdateBinaries', lazy = false },
   { 'mdempsky/gocode',     rtp = 'vim', lazy = false },
   { 'mattn/vim-goimports', lazy = false },
   -- JSON / HTML
