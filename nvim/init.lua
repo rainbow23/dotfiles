@@ -16,7 +16,8 @@ vim.g.mapleader = ' '
 require('lazy').setup({
   -- FZF
   { 'junegunn/vim-easy-align',   lazy = false },
-  { 'junegunn/fzf.vim',          commit = '9cc54fb3d3bfb44d7c6d549c78f0a125ec3281aa', lazy = false },
+  { 'junegunn/fzf',     dir = '~/.fzf', build = './install --bin', lazy = false },
+  { 'junegunn/fzf.vim', lazy = false, dependencies = { 'junegunn/fzf' } },
   { 'junegunn/vim-peekaboo',     lazy = false },
   -- Unite
   { 'Shougo/unite.vim',          lazy = false },
@@ -59,7 +60,7 @@ require('lazy').setup({
   { 'preservim/nerdtree',             lazy = false },
   { 'jistr/vim-nerdtree-tabs',        lazy = false },
   { 'Xuyuanp/nerdtree-git-plugin',    lazy = false },
-  { 'jlanzarotta/bufexplorer',        lazy = false },
+  { 'jlanzarotta/bufexplorer',        lazy = false, init = function() vim.g.bufExplorerDisableDefaultKeyMapping = 1 end },
   { 'ctrlpvim/ctrlp.vim',             lazy = false },
   { 'mattn/ctrlp-matchfuzzy',         lazy = false },
   { 'christoomey/vim-tmux-navigator', lazy = false },
@@ -98,8 +99,8 @@ require('lazy').setup({
   { 'tpope/vim-repeat',                 lazy = false },
   { 'jiangmiao/auto-pairs',             lazy = false },
   { 'ntpeters/vim-better-whitespace',   lazy = false },
-  { 'kana/vim-operator-replace',        lazy = false },
   { 'kana/vim-operator-user',           lazy = false },
+  { 'kana/vim-operator-replace',        lazy = false, dependencies = { 'kana/vim-operator-user' } },
   -- Snippet / Completion
   { 'rainbow23/vim-snippets', lazy = false },
   { 'Shougo/neco-syntax',     lazy = false },

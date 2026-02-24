@@ -284,13 +284,13 @@ function! s:rg(query, ...)
   return call('s:rg_raw', insert(args, fzf#shellescape(query), 0))
 endfunction
 
-command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview())
+command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview('right:50%:hidden', '?'))
 
 command! -bang -nargs=? GFiles
-\ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview(), <bang>0),
+\ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0),
 
 command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
 
  " Make Ripgrep ONLY search file contents and not filenames
 command! -bang -nargs=* Search
