@@ -267,6 +267,9 @@ nnoremap [fzf]f :<C-u>FzfGitDiffFiles<CR>
 let g:fzf_layout = { 'down': '~30%' }
 let s:fzf_base_options = extend({'options': ''}, g:fzf_layout)
 
+" batの代わりにcatを使用（パフォーマンス検証用）
+let $FZF_PREVIEW_COMMAND = 'cat {}'
+
 
 function! s:rg_raw(command_suffix, ...)
   if !executable('rg')
@@ -317,7 +320,7 @@ command! -bang FzfGitDiffFiles
   \ call fzf#run({'source':
   \   "git diff --name-only $(git show-branch --sha1-name $(git symbolic-ref --short refs/remotes/origin/HEAD) $(git rev-parse --abbrev-ref HEAD) | tail -1 | awk -F'[]~^[]' '{print $2}')",
   \   'sink': 'e',
-  \   'options': '-m --prompt "GitDiffFiles>" --preview "bat --color=always  {}"',
+  \   'options': '-m --prompt "GitDiffFiles>" --preview "cat {}"',
   \   'window': { 'width': 0.92, 'height': 0.7, 'yoffset': 1 }
   \   })
 
