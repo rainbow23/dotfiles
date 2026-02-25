@@ -138,6 +138,16 @@ require('lazy').setup({
         numhl  = 'BookmarkSignHighlight',
         linehl = 'BookmarkHighlight',
       })
+      -- _vimrc の colorscheme 適用で BookmarkHighlight が消えるため再定義
+      -- VimEnter: _vimrc source 完了後に確実に定義、ColorScheme: 以降の変更にも対応
+      local function restore_bookmark_hl()
+        vim.api.nvim_set_hl(0, 'BookmarkHighlight',     { bg = '#594d3e', bold = true })
+        vim.api.nvim_set_hl(0, 'BookmarkSignHighlight', { fg = '#FFE5B4', bold = true })
+        require('bookmarks.autocmds').refresh_all_buffers()
+      end
+      vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, {
+        callback = restore_bookmark_hl,
+      })
     end,
   },
   -- Git
