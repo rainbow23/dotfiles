@@ -217,6 +217,12 @@ let g:fzf_action = {
 " fzfからファイルにジャンプできるようにする
 let g:fzf_buffers_jump = 1
 
+" nvim のターミナルモードで Esc がfzfに届かない問題の対策
+let $FZF_DEFAULT_OPTS = '--bind esc:abort'
+if has('nvim')
+  autocmd! FileType fzf tnoremap <buffer> <Esc> <Esc>
+endif
+
 nnoremap [fzf] <Nop>
 nmap <Leader>f [fzf]
 
