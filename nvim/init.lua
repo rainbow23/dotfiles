@@ -204,3 +204,24 @@ vim.cmd('source ' .. vim.fn.expand('~/dotfiles/_vimrc'))
 -- autochdir を無効化: bookmarks.nvim が getcwd() を project_root として使うため
 -- autochdir が有効だとファイルごとに project_root が変わり複数ファイルのブックマークが表示されない
 vim.opt.autochdir = false
+
+-- Search / SearchFromCurrDir を telescope の live_grep に置き換え
+-- _vimrc の fzf 版は has('nvim') で無効化済み
+vim.api.nvim_create_user_command('Search', function(opts)
+  local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
+  require('telescope.builtin').live_grep({
+    cwd          = git_root,
+    default_text = opts.args,
+    additional_args = { '--hidden', '--smart-case', '-g', '!.git/' },
+    prompt_title = 'Search (git root)',
+  })
+end, { nargs = '*', bang = true })
+
+vim.api.nvim_create_user_command('SearchFromCurrDir', function(opts)
+  require('telescope.builtin').live_grep({
+    cwd          = vim.fn.getcwd(),
+    default_text = opts.args,
+    additional_args = { '--hidden', '--smart-case' },
+    prompt_title = 'Search (cwd)',
+  })
+end, { nargs = '*', bang = true })

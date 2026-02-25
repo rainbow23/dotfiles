@@ -302,19 +302,21 @@ command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
 
  " Make Ripgrep ONLY search file contents and not filenames
-command! -bang -nargs=* Search
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --hidden --smart-case -g !.git/ --no-heading --color=always ^ $(git rev-parse --show-toplevel) '.shellescape(<q-args>), 1,
-  \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
-  \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
-  \   <bang>0)
+if !has('nvim')
+  command! -bang -nargs=* Search
+    \ call fzf#vim#grep(
+    \   'rg --column --line-number --hidden --smart-case -g !.git/ --no-heading --color=always ^ $(git rev-parse --show-toplevel) '.shellescape(<q-args>), 1,
+    \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
+    \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
+    \   <bang>0)
 
-command! -bang -nargs=* SearchFromCurrDir
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --hidden --smart-case --no-heading --color=always ^ $(pwd) '.shellescape(<q-args>), 1,
-  \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
-  \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
-  \   <bang>0)
+  command! -bang -nargs=* SearchFromCurrDir
+    \ call fzf#vim#grep(
+    \   'rg --column --line-number --hidden --smart-case --no-heading --color=always ^ $(pwd) '.shellescape(<q-args>), 1,
+    \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
+    \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
+    \   <bang>0)
+endif
 
 command! -bang -nargs=* Ag
   \ call fzf#vim#ag(<q-args>,
