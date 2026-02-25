@@ -205,23 +205,62 @@ vim.cmd('source ' .. vim.fn.expand('~/dotfiles/_vimrc'))
 -- autochdir が有効だとファイルごとに project_root が変わり複数ファイルのブックマークが表示されない
 vim.opt.autochdir = false
 
--- Search / SearchFromCurrDir を telescope の live_grep に置き換え
+-- Search / SearchFromCurrDir を telescope に置き換え
+-- クエリ未入力時はファイル一覧、入力後は live_grep 結果を Result 枠に表示
 -- _vimrc の fzf 版は has('nvim') で無効化済み
+local function make_smart_search(opts)
+  local conf       = require('telescope.config').values
+  local finders    = require('telescope.finders')
+  local pickers    = require('telescope.pickers')
+  local make_entry = require('telescope.make_entry')
+  local sorters    = require('telescope.sorters')
+
+  local grep_args  = vim.tbl_flatten({ conf.vimgrep_arguments, opts.additional_args or {} })
+  local grep_entry = make_entry.gen_from_vimgrep(opts)
+  local file_entry = make_entry.gen_from_file(opts)
+
+  local function entry_maker(line)
+    if not line or line == '' then return nil end
+    -- grep 出力: filename:line:col:text / ファイル一覧: パスのみ
+    if line:match('^.+:%d+:%d+:') then
+      return grep_entry(line)
+    end
+    return file_entry(line)
+  end
+
+  pickers.new(opts, {
+    prompt_title = opts.prompt_title,
+    finder = finders.new_job(function(prompt)
+      if not prompt or prompt == '' then
+        return opts.files_cmd
+      end
+      local cmd = vim.deepcopy(grep_args)
+      table.insert(cmd, '--')
+      table.insert(cmd, prompt)
+      return cmd
+    end, entry_maker, opts.max_results, opts.cwd),
+    previewer = conf.grep_previewer(opts),
+    sorter    = sorters.empty(),
+  }):find()
+end
+
 vim.api.nvim_create_user_command('Search', function(opts)
   local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
-  require('telescope.builtin').live_grep({
-    cwd          = git_root,
-    default_text = opts.args,
+  make_smart_search({
+    cwd             = git_root,
+    default_text    = opts.args,
     additional_args = { '--hidden', '--smart-case', '-g', '!.git/' },
-    prompt_title = 'Search (git root)',
+    files_cmd       = { 'rg', '--files', '--hidden', '--color=never', '-g', '!.git/' },
+    prompt_title    = 'Search (git root)',
   })
 end, { nargs = '*', bang = true })
 
 vim.api.nvim_create_user_command('SearchFromCurrDir', function(opts)
-  require('telescope.builtin').live_grep({
-    cwd          = vim.fn.getcwd(),
-    default_text = opts.args,
+  make_smart_search({
+    cwd             = vim.fn.getcwd(),
+    default_text    = opts.args,
     additional_args = { '--hidden', '--smart-case' },
-    prompt_title = 'Search (cwd)',
+    files_cmd       = { 'rg', '--files', '--hidden', '--color=never' },
+    prompt_title    = 'Search (cwd)',
   })
 end, { nargs = '*', bang = true })
