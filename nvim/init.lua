@@ -41,7 +41,10 @@ require('lazy').setup({
   { 'machakann/vim-highlightedyank',  lazy = false },
   -- Clipboard / Yank
   { 'kana/vim-fakeclip',         lazy = false },
-  { 'svermeulen/vim-easyclip',   lazy = false },
+  { 'svermeulen/vim-easyclip',   lazy = false, init = function()
+    vim.g.EasyClipShareYanks = 1
+    vim.g.EasyClipUseGlobalPasteToggle = 0
+  end },
   { 'leafcage/yankround.vim',    lazy = false },
   -- Cursor / Motion
   { 'terryma/vim-multiple-cursors',  lazy = false },
@@ -70,7 +73,32 @@ require('lazy').setup({
   {
     'heilgar/bookmarks.nvim',
     lazy = false,
-    dependencies = { 'kkharji/sqlite.lua' },
+    dependencies = {
+      'kkharji/sqlite.lua',
+      'nvim-telescope/telescope.nvim',
+      'nvim-lua/plenary.nvim',
+    },
+    build = function(plugin)
+      -- storage.lua の初期スキーマに branch/list が欠けているバグへのワークアラウンド
+      -- https://github.com/heilgar/bookmarks.nvim/issues/12
+      local path = plugin.dir .. '/lua/bookmarks/storage.lua'
+      local f = io.open(path, 'r')
+      if not f then return end
+      local content = f:read('*a')
+      f:close()
+      if not content:find('branch%s*=') then
+        content = content:gsub(
+          '(project_root%s*=%s*"text",)',
+          '%1\n                branch       = "text",\n                list         = "text",'
+        )
+        local fw = io.open(path, 'w')
+        if fw then
+          fw:write(content)
+          fw:close()
+          vim.notify('bookmarks.nvim: storage.lua patched (branch/list added to schema)')
+        end
+      end
+    end,
     config = function()
       require('bookmarks').setup({
         on_attach = function()
@@ -135,3 +163,8 @@ require('lazy').setup({
 
 -- ④ VimScript 設定を source（プラグインロード後）
 vim.cmd('source ' .. vim.fn.expand('~/dotfiles/_vimrc'))
+
+-- ⑤ nvim 向け上書き設定
+-- autochdir を無効化: bookmarks.nvim が getcwd() を project_root として使うため
+-- autochdir が有効だとファイルごとに project_root が変わり複数ファイルのブックマークが表示されない
+vim.opt.autochdir = false
