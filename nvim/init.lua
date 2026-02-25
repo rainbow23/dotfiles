@@ -41,10 +41,6 @@ require('lazy').setup({
   { 'machakann/vim-highlightedyank',  lazy = false },
   -- Clipboard / Yank
   { 'kana/vim-fakeclip',         lazy = false },
-  { 'svermeulen/vim-easyclip',   lazy = false, init = function()
-    vim.g.EasyClipShareYanks = 1
-    vim.g.EasyClipUseGlobalPasteToggle = 0
-  end },
   { 'leafcage/yankround.vim',    lazy = false },
   -- Cursor / Motion
   { 'terryma/vim-multiple-cursors',  lazy = false },
@@ -67,9 +63,7 @@ require('lazy').setup({
   { 'ctrlpvim/ctrlp.vim',             lazy = false },
   { 'mattn/ctrlp-matchfuzzy',         lazy = false },
   { 'christoomey/vim-tmux-navigator', lazy = false },
-  -- Bookmarks（既存）
-  { 'rainbow23/vim-bookmarks', branch = 'fzf', lazy = false },
-  -- Bookmarks（新規追加）
+  -- Bookmarks
   {
     'heilgar/bookmarks.nvim',
     lazy = false,
@@ -78,15 +72,17 @@ require('lazy').setup({
       'nvim-telescope/telescope.nvim',
       'nvim-lua/plenary.nvim',
     },
-    build = function(plugin)
+    init = function()
       -- storage.lua の初期スキーマに branch/list が欠けているバグへのワークアラウンド
+      -- build はインストール時のみ実行されるため init（毎起動・プラグインロード前）で対応
       -- https://github.com/heilgar/bookmarks.nvim/issues/12
-      local path = plugin.dir .. '/lua/bookmarks/storage.lua'
+      local plugin_dir = vim.fn.stdpath('data') .. '/lazy/bookmarks.nvim'
+      local path = plugin_dir .. '/lua/bookmarks/storage.lua'
       local f = io.open(path, 'r')
       if not f then return end
       local content = f:read('*a')
       f:close()
-      if not content:find('branch%s*=') then
+      if not content:find('branch%s*=%s*"text"') then
         content = content:gsub(
           '(project_root%s*=%s*"text",)',
           '%1\n                branch       = "text",\n                list         = "text",'
@@ -95,22 +91,43 @@ require('lazy').setup({
         if fw then
           fw:write(content)
           fw:close()
-          vim.notify('bookmarks.nvim: storage.lua patched (branch/list added to schema)')
         end
       end
+      -- パッチ済みファイルを git の変更検知から除外（lazy.nvim の sync エラーを防ぐ）
+      vim.fn.system({'git', '-C', plugin_dir, 'update-index', '--assume-unchanged', 'lua/bookmarks/storage.lua'})
     end,
     config = function()
-      require('bookmarks').setup({
-        on_attach = function()
-          local bm  = require('bookmarks')
-          local map = vim.keymap.set
-          map('n', 'mm', bm.bookmark_toggle, { desc = 'Bookmark toggle' })
-          map('n', 'mi', bm.bookmark_ann,    { desc = 'Bookmark annotate' })
-          map('n', 'mc', bm.bookmark_clean,  { desc = 'Bookmark clean' })
-          map('n', 'mn', bm.bookmark_next,   { desc = 'Bookmark next' })
-          map('n', 'mp', bm.bookmark_prev,   { desc = 'Bookmark prev' })
-          map('n', 'ml', bm.bookmark_list,   { desc = 'Bookmark list' })
-        end,
+      require('bookmarks').setup({})
+      local autocmds = require('bookmarks.autocmds')
+      local map      = vim.keymap.set
+      local function refresh()
+        autocmds.refresh_buffer(vim.api.nvim_get_current_buf())
+      end
+      map('n', 'mm', function()
+        require('bookmarks.commands').add_bookmark()
+        refresh()
+      end, { desc = 'Bookmark toggle' })
+      map('n', 'mc', function()
+        require('bookmarks.commands').remove_bookmark()
+        refresh()
+      end, { desc = 'Bookmark remove' })
+      map('n', 'mn', function()
+        local bufnr = vim.api.nvim_get_current_buf()
+        require('bookmarks.navigation').jump_to_next(autocmds.get_buffer_bookmarks(bufnr))
+      end, { desc = 'Bookmark next' })
+      map('n', 'mp', function()
+        local bufnr = vim.api.nvim_get_current_buf()
+        require('bookmarks.navigation').jump_to_prev(autocmds.get_buffer_bookmarks(bufnr))
+      end, { desc = 'Bookmark prev' })
+      map('n', 'ml', function()
+        require('telescope').extensions.bookmarks.list()
+      end, { desc = 'Bookmark list' })
+      -- Nerd Font 非対応環境での ? 表示を回避するため ASCII 文字に上書き
+      vim.fn.sign_define('BookmarkSign', {
+        text   = '>>',
+        texthl = 'BookmarkSignHighlight',
+        numhl  = 'BookmarkSignHighlight',
+        linehl = 'BookmarkHighlight',
       })
     end,
   },
