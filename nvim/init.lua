@@ -97,6 +97,15 @@ require('lazy').setup({
       vim.fn.system({'git', '-C', plugin_dir, 'update-index', '--assume-unchanged', 'lua/bookmarks/storage.lua'})
     end,
     config = function()
+      -- Esc でウィンドウを閉じる（_vimrc の noremap <ESC> による上書きを回避）
+      require('telescope').setup({
+        defaults = {
+          mappings = {
+            i = { ['<esc>'] = require('telescope.actions').close },
+            n = { ['<esc>'] = require('telescope.actions').close },
+          },
+        },
+      })
       require('bookmarks').setup({})
       local autocmds = require('bookmarks.autocmds')
       local map      = vim.keymap.set
