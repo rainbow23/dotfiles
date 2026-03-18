@@ -12,5 +12,7 @@ ln -sfn $HOME/dotfiles/_ctags $HOME/.ctags.d/kotlin.ctags
 if [ ! -d $HOME/.config/nvim ];then
     mkdir -p -m 744 $HOME/.config/nvim
 fi
-ln -sfn $HOME/dotfiles/_vimrc $HOME/.config/nvim/init.vim
+ln -sfn $HOME/dotfiles/nvim/init.lua $HOME/.config/nvim/init.lua
 
+#karabiner設定を追加
+ln -sfn ~/dotfiles/etc/karabiner/karabiner.json ~/.config/karabiner/karabiner.json

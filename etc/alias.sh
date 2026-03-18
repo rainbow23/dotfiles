@@ -122,6 +122,8 @@ alias cl='clear'
   abbrev-alias -g rt="go-to-git-root-dir"
   abbrev-alias -g c='browse-chrome-history'
   # abbrev-alias -g rm='gomi'
+
+  abbrev-alias -g vim='nvim'
 }
 
 alias b="chrome_bookmarks_with_fzf.rb"
