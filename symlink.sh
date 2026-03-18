@@ -14,3 +14,5 @@ if [ ! -d $HOME/.config/nvim ];then
 fi
 ln -sfn $HOME/dotfiles/nvim/init.lua $HOME/.config/nvim/init.lua
 
+#karabiner設定を追加
+ln -sfn ~/dotfiles/etc/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
