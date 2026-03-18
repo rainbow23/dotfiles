@@ -156,6 +156,22 @@ require('lazy').setup({
   { 'airblade/vim-gitgutter',      lazy = false },
   { 'iberianpig/tig-explorer.vim', lazy = false },
   { 'rbgrouleff/bclose.vim',       lazy = false },
+  {
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    lazy = false,
+    config = function()
+      require('toggleterm').setup()
+      local Terminal = require('toggleterm.terminal').Terminal
+      local tig = Terminal:new({
+        cmd = 'tig',
+        direction = 'float',
+        float_opts = { border = 'curved' },
+        on_open = function() vim.cmd('startinsert!') end,
+      })
+      vim.keymap.set('n', '<leader>tig', function() tig:toggle() end, { desc = 'tig float' })
+    end,
+  },
   -- Edit
   { 'preservim/nerdcommenter',          lazy = false },
   { 'machakann/vim-sandwich',           lazy = false },
