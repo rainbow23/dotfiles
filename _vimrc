@@ -17,6 +17,9 @@ if 1 == exists("+autochdir")
     set autochdir
 endif
 syntax on
+if has('nvim')
+  set termguicolors
+endif
 colorscheme torte
 filetype on
 set hlsearch
@@ -28,12 +31,17 @@ hi Visual ctermfg=DarkBlue
 hi Comment ctermfg=Cyan
 set encoding=utf-8
 
-let &t_ti.="\e[1 q"
-" 挿入モード時に非点滅の縦棒タイプのカーソル
-let &t_SI.="\e[5 q"
-" 挿入モード時に非点滅の縦棒タイプのカーソル
-let &t_EI.="\e[1 q"
-let &t_te.="\e[0 q"
+if !has('nvim')
+  let &t_ti.="\e[1 q"
+  " 挿入モード時に非点滅の縦棒タイプのカーソル
+  let &t_SI.="\e[5 q"
+  " 挿入モード時に非点滅の縦棒タイプのカーソル
+  let &t_EI.="\e[1 q"
+  let &t_te.="\e[0 q"
+else
+  " nvim カーソル形状設定 (ノーマル:ブロック、挿入:縦棒、置換:下線)
+  set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+endif
 
 autocmd BufEnter *.html,*.vue,*.yml,*.yaml,*.sh,*.zsh,_zshrc,_vimrc,*.vim set shiftwidth=2
 " %retab!            "spaceをtabに変換
@@ -62,7 +70,7 @@ nnoremap snn :<C-u>set nonumber<CR>
 nnoremap srn :<C-u>setlocal relativenumber!<CR>
 nnoremap <silent> uss :<C-u>Uss<CR>
 nnoremap <silent> usos :call <SID>Unite_session_override_save()<CR>
-nnoremap src :<C-u>source ~/.vimrc<CR>
+nnoremap src :<C-u>source $MYVIMRC<CR>
 nnoremap setp :<C-u>set paste<CR>
 nnoremap tn :tabnew<CR>
 nnoremap tk :tabnext<CR>
@@ -192,100 +200,7 @@ nnoremap <Leader>. :<C-u>tabedit $HOME/dotfiles/_vimrc<CR>
 :set list lcs=tab:\|\ 
 
 
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
 
-call plug#begin('~/.vim/plugged')
-Plug 'junegunn/vim-easy-align'
-Plug 'junegunn/fzf.vim', { 'commit': '9cc54fb3d3bfb44d7c6d549c78f0a125ec3281aa' }
-Plug 'junegunn/vim-peekaboo'
-Plug 'Shougo/unite.vim'
-Plug 'rainbow23/unite-session'
-Plug 'Shougo/neomru.vim'
-"unite-outline brew install ctagsが必要
-Plug 'Shougo/unite-outline'
-Plug 'Shougo/vimproc.vim', {'do' : 'make'}
-Plug 'Shougo/deol.nvim'
-Plug 'Shougo/ddc.vim'
-Plug 'Shougo/ddc-ui-native'
-Plug 'Shougo/ddc-around'
-Plug 'matsui54/ddc-buffer'
-Plug 'shun/ddc-source-vim-lsp'
-Plug 'tani/ddc-fuzzy'
-
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'kana/vim-fakeclip'
-Plug 'terryma/vim-multiple-cursors'
-" Plug 'thinca/vim-quickrun'
-Plug 'osyo-manga/unite-quickfix'
-" Plug 'osyo-manga/shabadou.vim'
-Plug 'Yggdroot/indentLine'
-Plug 'rainbow23/vim-anzu'
-Plug 'majutsushi/tagbar'
-Plug 'rhysd/clever-f.vim'
-Plug 'rainbow23/vim-bookmarks', { 'branch': 'fzf' }
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-rhubarb'
-Plug 'airblade/vim-gitgutter'
-" Plug 'deris/vim-gothrough-jk'
-Plug 'rhysd/accelerated-jk'
-Plug 'easymotion/vim-easymotion'
-Plug 'yuki-yano/fuzzy-motion.vim'
-Plug 'elzr/vim-json'
-Plug 'preservim/nerdcommenter'
-Plug 'scrooloose/nerdtree'
-Plug 'jistr/vim-nerdtree-tabs'
-Plug 'Xuyuanp/nerdtree-git-plugin'
-" Plug 'Townk/vim-autoclose' vim-multiple-cursorsに不具合
-Plug 'rainbow23/vim-snippets'
-Plug 'fatih/vim-go', { 'tag': 'v1.19', 'do': ':GoUpdateBinaries' }
-Plug 'mdempsky/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
-Plug 'Shougo/neco-syntax'
-Plug 'machakann/vim-sandwich'
-Plug 'ntpeters/vim-better-whitespace'
-Plug 'tyru/current-func-info.vim'
-Plug 'jlanzarotta/bufexplorer'
-Plug 'regedarek/ZoomWin'
-Plug 'leafcage/yankround.vim'
-Plug 'ujihisa/unite-colorscheme'
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'
-" 対応する括弧
-Plug 'itchyny/vim-parenmatch'
-Plug 'itchyny/vim-cursorword'
-Plug 'yuttie/comfortable-motion.vim'
-Plug 'mileszs/ack.vim'
-Plug 'thinca/vim-qfreplace'
-Plug 'vimlab/split-term.vim'
-Plug 'jiangmiao/auto-pairs'
-Plug 'matze/vim-move'
-Plug 't9md/vim-quickhl'
-Plug 'lighttiger2505/sqls.vim'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'prabirshrestha/async.vim'
-" Plug 'lighttiger2505/deoplete-vim-lsp'
-Plug 'mattn/vim-lsp-settings' ":LspInstallServer"
-Plug 'mattn/vim-goimports'
-Plug 'iberianpig/tig-explorer.vim'
-Plug 'rbgrouleff/bclose.vim'
-Plug 'alvan/vim-closetag'
-Plug 'machakann/vim-highlightedyank'
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'mattn/ctrlp-matchfuzzy'
-Plug 'kana/vim-operator-replace'
-Plug 'kana/vim-operator-user'
-Plug 'svermeulen/vim-easyclip'
-Plug 'vim-denops/denops.vim'
-Plug 'vim-denops/denops-helloworld.vim'
-Plug 'lambdalisue/kensaku.vim'
-Plug 'lambdalisue/kensaku-search.vim'
-Plug 'vim-skk/skkeleton'
-call plug#end()
 
 "FZF start ####################################################################
 if has("mac")
@@ -301,6 +216,12 @@ let g:fzf_action = {
 
 " fzfからファイルにジャンプできるようにする
 let g:fzf_buffers_jump = 1
+
+" nvim のターミナルモードで Esc がfzfに届かない問題の対策
+let $FZF_DEFAULT_OPTS = '--bind esc:abort'
+if has('nvim')
+  autocmd! FileType fzf tnoremap <buffer> <Esc> <Esc>
+endif
 
 nnoremap [fzf] <Nop>
 nmap <Leader>f [fzf]
@@ -352,6 +273,9 @@ nnoremap [fzf]f :<C-u>FzfGitDiffFiles<CR>
 let g:fzf_layout = { 'down': '~30%' }
 let s:fzf_base_options = extend({'options': ''}, g:fzf_layout)
 
+" batの代わりにcatを使用（パフォーマンス検証用）
+let $FZF_PREVIEW_COMMAND = 'cat {}'
+
 
 function! s:rg_raw(command_suffix, ...)
   if !executable('rg')
@@ -369,28 +293,30 @@ function! s:rg(query, ...)
   return call('s:rg_raw', insert(args, fzf#shellescape(query), 0))
 endfunction
 
-command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview())
+command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview('right:50%:hidden', '?'))
 
 command! -bang -nargs=? GFiles
-\ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview(), <bang>0),
+\ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0),
 
 command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
 
  " Make Ripgrep ONLY search file contents and not filenames
-command! -bang -nargs=* Search
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --hidden --smart-case -g !.git/ --no-heading --color=always ^ $(git rev-parse --show-toplevel) '.shellescape(<q-args>), 1,
-  \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
-  \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
-  \   <bang>0)
+if !has('nvim')
+  command! -bang -nargs=* Search
+    \ call fzf#vim#grep(
+    \   'rg --column --line-number --hidden --smart-case -g !.git/ --no-heading --color=always ^ $(git rev-parse --show-toplevel) '.shellescape(<q-args>), 1,
+    \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
+    \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
+    \   <bang>0)
 
-command! -bang -nargs=* SearchFromCurrDir
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --hidden --smart-case --no-heading --color=always ^ $(pwd) '.shellescape(<q-args>), 1,
-  \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
-  \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
-  \   <bang>0)
+  command! -bang -nargs=* SearchFromCurrDir
+    \ call fzf#vim#grep(
+    \   'rg --column --line-number --hidden --smart-case --no-heading --color=always ^ $(pwd) '.shellescape(<q-args>), 1,
+    \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
+    \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
+    \   <bang>0)
+endif
 
 command! -bang -nargs=* Ag
   \ call fzf#vim#ag(<q-args>,
@@ -402,7 +328,7 @@ command! -bang FzfGitDiffFiles
   \ call fzf#run({'source':
   \   "git diff --name-only $(git show-branch --sha1-name $(git symbolic-ref --short refs/remotes/origin/HEAD) $(git rev-parse --abbrev-ref HEAD) | tail -1 | awk -F'[]~^[]' '{print $2}')",
   \   'sink': 'e',
-  \   'options': '-m --prompt "GitDiffFiles>" --preview "bat --color=always  {}"',
+  \   'options': '-m --prompt "GitDiffFiles>" --preview "cat {}"',
   \   'window': { 'width': 0.92, 'height': 0.7, 'yoffset': 1 }
   \   })
 
@@ -424,7 +350,9 @@ let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 set laststatus=2
-set t_Co=256 "vim-air-line-themeを反映させる
+if !has('nvim')
+  set t_Co=256 "vim-air-line-themeを反映させる
+endif
 let g:airline_section_b = '%{getcwd()}' " in section B of the status line display the CWD
 
 let g:airline#extensions#tabline#enabled           = 1   " enable airline tabline
@@ -715,7 +643,7 @@ nmap # <Plug>(anzu-sharp-with-echo)
 " clear status
 nmap <Esc><Esc> <Plug>(anzu-clear-search-status)
 " statusline
-set statusline=%{anzu#search_status()}
+set statusline=%{exists('*anzu#search_status')?anzu#search_status():''}
 "osyo-manga/vim-anzu' end    ###################################################################
 
 " Plug 'majutsushi/tagbar' start ###################################################################
@@ -742,17 +670,17 @@ let g:tagbar_type_kotlin = {
 
 "airblade/vim-gitgutter   start  ###################################################################
 highlight clear SignColumn
-highlight GitGutterAdd        cterm=bold ctermfg=2    ctermbg=18
-highlight GitGutterChange     cterm=bold ctermfg=7    ctermbg=54
-highlight GitGutterDelete     cterm=bold ctermfg=164  ctermbg=53
-highlight DiffText            cterm=bold ctermfg=none ctermbg=54 gui=none
-highlight GitGutterAddLine    cterm=bold ctermfg=none ctermbg=18 gui=none
-highlight GitGutterDeleteLine cterm=bold ctermfg=none ctermbg=52 gui=none
+highlight GitGutterAdd        cterm=bold ctermfg=2   ctermbg=18 gui=bold guifg=#008000 guibg=#000087
+highlight GitGutterChange     cterm=bold ctermfg=7   ctermbg=54 gui=bold guifg=#c0c0c0 guibg=#5f0087
+highlight GitGutterDelete     cterm=bold ctermfg=164 ctermbg=53 gui=bold guifg=#d700d7 guibg=#5f005f
+highlight DiffText            cterm=bold ctermfg=none ctermbg=54 gui=bold guifg=NONE   guibg=#5f0087
+highlight GitGutterAddLine    cterm=bold ctermfg=none ctermbg=18 gui=bold guifg=NONE   guibg=#000087
+highlight GitGutterDeleteLine cterm=bold ctermfg=none ctermbg=52 gui=bold guifg=NONE   guibg=#5f0000
 highlight link GitGutterChangeLine DiffText
 let g:gitgutter_preview_win_floating = 0
 
-autocmd BufEnter * :GitGutterAll
-autocmd TextChanged * GitGutterAll
+autocmd BufEnter * if exists(':GitGutterAll') | GitGutterAll | endif
+autocmd TextChanged * if exists(':GitGutterAll') | GitGutterAll | endif
 nnoremap [gitgutter]    <Nop>
 nmap     <Leader>g [gitgutter]
 nnoremap [gitgutter]t :<C-u>GitGutterLineHighlightsToggle<CR>
@@ -896,7 +824,7 @@ vmap [nerdcommenter]s <plug>NERDCommenterSexy<CR>
 
 
 " Plug 'scrooloose/nerdtree' start ####################################################
-nnoremap ,t :NERDTreeTabsToggle<CR>
+nnoremap ,t :NERDTreeToggle<CR>
 " l:右パネルにファイルを表示、カーソルも右パネルに移動
 " gl:右パネルにファイルを表示、カーソルは左パネルから移動しない
 " Plug 'scrooloose/nerdtree' end ######################################################
@@ -906,11 +834,11 @@ let NERDTreeShowBookmarks=1
 let g:NERDTreeMapActivateNode ='l'
 let g:NERDTreeMapOpenVSplit ='v'
 
-autocmd VimEnter * call NERDTreeAddKeyMap({
+autocmd VimEnter * if exists('*NERDTreeAddKeyMap') | call NERDTreeAddKeyMap({
   \ 'key': 'b',
   \ 'callback': 'NERDTreeToggleBookmark',
   \ 'quickhelpText': 'Add/Remove Bookmark for Node.',
-  \ 'scope': 'Node' })
+  \ 'scope': 'Node' }) | endif
 
 function! NERDTreeToggleBookmark(node)
   let bookmarkName = a:node.path.getLastPathComponent(1)
@@ -932,7 +860,7 @@ endfunction
 
 "Plug 'tyru/current-func-info.vim' ###################################################################
 nnoremap <C-g>j :echo cfi#format("%s", "")<CR>
-let &statusline .= ' [%{cfi#format("%s", "")}]'
+let &statusline .= ' [%{exists("*cfi#format")?cfi#format("%s",""):""}]'
 "Plug 'tyru/current-func-info.vim' ###################################################################
 
 " Plug 'leafcage/yankround.vim' ######################################################################
@@ -957,7 +885,12 @@ nmap k <Plug>(accelerated_jk_gk)
 
 " Plug 'Shougo/deol.nvim'#############################################################################
 nnoremap dl :<C-u>Deol<CR>
-noremap <ESC>   <C-\><C-n>
+if has('nvim')
+  " nvim ターミナルモードでESCによりノーマルモードに戻る
+  tnoremap <Esc> <C-\><C-n>
+else
+  noremap <ESC>   <C-\><C-n>
+endif
 " Plug 'Shougo/deol.nvim'#############################################################################
 
 " Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } #################################################
@@ -1201,6 +1134,8 @@ function! WhatFunctionAreWeIn()
 endfunction
 " Plug 'svermeulen/vim-easyclip' ##################################################
 " クリップボードにコピーしたものを履歴として残す。vim再起動時に復元
+" pastetoggle は nvim で廃止されたため無効化
+let g:EasyClipUseGlobalPasteToggle = 0
 let g:EasyClipShareYanks = 1
 
 " easycilpからコピーした一覧を取得
@@ -1236,7 +1171,7 @@ inoremap [fzf]y <C-O>:<C-U>FZFYank<CR>
 " Plug 'lambdalisue/kensaku-search.vim' start #####################################
 " kensaku-search.vim はデフォルトマッピングを提供していないため、
 " ユーザーが以下のように <CR> に対して <Plug>(kensaku-search-replace) を割り当てる必要があります。
-cnoremap <CR> <Plug>(kensaku-search-replace)<CR>
+cnoremap <expr> <CR> getcmdtype() =~ '[/?]' ? "\<Plug>(kensaku-search-replace)\<CR>" : "\<CR>"
 nnoremap S :FuzzyMotion<CR>
 let g:fuzzy_motion_matchers = ['kensaku', 'fzf']
 
@@ -1268,6 +1203,7 @@ tmap <C-k> <Plug>(skkeleton-toggle)
 "===================================
 " Ddc Settings
 "===================================
+if exists('*ddc#enable')
 call ddc#custom#patch_global({
 \   'ui': 'native',
 \   'sources': [
@@ -1312,3 +1248,4 @@ call ddc#custom#patch_global({
 \    },
 \})
 call ddc#enable()
+endif
