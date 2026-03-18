@@ -3,7 +3,7 @@
 ## -------------------------------------
 # git
 # -------------------------------------
-if [ -f /usr/local/bin/delta ] ; then
+if command -v delta > /dev/null 2>&1 ; then
   git config --global core.pager "delta --diff-so-fancy"
   git config --global interactive.diffFilter                    "delta --color-only"
   git config --global delta.whitespace-error-style              "22 reverse"
@@ -37,7 +37,9 @@ git config --global alias.ctags '!~/dotfiles/etc/copy_ctags_files && .git/hooks/
 # -------------------------------------
 export GOPATH=$HOME/go
 export GOBIN=$GOPATH/bin
-export PATH=$PATH:/usr/local/go/bin
+# Apple Silicon: Homebrewのgoはすでに/opt/homebrew/binに含まれる
+# Intel Mac / 手動インストール時のみ /usr/local/go/bin を追加
+[ -d /usr/local/go/bin ] && export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$GOBIN
 
 ## -------------------------------------
