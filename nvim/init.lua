@@ -143,6 +143,7 @@ require('lazy').setup({
       local function restore_bookmark_hl()
         vim.api.nvim_set_hl(0, 'BookmarkHighlight',     { bg = '#594d3e', bold = true })
         vim.api.nvim_set_hl(0, 'BookmarkSignHighlight', { fg = '#FFE5B4', bold = true })
+        vim.api.nvim_set_hl(0, 'TelescopeSelection',    { bg = '#87CEEB', fg = '#000000', bold = true })
         require('bookmarks.autocmds').refresh_all_buffers()
       end
       vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, {
@@ -225,17 +226,18 @@ vim.opt.autochdir = false
 -- File モード: ファイル名を fuzzy 検索 / Grep モード: ファイル内文字列を live grep
 -- <C-t> で両モード切り替え（クエリ文字列を引き継ぐ）
 -- _vimrc の fzf 版は has('nvim') で無効化済み
+local conf         = require('telescope.config').values
+local finders      = require('telescope.finders')
+local pickers      = require('telescope.pickers')
+local make_entry   = require('telescope.make_entry')
+local sorters      = require('telescope.sorters')
+local actions      = require('telescope.actions')
+local action_state = require('telescope.actions.state')
+
 local make_file_search
 local make_grep_search
 
 make_file_search = function(opts)
-  local conf         = require('telescope.config').values
-  local finders      = require('telescope.finders')
-  local pickers      = require('telescope.pickers')
-  local make_entry   = require('telescope.make_entry')
-  local actions      = require('telescope.actions')
-  local action_state = require('telescope.actions.state')
-
   pickers.new(opts, {
     prompt_title = (opts.base_title or 'Search') .. ' [File]  <C-t>=Grep',
     finder = finders.new_oneshot_job(opts.files_cmd, {
@@ -258,14 +260,6 @@ make_file_search = function(opts)
 end
 
 make_grep_search = function(opts)
-  local conf         = require('telescope.config').values
-  local finders      = require('telescope.finders')
-  local pickers      = require('telescope.pickers')
-  local make_entry   = require('telescope.make_entry')
-  local sorters      = require('telescope.sorters')
-  local actions      = require('telescope.actions')
-  local action_state = require('telescope.actions.state')
-
   local grep_args  = vim.tbl_flatten({ conf.vimgrep_arguments, opts.additional_args or {} })
   local grep_entry = make_entry.gen_from_vimgrep(opts)
 
@@ -298,8 +292,8 @@ vim.api.nvim_create_user_command('Search', function(opts)
   make_file_search({
     cwd             = git_root,
     default_text    = opts.args,
-    additional_args = { '--hidden', '--smart-case', '-g', '!.git/' },
-    files_cmd       = { 'rg', '--files', '--hidden', '--color=never', '-g', '!.git/' },
+    additional_args = { '--hidden', '--smart-case', '-g', '!.git/', '-g', '!.claude/' },
+    files_cmd       = { 'rg', '--files', '--hidden', '--color=never', '-g', '!.git/', '-g', '!.claude/' },
     base_title      = 'Search (git root)',
   })
 end, { nargs = '*', bang = true })
@@ -308,8 +302,8 @@ vim.api.nvim_create_user_command('SearchFromCurrDir', function(opts)
   make_file_search({
     cwd             = vim.fn.getcwd(),
     default_text    = opts.args,
-    additional_args = { '--hidden', '--smart-case' },
-    files_cmd       = { 'rg', '--files', '--hidden', '--color=never' },
+    additional_args = { '--hidden', '--smart-case', '-g', '!.claude/' },
+    files_cmd       = { 'rg', '--files', '--hidden', '--color=never', '-g', '!.claude/' },
     base_title      = 'Search (cwd)',
   })
 end, { nargs = '*', bang = true })
