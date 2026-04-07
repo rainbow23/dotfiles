@@ -143,7 +143,6 @@ require('lazy').setup({
       local function restore_bookmark_hl()
         vim.api.nvim_set_hl(0, 'BookmarkHighlight',     { bg = '#594d3e', bold = true })
         vim.api.nvim_set_hl(0, 'BookmarkSignHighlight', { fg = '#FFE5B4', bold = true })
-        vim.api.nvim_set_hl(0, 'TelescopeSelection',    { bg = '#87CEEB', fg = '#000000', bold = true })
         require('bookmarks.autocmds').refresh_all_buffers()
       end
       vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, {
@@ -319,3 +318,25 @@ vim.api.nvim_create_user_command('SearchFromCurrDir', function(opts)
     base_title      = 'Search (cwd)',
   })
 end, { nargs = '*', bang = true })
+
+-- UI ハイライト（colorscheme 適用後に再定義）
+local function restore_ui_hl()
+  vim.api.nvim_set_hl(0, 'TelescopeSelection', { bg = '#87CEEB', fg = '#000000', bold = true })
+  vim.api.nvim_set_hl(0, 'TabLineSel',         { bg = '#87CEEB', fg = '#000000', bold = true })
+end
+vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, { callback = restore_ui_hl })
+
+-- タブラインにファイル名のみ表示する
+function _G.MyTabLine()
+  local s = ''
+  for i = 1, vim.fn.tabpagenr('$') do
+    s = s .. (i == vim.fn.tabpagenr() and '%#TabLineSel#' or '%#TabLine#')
+    s = s .. '%' .. i .. 'T'
+    local bufnr = vim.fn.tabpagebuflist(i)[vim.fn.tabpagewinnr(i)]
+    local name  = vim.fn.fnamemodify(vim.fn.bufname(bufnr), ':t')
+    if name == '' then name = '[No Name]' end
+    s = s .. ' ' .. name .. ' '
+  end
+  return s .. '%#TabLineFill#%T'
+end
+vim.opt.tabline = '%!v:lua.MyTabLine()'
