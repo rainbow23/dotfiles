@@ -92,6 +92,22 @@ if !has('nvim')
 endif
 ```
 
+### 2モード構成と切り替え
+
+| モード | 動作 | ソーター |
+|---|---|---|
+| **File** | `rg --files` でファイル名一覧を取得し fuzzy 絞り込み | `conf.file_sorter`（fuzzy）|
+| **Grep** | キー入力のたびに `rg <pattern>` を実行しファイル内容を検索 | `sorters.empty()`（rg の出力順）|
+
+- `:Search` / `:SearchFromCurrDir` は **File モード** で起動する
+- `<C-t>` で File ⇔ Grep を切り替え（入力中のクエリ文字列を引き継ぐ）
+- プロンプトタイトルに現在のモードとショートカットを表示する
+
+```
+Search (git root) [File]  <C-t>=Grep
+Search (git root) [Grep]  <C-t>=File
+```
+
 ### telescope 内部モジュールの役割
 
 カスタムピッカーを実装するために telescope の内部モジュールを直接利用している。
@@ -110,9 +126,23 @@ local grep_args = vim.tbl_flatten({ conf.vimgrep_arguments, opts.additional_args
 --  → { 'rg', '--vimgrep', '--color=never', ..., '--hidden', '--smart-case', '-g', '!.git/' }
 ```
 
+#### `require('telescope.finders').new_oneshot_job`
+
+コマンドを **一度だけ実行** して全結果を取得する finder を作成する。File モードで使用。
+署名: `finders.new_oneshot_job(cmd, opts)`
+
+| 引数 | 型 | 説明 |
+|---|---|---|
+| `cmd` | `string[]` | 実行するコマンドと引数のリスト |
+| `opts.entry_maker` | `function(line) -> table` | 出力行を telescope entry に変換する関数 |
+| `opts.cwd` | `string\|nil` | コマンドを実行するワーキングディレクトリ |
+
+起動時に一度だけ `rg --files` を実行して全ファイルを取得し、以降の絞り込みは `conf.file_sorter`（fuzzy）が担う。
+`new_job`（キー入力のたびにコマンドを再実行）とは異なり、sorter と競合しない。
+
 #### `require('telescope.finders').new_job`
 
-プロンプトの入力内容を受け取って **外部コマンドを動的に切り替える** finder を作成する。
+プロンプトの入力内容を受け取って **外部コマンドを動的に切り替える** finder を作成する。Grep モードで使用。
 署名: `finders.new_job(fn, entry_maker, max_results, cwd)`
 
 | 引数 | 型 | 説明 |
@@ -123,7 +153,6 @@ local grep_args = vim.tbl_flatten({ conf.vimgrep_arguments, opts.additional_args
 | `cwd` | `string\|nil` | コマンドを実行するワーキングディレクトリ |
 
 プロンプトが変わるたびに `fn` が呼ばれ、返ったコマンドが再実行される。
-これを利用して「空なら `rg --files`、入力ありなら `rg <pattern>`」と切り替えている。
 
 #### `require('telescope.make_entry')`
 
@@ -131,20 +160,8 @@ local grep_args = vim.tbl_flatten({ conf.vimgrep_arguments, opts.additional_args
 
 | 関数 | 対応する出力形式 | 用途 |
 |---|---|---|
-| `make_entry.gen_from_vimgrep(opts)` | `filename:line:col:text` | `rg --vimgrep` の grep 結果 |
-| `make_entry.gen_from_file(opts)` | ファイルパスのみ | `rg --files` のファイル一覧 |
-
-どちらも **関数を返す** ので、返り値を `entry_maker` として使う。
-今回は出力行のフォーマットで自動判別している。
-
-```lua
-local function entry_maker(line)
-  if line:match('^.+:%d+:%d+:') then  -- filename:line:col:text 形式 → grep 結果
-    return grep_entry(line)
-  end
-  return file_entry(line)             -- パスのみ → ファイル一覧
-end
-```
+| `make_entry.gen_from_vimgrep(opts)` | `filename:line:col:text` | `rg --vimgrep` の grep 結果（Grep モード）|
+| `make_entry.gen_from_file(opts)` | ファイルパスのみ | `rg --files` のファイル一覧（File モード）|
 
 #### `require('telescope.pickers').new`
 
@@ -153,86 +170,118 @@ end
 
 | config キー | 内容 |
 |---|---|
-| `finder` | データソース（`finders.new_job` で作成したもの）|
-| `previewer` | 右ペインのプレビュー表示。`conf.grep_previewer` はファイル内容を表示する標準プレビューアー |
-| `sorter` | 結果の並び替え方法。`sorters.empty()` は何もしない（rg が返した順序をそのまま使う）|
+| `finder` | データソース |
+| `previewer` | 右ペインのプレビュー表示 |
+| `sorter` | 結果の並び替え。File: `conf.file_sorter`（fuzzy）/ Grep: `sorters.empty()`（rg 出力順）|
+| `attach_mappings` | ピッカー内のキーバインドを追加する関数 |
 
 #### `require('telescope.sorters').empty()`
 
-ソートを行わない no-op ソーター。
-ripgrep 自体がファイル順・マッチ順で出力するため、追加のソートは不要。
-`live_grep` のように外部コマンドに結果の順序を任せる場合に使う。
+ソートを行わない no-op ソーター。Grep モードで使用。
+ripgrep 自体がマッチ順で出力するため、追加のソートは不要。
+
+#### `require('telescope.actions')` / `require('telescope.actions.state')`
+
+| API | 用途 |
+|---|---|
+| `actions.close(prompt_bufnr)` | 現在のピッカーを閉じる |
+| `action_state.get_current_line()` | プロンプトの入力文字列を取得する |
+
+モード切り替え時に現在のクエリを取得して次のモードへ引き継ぐために使用。
 
 ---
 
-### クエリ未入力時にファイル一覧を表示する仕組み
+### 実装コード (`nvim/init.lua`)
 
-telescope 標準の `live_grep` はクエリ未入力時に Result 枠が空になる。
-`finders.new_job` でクエリの有無に応じて実行コマンドを切り替えることで対応。
-
-```
-クエリなし → rg --files ...  → ファイル一覧を表示
-クエリあり → rg <pattern> ... → grep 結果を表示
-```
-
-**実装コード (`nvim/init.lua`):**
 ```lua
-local function make_smart_search(opts)
-  local conf       = require('telescope.config').values
-  local finders    = require('telescope.finders')
-  local pickers    = require('telescope.pickers')
-  local make_entry = require('telescope.make_entry')
-  local sorters    = require('telescope.sorters')
+local make_file_search
+local make_grep_search
+
+make_file_search = function(opts)
+  local conf         = require('telescope.config').values
+  local finders      = require('telescope.finders')
+  local pickers      = require('telescope.pickers')
+  local make_entry   = require('telescope.make_entry')
+  local actions      = require('telescope.actions')
+  local action_state = require('telescope.actions.state')
+
+  pickers.new(opts, {
+    prompt_title = (opts.base_title or 'Search') .. ' [File]  <C-t>=Grep',
+    finder = finders.new_oneshot_job(opts.files_cmd, {
+      entry_maker = make_entry.gen_from_file(opts),
+      cwd         = opts.cwd,
+    }),
+    previewer = conf.file_previewer(opts),
+    sorter    = conf.file_sorter(opts),
+    attach_mappings = function(prompt_bufnr, map)
+      local switch = function()
+        local query = action_state.get_current_line()
+        actions.close(prompt_bufnr)
+        make_grep_search(vim.tbl_extend('force', opts, { default_text = query }))
+      end
+      map('i', '<C-t>', switch)
+      map('n', '<C-t>', switch)
+      return true
+    end,
+  }):find()
+end
+
+make_grep_search = function(opts)
+  local conf         = require('telescope.config').values
+  local finders      = require('telescope.finders')
+  local pickers      = require('telescope.pickers')
+  local make_entry   = require('telescope.make_entry')
+  local sorters      = require('telescope.sorters')
+  local actions      = require('telescope.actions')
+  local action_state = require('telescope.actions.state')
 
   local grep_args  = vim.tbl_flatten({ conf.vimgrep_arguments, opts.additional_args or {} })
   local grep_entry = make_entry.gen_from_vimgrep(opts)
-  local file_entry = make_entry.gen_from_file(opts)
-
-  -- 出力フォーマットで grep 結果かファイル一覧かを自動判別
-  local function entry_maker(line)
-    if not line or line == '' then return nil end
-    if line:match('^.+:%d+:%d+:') then  -- filename:line:col:text 形式
-      return grep_entry(line)
-    end
-    return file_entry(line)             -- ファイルパスのみ
-  end
 
   pickers.new(opts, {
-    prompt_title = opts.prompt_title,
+    prompt_title = (opts.base_title or 'Search') .. ' [Grep]  <C-t>=File',
     finder = finders.new_job(function(prompt)
-      if not prompt or prompt == '' then
-        return opts.files_cmd           -- ファイル一覧コマンド
-      end
+      if not prompt or prompt == '' then return nil end
       local cmd = vim.deepcopy(grep_args)
       table.insert(cmd, '--')
       table.insert(cmd, prompt)
-      return cmd                        -- grep コマンド
-    end, entry_maker, opts.max_results, opts.cwd),
+      return cmd
+    end, grep_entry, nil, opts.cwd),
     previewer = conf.grep_previewer(opts),
     sorter    = sorters.empty(),
+    attach_mappings = function(prompt_bufnr, map)
+      local switch = function()
+        local query = action_state.get_current_line()
+        actions.close(prompt_bufnr)
+        make_file_search(vim.tbl_extend('force', opts, { default_text = query }))
+      end
+      map('i', '<C-t>', switch)
+      map('n', '<C-t>', switch)
+      return true
+    end,
   }):find()
 end
 
 -- git root を起点に検索（[fzf]s）
 vim.api.nvim_create_user_command('Search', function(opts)
   local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
-  make_smart_search({
+  make_file_search({
     cwd             = git_root,
     default_text    = opts.args,
     additional_args = { '--hidden', '--smart-case', '-g', '!.git/' },
     files_cmd       = { 'rg', '--files', '--hidden', '--color=never', '-g', '!.git/' },
-    prompt_title    = 'Search (git root)',
+    base_title      = 'Search (git root)',
   })
 end, { nargs = '*', bang = true })
 
 -- カレントディレクトリを起点に検索（[fzf]S）
 vim.api.nvim_create_user_command('SearchFromCurrDir', function(opts)
-  make_smart_search({
+  make_file_search({
     cwd             = vim.fn.getcwd(),
     default_text    = opts.args,
     additional_args = { '--hidden', '--smart-case' },
     files_cmd       = { 'rg', '--files', '--hidden', '--color=never' },
-    prompt_title    = 'Search (cwd)',
+    base_title      = 'Search (cwd)',
   })
 end, { nargs = '*', bang = true })
 ```
