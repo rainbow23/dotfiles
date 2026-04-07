@@ -237,9 +237,17 @@ local action_state = require('telescope.actions.state')
 local make_file_search
 local make_grep_search
 
+local open_in_tab = function(prompt_bufnr)
+  local entry = action_state.get_selected_entry()
+  actions.close(prompt_bufnr)
+  if entry then
+    vim.cmd('tabedit ' .. (entry.path or entry.filename or entry.value))
+  end
+end
+
 make_file_search = function(opts)
   pickers.new(opts, {
-    prompt_title = (opts.base_title or 'Search') .. ' [File]  <C-t>=Grep',
+    prompt_title = (opts.base_title or 'Search') .. ' [File]  <C-g>=Grep  <C-t>=新規タブ',
     finder = finders.new_oneshot_job(opts.files_cmd, {
       entry_maker = make_entry.gen_from_file(opts),
       cwd         = opts.cwd,
@@ -252,8 +260,10 @@ make_file_search = function(opts)
         actions.close(prompt_bufnr)
         make_grep_search(vim.tbl_extend('force', opts, { default_text = query }))
       end
-      map('i', '<C-t>', switch)
-      map('n', '<C-t>', switch)
+      map('i', '<C-g>', switch)
+      map('n', '<C-g>', switch)
+      map('i', '<C-t>', open_in_tab)
+      map('n', '<C-t>', open_in_tab)
       return true
     end,
   }):find()
@@ -264,7 +274,7 @@ make_grep_search = function(opts)
   local grep_entry = make_entry.gen_from_vimgrep(opts)
 
   pickers.new(opts, {
-    prompt_title = (opts.base_title or 'Search') .. ' [Grep]  <C-t>=File',
+    prompt_title = (opts.base_title or 'Search') .. ' [Grep]  <C-g>=File  <C-t>=新規タブ',
     finder = finders.new_job(function(prompt)
       if not prompt or prompt == '' then return nil end
       local cmd = vim.deepcopy(grep_args)
@@ -280,8 +290,10 @@ make_grep_search = function(opts)
         actions.close(prompt_bufnr)
         make_file_search(vim.tbl_extend('force', opts, { default_text = query }))
       end
-      map('i', '<C-t>', switch)
-      map('n', '<C-t>', switch)
+      map('i', '<C-g>', switch)
+      map('n', '<C-g>', switch)
+      map('i', '<C-t>', open_in_tab)
+      map('n', '<C-t>', open_in_tab)
       return true
     end,
   }):find()
