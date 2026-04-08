@@ -48,3 +48,19 @@ export JAVA_HOME=/Applications/"Android Studio.app"/Contents/jre/jdk/Contents/Ho
 export PATH="$PATH:/Users/rainbow/Documents/flutter/flutter/bin"
 # claude code
 export PATH="$HOME/.local/bin:$PATH"
+
+# ls の色設定（macOS LSCOLORS）
+# 各変数は「前景色 + 背景色」の2文字: a=黒 b=赤 c=緑 d=茶 e=青 f=紫 g=水 h=灰 x=デフォルト
+# 大文字=bold
+_ls_dir="Ex"  # ディレクトリ:                     bold青
+_ls_lnk="fx"  # シンボリックリンク:               紫
+_ls_soc="cx"  # ソケット:                         緑
+_ls_pip="dx"  # パイプ:                           茶
+_ls_exe="bx"  # 実行可能ファイル:                 赤
+_ls_blk="eg"  # ブロックデバイス:                 青/水背景
+_ls_chr="ed"  # キャラクタデバイス:               青/茶背景
+_ls_uid="ab"  # setuid実行ファイル:               黒/赤背景
+_ls_gid="ag"  # setgid実行ファイル:               黒/水背景
+_ls_diw="ac"  # 書き込み可能ディレクトリ:         黒/緑背景
+_ls_dis="ad"  # sticky書き込み可能ディレクトリ:   黒/茶背景
+export LSCOLORS="${_ls_dir}${_ls_lnk}${_ls_soc}${_ls_pip}${_ls_exe}${_ls_blk}${_ls_chr}${_ls_uid}${_ls_gid}${_ls_diw}${_ls_dis}"
