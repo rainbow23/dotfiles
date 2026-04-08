@@ -230,8 +230,9 @@ local finders      = require('telescope.finders')
 local pickers      = require('telescope.pickers')
 local make_entry   = require('telescope.make_entry')
 local sorters      = require('telescope.sorters')
-local actions      = require('telescope.actions')
-local action_state = require('telescope.actions.state')
+local actions        = require('telescope.actions')
+local action_state   = require('telescope.actions.state')
+local layout_actions = require('telescope.actions.layout')
 
 local make_file_search
 local make_grep_search
@@ -254,7 +255,7 @@ end
 
 make_file_search = function(opts)
   pickers.new(opts, {
-    prompt_title = (opts.base_title or 'Search') .. ' [File]  <C-g>=Grep  <C-t>=新規タブ  <C-v>=vsplit  <C-s>=split',
+    prompt_title = (opts.base_title or 'Search') .. ' [File]  <C-g>=Grep  <C-t>=新規タブ  <C-v>=vsplit  <C-s>=split  <C-f>=Preview',
     finder = finders.new_oneshot_job(opts.files_cmd, {
       entry_maker = make_entry.gen_from_file(opts),
       cwd         = opts.cwd,
@@ -262,6 +263,7 @@ make_file_search = function(opts)
     previewer = conf.file_previewer(opts),
     sorter    = conf.file_sorter(opts),
     attach_mappings = function(prompt_bufnr, map)
+      vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
       local switch = function()
         local query = action_state.get_current_line()
         actions.close(prompt_bufnr)
@@ -275,6 +277,8 @@ make_file_search = function(opts)
       map('n', '<C-v>', function(b) open_in_split(b, 'vsplit') end)
       map('i', '<C-s>', function(b) open_in_split(b, 'split') end)
       map('n', '<C-s>', function(b) open_in_split(b, 'split') end)
+      map('i', '<C-f>', layout_actions.toggle_preview)
+      map('n', '<C-f>', layout_actions.toggle_preview)
       return true
     end,
   }):find()
@@ -285,7 +289,7 @@ make_grep_search = function(opts)
   local grep_entry = make_entry.gen_from_vimgrep(opts)
 
   pickers.new(opts, {
-    prompt_title = (opts.base_title or 'Search') .. ' [Grep]  <C-g>=File  <C-t>=新規タブ  <C-v>=vsplit  <C-s>=split',
+    prompt_title = (opts.base_title or 'Search') .. ' [Grep]  <C-g>=File  <C-t>=新規タブ  <C-v>=vsplit  <C-s>=split  <C-f>=Preview',
     finder = finders.new_job(function(prompt)
       if not prompt or prompt == '' then return nil end
       local cmd = vim.deepcopy(grep_args)
@@ -296,6 +300,7 @@ make_grep_search = function(opts)
     previewer = conf.grep_previewer(opts),
     sorter    = sorters.empty(),
     attach_mappings = function(prompt_bufnr, map)
+      vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
       local switch = function()
         local query = action_state.get_current_line()
         actions.close(prompt_bufnr)
@@ -305,10 +310,12 @@ make_grep_search = function(opts)
       map('n', '<C-g>', switch)
       map('i', '<C-t>', open_in_tab)
       map('n', '<C-t>', open_in_tab)
-      map('i', '<C-v>', function(b) open_in_split(b, 'vsplit') end)
-      map('n', '<C-v>', function(b) open_in_split(b, 'vsplit') end)
+      map('i', '<C-v>', function(a) open_in_split(b, 'vsplit') end)
+      map('n', '<C-v>', function(a) open_in_split(b, 'vsplit') end)
       map('i', '<C-s>', function(b) open_in_split(b, 'split') end)
       map('n', '<C-s>', function(b) open_in_split(b, 'split') end)
+      map('i', '<C-f>', layout_actions.toggle_preview)
+      map('n', '<C-f>', layout_actions.toggle_preview)
       return true
     end,
   }):find()
