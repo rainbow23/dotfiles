@@ -113,10 +113,10 @@ git-commit-show() {
       fzf --height=100% --no-sort --reverse --tiebreak=index --no-multi --ansi \
         --preview="$_viewGitLogLine" \
         --preview-window=right:hidden \
-        --header "<C-f>=preview <C-g>=copy message <C-h>=copy hash <m>=branch list" \
+        --header "<C-f>=preview, <C-g>=copy message, <C-h>=copy hash, <m>=branch list" \
         --bind "enter:execute:$_viewGitLogLine   | less -R" \
-        --bind "ctrl-h:execute:($_gitLogLineToHash | pbcopy)+abort" \
-        --bind "ctrl-g:execute:($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)+abort" \
+        --bind "ctrl-h:execute($_gitLogLineToHash | pbcopy)+abort" \
+        --bind "ctrl-g:execute($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)+abort" \
         --bind "q:abort" \
         --expect=m \
         --bind '?:toggle-preview' \
