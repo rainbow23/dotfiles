@@ -253,6 +253,28 @@ local open_in_split = function(prompt_bufnr, cmd)
   end
 end
 
+local make_attach_mappings = function(opts, switch_target)
+  return function(prompt_bufnr, map)
+    vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
+    local switch = function()
+      local query = action_state.get_current_line()
+      actions.close(prompt_bufnr)
+      switch_target(vim.tbl_extend('force', opts, { default_text = query }))
+    end
+    map('i', '<C-g>', switch)
+    map('n', '<C-g>', switch)
+    map('i', '<C-t>', open_in_tab)
+    map('n', '<C-t>', open_in_tab)
+    map('i', '<C-v>', function(b) open_in_split(b, 'vsplit') end)
+    map('n', '<C-v>', function(b) open_in_split(b, 'vsplit') end)
+    map('i', '<C-s>', function(b) open_in_split(b, 'split') end)
+    map('n', '<C-s>', function(b) open_in_split(b, 'split') end)
+    map('i', '<C-f>', layout_actions.toggle_preview)
+    map('n', '<C-f>', layout_actions.toggle_preview)
+    return true
+  end
+end
+
 make_file_search = function(opts)
   pickers.new(opts, {
     prompt_title = (opts.base_title or 'Search') .. ' [File]  <C-g>=Grep  <C-t>=新規タブ  <C-v>=vsplit  <C-s>=split  <C-f>=Preview',
@@ -262,25 +284,7 @@ make_file_search = function(opts)
     }),
     previewer = conf.file_previewer(opts),
     sorter    = conf.file_sorter(opts),
-    attach_mappings = function(prompt_bufnr, map)
-      vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
-      local switch = function()
-        local query = action_state.get_current_line()
-        actions.close(prompt_bufnr)
-        make_grep_search(vim.tbl_extend('force', opts, { default_text = query }))
-      end
-      map('i', '<C-g>', switch)
-      map('n', '<C-g>', switch)
-      map('i', '<C-t>', open_in_tab)
-      map('n', '<C-t>', open_in_tab)
-      map('i', '<C-v>', function(b) open_in_split(b, 'vsplit') end)
-      map('n', '<C-v>', function(b) open_in_split(b, 'vsplit') end)
-      map('i', '<C-s>', function(b) open_in_split(b, 'split') end)
-      map('n', '<C-s>', function(b) open_in_split(b, 'split') end)
-      map('i', '<C-f>', layout_actions.toggle_preview)
-      map('n', '<C-f>', layout_actions.toggle_preview)
-      return true
-    end,
+    attach_mappings = make_attach_mappings(opts, make_grep_search),
   }):find()
 end
 
@@ -299,25 +303,7 @@ make_grep_search = function(opts)
     end, grep_entry, nil, opts.cwd),
     previewer = conf.grep_previewer(opts),
     sorter    = sorters.empty(),
-    attach_mappings = function(prompt_bufnr, map)
-      vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
-      local switch = function()
-        local query = action_state.get_current_line()
-        actions.close(prompt_bufnr)
-        make_file_search(vim.tbl_extend('force', opts, { default_text = query }))
-      end
-      map('i', '<C-g>', switch)
-      map('n', '<C-g>', switch)
-      map('i', '<C-t>', open_in_tab)
-      map('n', '<C-t>', open_in_tab)
-      map('i', '<C-v>', function(a) open_in_split(b, 'vsplit') end)
-      map('n', '<C-v>', function(a) open_in_split(b, 'vsplit') end)
-      map('i', '<C-s>', function(b) open_in_split(b, 'split') end)
-      map('n', '<C-s>', function(b) open_in_split(b, 'split') end)
-      map('i', '<C-f>', layout_actions.toggle_preview)
-      map('n', '<C-f>', layout_actions.toggle_preview)
-      return true
-    end,
+    attach_mappings = make_attach_mappings(opts, make_file_search),
   }):find()
 end
 
