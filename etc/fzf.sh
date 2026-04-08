@@ -107,21 +107,27 @@ _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always 
 
 git-commit-show() {
   tput reset
-  _glNoGraph ${1:+"$1"} |
-    fzf --height=100% --no-sort --reverse --tiebreak=index --no-multi --ansi \
-      --preview="$_viewGitLogLine" \
-      --preview-window=right:hidden \
-      --header "ctrl-f to toggle preview, ctrl-g to copy git message, ctrl-h to copy hash" \
-      --bind "enter:execute:$_viewGitLogLine   | less -R" \
-      --bind "ctrl-h:execute:($_gitLogLineToHash | pbcopy)+abort" \
-      --bind "ctrl-g:execute:($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)+abort" \
-      --bind "q:abort" \
-      --bind '?:toggle-preview' \
-      --bind='ctrl-f:toggle-preview'
+  local out key
+  out=$(
+    _glNoGraph ${1:+"$1"} |
+      fzf --height=100% --no-sort --reverse --tiebreak=index --no-multi --ansi \
+        --preview="$_viewGitLogLine" \
+        --preview-window=right:hidden \
+        --header "<C-f>=preview <C-g>=copy message <C-h>=copy hash <m>=branch list" \
+        --bind "enter:execute:$_viewGitLogLine   | less -R" \
+        --bind "ctrl-h:execute:($_gitLogLineToHash | pbcopy)+abort" \
+        --bind "ctrl-g:execute:($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)+abort" \
+        --bind "q:abort" \
+        --expect=m \
+        --bind '?:toggle-preview' \
+        --bind='ctrl-f:toggle-preview'
+  )
+  key=$(head -1 <<< "$out")
 
-  #ファイルサイズが0でない場合
   if [ -s /tmp/git_commit_message ]; then
     git-commit-with-tmp-message
+  elif [ "$key" = "m" ]; then
+    git-commit-show-multi-branch
   fi
 }
 
