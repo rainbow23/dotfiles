@@ -192,7 +192,7 @@ inoremap <silent> jj <ESC>l
 
 "set termguicolors nvim用
 "set nohlsearch
-"set cursorline
+set cursorline
 "highlight Normal ctermbg=black ctermfg=white
 highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 "highlight CursorLine term=none cterm=none ctermfg=none ctermbg=grey
