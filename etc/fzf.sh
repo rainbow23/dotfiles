@@ -22,7 +22,7 @@ git-add-files() {
       awk '{if (substr($0,2,1) !~ / /) print $2}' |
       fzf --multi --border -d 100 --preview "$NESTED_GIT_DIFF_PREVIEW" \
       --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a --expect=ctrl-r --expect=ctrl-t \
-      --header "ctrl-r=git checkout, ctrl-t=tmux popup, enter=git diff, ctrl-e=edit, ctrl-a=git add"); do
+      --header "<C-r>=git checkout <C-t>=tmux popup, enter=git diff <C-e>=edit, <C-a>=git add"); do
     q=$(head -1 <<< "$out")
     n=$[$(wc -l <<< "$out") - 1]
     addfiles=(`echo $(tail "-$n" <<< "$out")`)
