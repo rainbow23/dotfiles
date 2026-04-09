@@ -114,12 +114,12 @@ git-commit-show() {
       fzf --height=100% --no-sort --reverse --tiebreak=index --no-multi --ansi \
         --preview="$_viewGitLogLine" \
         --preview-window=right:hidden \
-        --header "<C-f>=preview, <C-g>=copy message, <C-h>=copy hash, <m>=branch list" \
+        --header "<C-f>=preview, <C-g>=copy message, <C-h>=copy hash, <C-m>=branch list" \
         --bind "enter:execute:$_viewGitLogLine   | less -R" \
         --bind "ctrl-h:execute($_gitLogLineToHash | pbcopy)+abort" \
         --bind "ctrl-g:execute($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)+abort" \
         --bind "q:abort" \
-        --expect=m \
+        --expect=ctrl-m \
         --bind '?:toggle-preview' \
         --bind='ctrl-f:toggle-preview'
   )
@@ -127,7 +127,7 @@ git-commit-show() {
 
   if [ -s /tmp/git_commit_message ]; then
     git-commit-with-tmp-message
-  elif [ "$key" = "m" ]; then
+  elif [ "$key" = ctrl-m ]; then
     git-commit-show-multi-branch
   fi
 }
