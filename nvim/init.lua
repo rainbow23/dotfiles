@@ -253,9 +253,11 @@ local open_in_split = function(prompt_bufnr, cmd)
   end
 end
 
-local make_attach_mappings = function(opts, switch_target)
+local make_attach_mappings = function(opts, switch_target, preview_default_on)
   return function(prompt_bufnr, map)
-    vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
+    if not preview_default_on then
+      vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
+    end
     local switch = function()
       local query = action_state.get_current_line()
       actions.close(prompt_bufnr)
@@ -303,7 +305,7 @@ make_grep_search = function(opts)
     end, grep_entry, nil, opts.cwd),
     previewer = conf.grep_previewer(opts),
     sorter    = sorters.empty(),
-    attach_mappings = make_attach_mappings(opts, make_file_search),
+    attach_mappings = make_attach_mappings(opts, make_file_search, true),
   }):find()
 end
 
