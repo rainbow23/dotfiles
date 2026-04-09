@@ -21,8 +21,9 @@ git-add-files() {
       git status --short --untracked-files=no |
       awk '{if (substr($0,2,1) !~ / /) print $2}' |
       fzf --multi --border -d 100 --preview "$NESTED_GIT_DIFF_PREVIEW" \
+      --bind 'ctrl-f:toggle-preview' \
       --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a --expect=ctrl-r --expect=ctrl-t \
-      --header "<C-r>=git checkout <C-t>=tmux popup, enter=git diff <C-e>=edit, <C-a>=git add"); do
+      --header "<C-r>=git checkout <C-t>=tmux popup, enter=git diff <C-e>=edit, <C-a>=git add, <C-f>=preview"); do
     q=$(head -1 <<< "$out")
     n=$[$(wc -l <<< "$out") - 1]
     addfiles=(`echo $(tail "-$n" <<< "$out")`)
