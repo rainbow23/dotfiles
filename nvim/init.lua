@@ -277,9 +277,11 @@ local make_attach_mappings = function(opts, switch_target, preview_default_on)
   end
 end
 
+local prompt_title_shortcut = '<C-g>=File <C-f>=Preview <C-t>=新規タブ <C-v>=vsplit <C-s>=split'
+
 make_file_search = function(opts)
   pickers.new(opts, {
-    prompt_title = (opts.base_title or 'Search') .. ' [File]  <C-g>=Grep  <C-t>=新規タブ  <C-v>=vsplit  <C-s>=split  <C-f>=Preview',
+    prompt_title = (opts.base_title or 'Search') .. ' [File] ' .. prompt_title_shortcut,
     finder = finders.new_oneshot_job(opts.files_cmd, {
       entry_maker = make_entry.gen_from_file(opts),
       cwd         = opts.cwd,
@@ -295,7 +297,7 @@ make_grep_search = function(opts)
   local grep_entry = make_entry.gen_from_vimgrep(opts)
 
   pickers.new(opts, {
-    prompt_title = (opts.base_title or 'Search') .. ' [Grep]  <C-g>=File  <C-t>=新規タブ  <C-v>=vsplit  <C-s>=split  <C-f>=Preview',
+    prompt_title = (opts.base_title or 'Search') .. ' [Grep] ' .. prompt_title_shortcut,
     finder = finders.new_job(function(prompt)
       if not prompt or prompt == '' then return nil end
       local cmd = vim.deepcopy(grep_args)
