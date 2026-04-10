@@ -21,11 +21,18 @@ git-add-files() {
       awk '{if (substr($0,2,1) !~ / /) print $2}' |
       fzf --multi --border -d 100 --preview 'if [ -n "$(git diff {})" ]; then git diff --color=always {} | delta --diff-so-fancy; else cat {}; fi' \
       --bind 'ctrl-f:toggle-preview' \
-      --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a --expect=ctrl-r --expect=ctrl-t \
-      --header "<C-r>=git checkout <C-t>=tmux popup, enter=git diff <C-e>=edit, <C-a>=git add, <C-f>=preview"); do
+      --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a --expect=ctrl-r --expect=ctrl-t --expect=ctrl-s \
+      --header "<C-r>=git checkout <C-t>=tmux popup, enter=git diff <C-e>=edit, <C-a>=git add, <C-f>=preview, <C-s>=staging"); do
     q=$(head -1 <<< "$out")
     n=$[$(wc -l <<< "$out") - 1]
     addfiles=(`echo $(tail "-$n" <<< "$out")`)
+    if [ "$q" = ctrl-s ] ; then
+      git diff --cached --name-only | \
+        fzf --multi --border --ansi \
+          --preview 'git diff --cached --color=always {} | delta --diff-so-fancy' \
+          --header "staging files"
+      continue
+    fi
     [[ -z "$addfiles" ]] && continue
     if [ "$q" = ctrl-d ] || [ "$q" = enter ] ; then
       git diff --color=always -u $addfiles | delta --diff-so-fancy | less -R
