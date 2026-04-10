@@ -252,18 +252,14 @@ command! MyUniteSessionLoad  call fzf#run({
 
 nnoremap [fzf]m :<C-u>FZFMru<CR>
 " nnoremap [fzf]f :<C-u>Files<CR>
-" git ls-files
-nnoremap [fzf]g :<C-u>GFiles<CR>
-nnoremap [fzf]gs :<C-u>GFiles?<CR>
-" git staus
-nnoremap [fzf]G :<C-u>GFiles?<CR>
+nnoremap [fzf]g :<C-u>Search<CR>
 nnoremap [fzf]b :<C-u>Buffers<CR>
 nnoremap [fzf]h :<C-u>History<CR>
 " list tabs
 nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]a :<C-u>Ag<CR>
 nnoremap [fzf]l :<C-u>BLines<CR>
-nnoremap [fzf]s :<C-u>Search<CR>
+nnoremap [fzf]s :<C-u>GrepSearch<CR>
 nnoremap [fzf]S :<C-u>SearchFromCurrDir<CR>
 nnoremap [fzf]k :<C-u>FzfGitRootDirBookmarks!<CR>
 nnoremap [fzf]K :<C-u>FzfCurrFileBookmarks!<CR>
@@ -295,8 +291,6 @@ endfunction
 
 command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview('right:50%:hidden', '?'))
 
-command! -bang -nargs=? GFiles
-\ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0),
 
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
