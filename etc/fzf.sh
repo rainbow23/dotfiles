@@ -148,19 +148,20 @@ gsd() {
   git diff $out
 }
 
-alias _gitStashGraph='git stash list --color=always --pretty="%C(auto)%h %gs %C(black)%C(bold)%cr"'
+alias _gitStashGraph='git stash list --color=always --pretty="%C(auto)%h %gd %gs %C(black)%C(bold)%cr"'
+_gitStashLineToRef="echo {} | grep -o 'stash@{[0-9]*}' | head -1"
+_viewGitStashLine="$_gitStashLineToRef | xargs -I % sh -c 'git stash show --color=always -p % | delta --diff-so-fancy'"
 
 git-stash-list() {
   clear
   _gitStashGraph |
-    fzf --height=100 --ansi +m --exit-0 --header "enter with show diff, ctrl-d with show files namea ctr-a with stash apply" \
-      --preview="$_viewGitLogLine" \
+    fzf --height=100 --ansi +m --exit-0 --header "enter=diff表示, <C-a>=stash apply, <C-f>=preview" \
+      --preview="$_viewGitStashLine" \
       --preview-window=right:hidden \
-      --bind "enter:execute:$_gitLogLineToHash | xargs git stash show -p" \
-      --bind "ctrl-a:abort+execute:($_gitLogLineToHash | xargs git stash apply )" \
-      --bind "q:execute()+abort" \
-      --bind='ctrl-f:toggle-preview' \
-      --bind='ctrl-p:toggle-preview'
+      --bind "enter:execute($_viewGitStashLine | less -R)" \
+      --bind "ctrl-a:execute($_gitStashLineToRef | xargs git stash apply)+abort" \
+      --bind "q:abort" \
+      --bind='ctrl-f:toggle-preview'
 }
 
 do_enter() {
