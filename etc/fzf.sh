@@ -13,14 +13,13 @@ ftags() {
 ## -------------------------------------
 # fzf git
 # -------------------------------------
-export NESTED_GIT_DIFF_PREVIEW='git diff --color=always {} | delta --diff-so-fancy'
 
 git-add-files() {
   local out q n addfiles
   while out=$(
-      git status --short --untracked-files=no |
+      git status --short |
       awk '{if (substr($0,2,1) !~ / /) print $2}' |
-      fzf --multi --border -d 100 --preview "$NESTED_GIT_DIFF_PREVIEW" \
+      fzf --multi --border -d 100 --preview 'if [ -n "$(git diff {})" ]; then git diff --color=always {} | delta --diff-so-fancy; else cat {}; fi' \
       --bind 'ctrl-f:toggle-preview' \
       --expect=ctrl-d --expect=enter --expect=ctrl-e --expect=ctrl-a --expect=ctrl-r --expect=ctrl-t \
       --header "<C-r>=git checkout <C-t>=tmux popup, enter=git diff <C-e>=edit, <C-a>=git add, <C-f>=preview"); do
