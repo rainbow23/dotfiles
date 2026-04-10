@@ -257,14 +257,9 @@ nnoremap [fzf]b :<C-u>Buffers<CR>
 nnoremap [fzf]h :<C-u>History<CR>
 " list tabs
 nnoremap [fzf]w :<C-u>Windows<CR>
-nnoremap [fzf]a :<C-u>Ag<CR>
 nnoremap [fzf]l :<C-u>BLines<CR>
 nnoremap [fzf]s :<C-u>GrepSearch<CR>
 nnoremap [fzf]S :<C-u>SearchFromCurrDir<CR>
-nnoremap [fzf]k :<C-u>FzfGitRootDirBookmarks!<CR>
-nnoremap [fzf]K :<C-u>FzfCurrFileBookmarks!<CR>
-nnoremap [fzf]f :<C-u>FzfGitDiffFiles<CR>
-" nnoremap [fzf]ka :<C-u>FzfAllBookmarks!<CR>
 
 let g:fzf_layout = { 'down': '~30%' }
 let s:fzf_base_options = extend({'options': ''}, g:fzf_layout)
@@ -311,20 +306,6 @@ if !has('nvim')
     \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
     \   <bang>0)
 endif
-
-command! -bang -nargs=* Ag
-  \ call fzf#vim#ag(<q-args>,
-  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
-  \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
-  \                 <bang>0)
-
-command! -bang FzfGitDiffFiles
-  \ call fzf#run({'source':
-  \   "git diff --name-only $(git show-branch --sha1-name $(git symbolic-ref --short refs/remotes/origin/HEAD) $(git rev-parse --abbrev-ref HEAD) | tail -1 | awk -F'[]~^[]' '{print $2}')",
-  \   'sink': 'e',
-  \   'options': '-m --prompt "GitDiffFiles>" --preview "cat {}"',
-  \   'window': { 'width': 0.92, 'height': 0.7, 'yoffset': 1 }
-  \   })
 
 "FZF end  ####################################################################
 
