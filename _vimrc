@@ -1056,36 +1056,11 @@ let g:highlightedyank_highlight_duration = 500
 let g:tmux_navigator_disable_when_zoomed = 1
 " Plug 'christoomey/vim-tmux-navigator' #############################################
 
-" Plug 'ctrlpvim/ctrlp.vim' #########################################################
-let g:ctrlp_custom_ignore = '\v'
-let g:ctrlp_custom_ignore .= '%('
-let g:ctrlp_custom_ignore .= '\.%(git|hg|svn)$|'
-let g:ctrlp_custom_ignore .= '\.%(o|obj|so|pyc|png|jpeg|jpg|bmp|ogg|odt|pdf|ttf|jar)$|'
-let g:ctrlp_custom_ignore .= '[\/]*build'
-let g:ctrlp_custom_ignore .= ')'
-nnoremap <Leader>fe :CtrlP .<CR>
-nnoremap <Leader>fb :CtrlPBuffer<CR>
-
-
-
 " The Silver Searcher
 if executable('ag')
   " Use ag over grep
   set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-
-  " ag is fast enough that CtrlP doesn't need to cache
-  let g:ctrlp_use_caching = 0
 endif
-
-
-" Plug 'ctrlpvim/ctrlp.vim' #########################################################
-
-" Plug 'mattn/ctrlp-matchfuzzy' #####################################################
-let g:ctrlp_match_func = {'match': 'ctrlp_matchfuzzy#matcher'}
-" Plug 'mattn/ctrlp-matchfuzzy' #####################################################
 
 " Plug 'kana/vim-operator-replace'###################################################
 nmap s <Plug>(operator-replace)

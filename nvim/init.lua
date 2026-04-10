@@ -60,8 +60,6 @@ require('lazy').setup({
   { 'jistr/vim-nerdtree-tabs',        lazy = false },
   { 'Xuyuanp/nerdtree-git-plugin',    lazy = false },
   { 'jlanzarotta/bufexplorer',        lazy = false, init = function() vim.g.bufExplorerDisableDefaultKeyMapping = 1 end },
-  { 'ctrlpvim/ctrlp.vim',             lazy = false },
-  { 'mattn/ctrlp-matchfuzzy',         lazy = false },
   { 'christoomey/vim-tmux-navigator', lazy = false },
   -- Bookmarks
   {
