@@ -1,7 +1,7 @@
 #!/bin/sh
 
 currentDir="$1"
-SESSION="claude-$(echo "$currentDir" | md5sum | cut -c1-8)"
+SESSION="z-claude-$(echo "$currentDir" | md5sum | cut -c1-8)"
 
 if [ "$(tmux display-message -p -F '#{session_name}')" = "$SESSION" ]; then
     tmux detach-client
