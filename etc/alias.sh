@@ -108,12 +108,12 @@ alias cl='clear'
   abbrev-alias -g tl='tmux-list-panes'
 
   ## -------------------------------------
-  # fzf fd
+  # fzf cd
   # -------------------------------------
-  abbrev-alias -g fdg='cd-to-ghq-selected-directory'
-  abbrev-alias -g fd='fd-selected-directory'
-  abbrev-alias -g fdo='fd-selected-sub-directory'
-  abbrev-alias -g fdp='fd-selected-parent-directory'
+  abbrev-alias -g cdd='cd-selected-directory'
+  abbrev-alias -g cds='cd-selected-sub-directory'
+  abbrev-alias -g cdp='cd-selected-parent-directory'
+  abbrev-alias -g cdg='cd-to-ghq-selected-directory'
 
   ## -------------------------------------
   # ls

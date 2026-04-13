@@ -191,14 +191,6 @@ do_enter() {
 zle -N do_enter
 bindkey '^m' do_enter
 
-cd-to-ghq-selected-directory() {
-  local selected
-  selected=$(ghq list | fzf)
-
-  if [ "x$selected" != "x" ]; then
-    cd $(ghq root)/$selected
-  fi
-}
 
 fkill() {
   local pid
@@ -260,27 +252,25 @@ _fzf_complete_tmux-list-panes() {
 }
 
 ## -------------------------------------
-# fzf fd
+# fzf cd
 # -------------------------------------
 
-# fd - cd to selected directory
-fd-selected-directory() {
+# cd to selected directory
+cd-selected-directory() {
   local dir
   dir=$(find ${1:-.} -path '*/\.*' -prune \
                   -o -type d -print 2> /dev/null | fzf +m) &&
   cd "$dir"
 }
 
-# Another fd - cd into the selected directory
-# This one differs from the above, by only showing the sub directories and not
-#  showing the directories within those.
-fd-selected-sub-directory() {
+# cd into the selected directory
+cd-selected-sub-directory() {
   DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf` \
     && cd "$DIR"
 }
 
-# fdp - cd to selected parent directory
-fd-selected-parent-directory() {
+# cd to selected parent directory
+cd-selected-parent-directory() {
   local declare dirs=()
   get_parent_dirs() {
     if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
@@ -292,6 +282,15 @@ fd-selected-parent-directory() {
   }
   local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf --tac)
   cd "$DIR"
+}
+
+cd-to-ghq-selected-directory() {
+  local selected
+  selected=$(ghq list | fzf)
+
+  if [ "x$selected" != "x" ]; then
+    cd $(ghq root)/$selected
+  fi
 }
 
 ftpane() {
