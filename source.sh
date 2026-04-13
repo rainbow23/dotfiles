@@ -43,17 +43,6 @@ export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOBIN
 
 ## -------------------------------------
-# enhancd
-# -------------------------------------
-ENHANCD=$HOME/.enhancd
-if [ ! -d $ENHANCD ] ; then
-  mkdir -p $ENHANCD
-  git clone --depth 1 https://github.com/rainbow23/enhancd.git $ENHANCD
-fi
-source $ENHANCD/init.sh
-export ENHANCD_FILTER=fzf-tmux
-
-## -------------------------------------
 # fzf
 # -------------------------------------
 if [ ! -f $HOME/.fzf/bin/fzf ] ; then
