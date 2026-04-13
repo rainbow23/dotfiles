@@ -111,7 +111,23 @@ require('lazy').setup({
         autocmds.refresh_buffer(vim.api.nvim_get_current_buf())
       end
       map('n', 'mm', function()
-        require('bookmarks.commands').add_bookmark()
+        local bufnr = vim.api.nvim_get_current_buf()
+        local line = vim.api.nvim_win_get_cursor(0)[1]
+        local list = autocmds.get_buffer_bookmarks(bufnr)
+        local is_bookmarked = false
+        if list then
+          for _, bm in ipairs(list.items) do
+            if bm.line == line then
+              is_bookmarked = true
+              break
+            end
+          end
+        end
+        if is_bookmarked then
+          require('bookmarks.commands').remove_bookmark()
+        else
+          require('bookmarks.commands').add_bookmark()
+        end
         refresh()
       end, { desc = 'Bookmark toggle' })
       map('n', 'mc', function()
