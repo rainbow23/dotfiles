@@ -143,7 +143,15 @@ require('lazy').setup({
         require('bookmarks.navigation').jump_to_prev(autocmds.get_buffer_bookmarks(bufnr))
       end, { desc = 'Bookmark prev' })
       map('n', 'ml', function()
-        require('telescope').extensions.bookmarks.list()
+        require('telescope').extensions.bookmarks.list({
+          layout_strategy = 'horizontal',
+          layout_config = {
+            height = 0.9,
+            width = 0.9,
+            preview_width = 0.6,
+            prompt_position = 'bottom',
+          },
+        })
       end, { desc = 'Bookmark list' })
       -- Nerd Font 非対応環境での ? 表示を回避するため ASCII 文字に上書き
       vim.fn.sign_define('BookmarkSign', {
