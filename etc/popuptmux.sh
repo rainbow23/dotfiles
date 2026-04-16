@@ -17,10 +17,15 @@ if [ "$(tmux display-message -p -F "#{session_name}")" = "popup"  ];then
     rootDir=$(git -C "$currentDir" rev-parse --show-toplevel 2>/dev/null)
     if [ ! -z "$rootDir" ]; then
       # セッションを切り替える前にコマンドを送信する
-      # シェルの子プロセスが存在する場合（vim・fzf等が実行中）は送信しない
-      pane_pid=$(tmux display-message -t popup -p '#{pane_pid}' 2>/dev/null)
-      if [ -n "$pane_pid" ] && [ -z "$(pgrep -P "$pane_pid")" ]; then
-        tmux send-keys -t 'popup' "cd $rootDir ; clear" 'C-m'
+      # TTYのフォアグラウンドプロセスグループを確認し、シェル以外が実行中の場合は送信しない
+      # fzf等のインタラクティブプログラムはフォアグラウンドグループに入るため確実に検出できる
+      # zsh非同期プロンプトワーカーはバックグラウンドのため除外される
+      pane_tty=$(tmux display-message -t popup -p '#{pane_tty}' 2>/dev/null)
+      if [ -n "$pane_tty" ]; then
+        fg_non_shell=$(ps -t "$pane_tty" -o stat=,comm= 2>/dev/null | awk '$1 ~ /\+/ && $2 !~ /^-?(zsh|bash|sh)$/ {print $2}')
+        if [ -z "$fg_non_shell" ]; then
+          tmux send-keys -t 'popup' "cd $rootDir ; clear" 'C-m'
+        fi
       fi
     fi
 
