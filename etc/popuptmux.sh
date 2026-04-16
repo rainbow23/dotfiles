@@ -21,8 +21,12 @@ if [ "$(tmux display-message -p -F "#{session_name}")" = "popup"  ];then
       # fzf等のインタラクティブプログラムはフォアグラウンドグループに入るため確実に検出できる
       # zsh非同期プロンプトワーカーはバックグラウンドのため除外される
       pane_tty=$(tmux display-message -t popup -p '#{pane_tty}' 2>/dev/null)
+      #出力例
+      #echo "pane_tty: $pane_tty"
+      #pane_tty: /dev/ttys021
       if [ -n "$pane_tty" ]; then
         fg_non_shell=$(ps -t "$pane_tty" -o stat=,comm= 2>/dev/null | awk '$1 ~ /\+/ && $2 !~ /^-?(zsh|bash|sh)$/ {print $2}')
+        #echo "fg_non_shell: $fg_non_shell"
         if [ -z "$fg_non_shell" ]; then
           tmux send-keys -t 'popup' "cd $rootDir ; clear" 'C-m'
         fi
