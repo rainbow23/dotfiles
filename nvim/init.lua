@@ -399,6 +399,9 @@ vim.api.nvim_create_user_command('GrepSearch', function(opts)
   })
 end, { nargs = '*', bang = true })
 
+vim.api.nvim_create_user_command('BLines', function(opts)
+  builtin.current_buffer_fuzzy_find({ default_text = opts.args })
+end, { nargs = '*', bang = true })
 vim.api.nvim_create_user_command('SearchFromCurrDir', function(opts)
   make_file_search({
     cwd       = vim.fn.getcwd(),
