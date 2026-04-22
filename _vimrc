@@ -251,8 +251,8 @@ command! MyUniteSessionLoad  call fzf#run({
       \ 'right': '40%'})
 
 nnoremap [fzf]m :<C-u>FZFMru<CR>
-" nnoremap [fzf]f :<C-u>Files<CR>
-nnoremap [fzf]g :<C-u>Search<CR>
+nnoremap [fzf]f :<C-u>Search<CR>
+nnoremap [fzf]g :<C-u>GitStatus<CR>
 nnoremap [fzf]b :<C-u>Buffers<CR>
 nnoremap [fzf]h :<C-u>History<CR>
 " list tabs
