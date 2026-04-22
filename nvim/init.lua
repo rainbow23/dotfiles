@@ -257,14 +257,6 @@ local action_state   = require('telescope.actions.state')
 local layout_actions = require('telescope.actions.layout')
 local builtin        = require('telescope.builtin')
 
-local open_in_tab = function(prompt_bufnr)
-  local entry = action_state.get_selected_entry()
-  actions.close(prompt_bufnr)
-  if entry then
-    vim.cmd('tabedit ' .. (entry.path or entry.filename or entry.value))
-  end
-end
-
 local open_in_split = function(prompt_bufnr, cmd)
   local entry = action_state.get_selected_entry()
   actions.close(prompt_bufnr)
@@ -278,10 +270,6 @@ local make_attach_mappings = function(preview_default_on, extra_mappings)
     if not preview_default_on then
       vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
     end
-    map('i', '<C-t>', open_in_tab)
-    map('n', '<C-t>', open_in_tab)
-    map('i', '<C-v>', function(b) open_in_split(b, 'vsplit') end)
-    map('n', '<C-v>', function(b) open_in_split(b, 'vsplit') end)
     map('i', '<C-h>', function(b) open_in_split(b, 'split') end)
     map('n', '<C-h>', function(b) open_in_split(b, 'split') end)
     map('i', '<C-f>', layout_actions.toggle_preview)
