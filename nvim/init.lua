@@ -143,7 +143,27 @@ require('lazy').setup({
         require('bookmarks.navigation').jump_to_prev(autocmds.get_buffer_bookmarks(bufnr))
       end, { desc = 'Bookmark prev' })
       map('n', 'ml', function()
+        local function getTitleName()
+            local bm_config = require('bookmarks').get_config()
+            local title = '📖 Bookmarks'
+            if bm_config.use_branch_specific then
+              local branch = require('bookmarks.utils').get_current_branch()
+              title = title .. (branch and string.format(' (branch: %s)', branch) or ' (branch: unknown)')
+            end
+            local active_list = bm_config.active_list or 'default'
+            if active_list == 'all' then
+              title = title .. ' [🔍 all lists]'
+            elseif active_list == 'default' then
+              title = title .. ' [📋 default]'
+            else
+              title = title .. string.format(' [📁 %s]', active_list)
+            end
+            title = title .. '  <C-d>=削除'
+            return title
+        end
+
         require('telescope').extensions.bookmarks.list({
+          prompt_title = getTitleName(),
           layout_strategy = 'horizontal',
           layout_config = {
             height = 0.9,
@@ -151,6 +171,31 @@ require('lazy').setup({
             preview_width = 0.6,
             prompt_position = 'bottom',
           },
+          attach_mappings = function(prompt_bufnr, map)
+            local function delete_bookmark()
+              local as = require('telescope.actions.state')
+              local current_picker = as.get_current_picker(prompt_bufnr)
+              local selection = as.get_selected_entry()
+              if not (selection and selection.value) then return end
+              local bmk = selection.value
+              local bm_config = require('bookmarks').get_config()
+              local branch = nil
+              if bm_config.use_branch_specific then
+                branch = require('bookmarks.utils').get_current_branch()
+              end
+              require('bookmarks.storage').remove_bookmark(bmk.filename, bmk.line, bmk.project_root, branch, bmk.list)
+              local bufnr = vim.fn.bufnr(bmk.filename)
+              if bufnr ~= -1 then
+                require('bookmarks.autocmds').refresh_buffer(bufnr)
+              end
+              current_picker:delete_selection(function()
+                vim.notify('Bookmark deleted', vim.log.levels.INFO)
+              end)
+            end
+            map('i', '<C-d>', delete_bookmark)
+            map('n', '<C-d>', delete_bookmark)
+            return true
+          end,
         })
       end, { desc = 'Bookmark list' })
       -- Nerd Font 非対応環境での ? 表示を回避するため ASCII 文字に上書き
