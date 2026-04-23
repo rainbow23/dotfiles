@@ -365,7 +365,7 @@ end
 
 make_file_search = function(opts)
   pickers.new(opts, {
-    prompt_title = (opts.base_title or 'Search') .. ' [File] ' .. file_search_shortcut,
+    prompt_title = (opts.base_title or 'FileSearch') .. ' [File] ' .. file_search_shortcut,
     finder = finders.new_oneshot_job(opts.files_cmd, {
       entry_maker = make_entry.gen_from_file(opts),
       cwd         = opts.cwd,
@@ -412,7 +412,7 @@ local make_grep_search = function(opts)
   }):find()
 end
 
-vim.api.nvim_create_user_command('Search', function(opts)
+vim.api.nvim_create_user_command('FileSearch', function(opts)
   local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
   make_file_search({
     cwd       = git_root,
@@ -440,7 +440,7 @@ vim.api.nvim_create_user_command('GitStatus', function(opts)
   builtin.git_status({ default_text = opts.args })
 end, { nargs = '*', bang = true })
 
-vim.api.nvim_create_user_command('SearchFromCurrDir', function(opts)
+vim.api.nvim_create_user_command('FileSearchFromCurrDir', function(opts)
   make_file_search({
     cwd       = vim.fn.getcwd(),
     default_text = opts.args,

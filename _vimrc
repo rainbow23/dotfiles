@@ -251,7 +251,7 @@ command! MyUniteSessionLoad  call fzf#run({
       \ 'right': '40%'})
 
 nnoremap [fzf]m :<C-u>FZFMru<CR>
-nnoremap [fzf]f :<C-u>Search<CR>
+nnoremap [fzf]f :<C-u>FileSearch<CR>
 nnoremap [fzf]g :<C-u>GitStatus<CR>
 nnoremap [fzf]b :<C-u>Buffers<CR>
 nnoremap [fzf]h :<C-u>History<CR>
@@ -259,7 +259,7 @@ nnoremap [fzf]h :<C-u>History<CR>
 nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]l :<C-u>BLines<CR>
 nnoremap [fzf]s :<C-u>GrepSearch<CR>
-nnoremap [fzf]S :<C-u>SearchFromCurrDir<CR>
+nnoremap [fzf]S :<C-u>FileSearchFromCurrDir<CR>
 
 let g:fzf_layout = { 'down': '~30%' }
 let s:fzf_base_options = extend({'options': ''}, g:fzf_layout)
