@@ -86,6 +86,44 @@ require('lazy').setup({
       end
       -- パッチ済みファイルを git の変更検知から除外（lazy.nvim の sync エラーを防ぐ）
       vim.fn.system({'git', '-C', plugin_dir, 'update-index', '--assume-unchanged', 'lua/bookmarks/storage.lua'})
+
+      -- navigation.lua パッチ: project_root を getcwd() から git root に統一
+      local nav_path = plugin_dir .. '/lua/bookmarks/navigation.lua'
+      local fnav = io.open(nav_path, 'r')
+      if fnav then
+        local nav_src = fnav:read('*a')
+        fnav:close()
+        if not nav_src:find('git rev%-parse') then
+          nav_src = nav_src:gsub(
+            'local project_root = vim%.fn%.getcwd%(%)',
+            function()
+              return "local _g = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\\n', '')\n    local project_root = (_g ~= '' and not _g:find('fatal')) and _g or vim.fn.getcwd()"
+            end
+          )
+          local fnav_w = io.open(nav_path, 'w')
+          if fnav_w then fnav_w:write(nav_src) fnav_w:close() end
+        end
+        vim.fn.system({'git', '-C', plugin_dir, 'update-index', '--assume-unchanged', 'lua/bookmarks/navigation.lua'})
+      end
+
+      -- telescope extension パッチ: 一覧表示の project_root を git root に統一
+      local ext_path = plugin_dir .. '/lua/telescope/_extensions/bookmarks.lua'
+      local fext = io.open(ext_path, 'r')
+      if fext then
+        local ext_src = fext:read('*a')
+        fext:close()
+        if not ext_src:find('git rev%-parse') then
+          ext_src = ext_src:gsub(
+            'storage%.get_bookmarks%(vim%.fn%.getcwd%(%),',
+            function()
+              return "storage.get_bookmarks((function() local g = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\\n','') return (g ~= '' and not g:find('fatal')) and g or vim.fn.getcwd() end)(),"
+            end
+          )
+          local fext_w = io.open(ext_path, 'w')
+          if fext_w then fext_w:write(ext_src) fext_w:close() end
+        end
+        vim.fn.system({'git', '-C', plugin_dir, 'update-index', '--assume-unchanged', 'lua/telescope/_extensions/bookmarks.lua'})
+      end
     end,
     config = function()
       -- Esc でウィンドウを閉じる（_vimrc の noremap <ESC> による上書きを回避）
