@@ -112,20 +112,27 @@ require('lazy').setup({
       if fext then
         local ext_src = fext:read('*a')
         fext:close()
-        if not ext_src:find('git rev%-parse') then
+        local changed = false
+        if not ext_src:find('git rev%-parse.*show%-toplevel.*getcwd') then
           ext_src = ext_src:gsub(
             'storage%.get_bookmarks%(vim%.fn%.getcwd%(%),',
             function()
               return "storage.get_bookmarks((function() local g = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\\n','') return (g ~= '' and not g:find('fatal')) and g or vim.fn.getcwd() end)(),"
             end
           )
-          -- format_bookmark パッチ: ファイルパスを git root 基準の相対パスで表示
+          changed = true
+        end
+        -- format_bookmark パッチ: ファイルパスを git root 基準の相対パスで表示
+        if not ext_src:find('local _gr = vim%.fn%.system') then
           ext_src = ext_src:gsub(
             'local rel_path = vim%.fn%.fnamemodify%(bookmark%.filename, ":%."%)' ,
             function()
               return "local _gr = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\\n','')\n    local _fn = bookmark.filename:gsub('\\\\', '/')\n    local _grn = _gr:gsub('\\\\', '/')\n    local rel_path = (_grn ~= '' and not _grn:find('fatal') and _fn:find(_grn, 1, true) == 1)\n        and _fn:sub(#_grn + 2)\n        or vim.fn.fnamemodify(bookmark.filename, ':.')"
             end
           )
+          changed = true
+        end
+        if changed then
           local fext_w = io.open(ext_path, 'w')
           if fext_w then fext_w:write(ext_src) fext_w:close() end
         end
