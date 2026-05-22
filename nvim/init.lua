@@ -323,9 +323,10 @@ local make_attach_mappings = function(preview_default_on, extra_mappings)
 end
 
 local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-f>=Preview <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
-local grep_search_shortcut = '<C-f>=Preview <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
+local grep_search_shortcut = '<C-s>=Dir切替 <C-f>=Preview <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
 
-local make_file_search  -- forward declaration
+local make_file_search   -- forward declaration
+local make_grep_search   -- forward declaration
 
 local open_oldfiles_with_back = function(file_opts)
   builtin.oldfiles({
@@ -391,7 +392,7 @@ make_file_search = function(opts)
   }):find()
 end
 
-local make_grep_search = function(opts)
+make_grep_search = function(opts)
   local grep_args  = vim.tbl_flatten({ conf.vimgrep_arguments, opts.additional_args or {} })
   local grep_entry = make_entry.gen_from_vimgrep(opts)
 
@@ -406,7 +407,26 @@ local make_grep_search = function(opts)
     end, grep_entry, nil, opts.cwd),
     previewer = conf.grep_previewer(opts),
     sorter    = sorters.empty(),
-    attach_mappings = make_attach_mappings(true),
+    attach_mappings = make_attach_mappings(true, (opts.file_dir or opts.git_root) and function(_, map)
+      local function toggle_dir(b)
+        local query = action_state.get_current_picker(b):_get_prompt()
+        actions.close(b)
+        vim.schedule(function()
+          local next_cwd   = (opts.cwd == opts.file_dir) and opts.git_root or opts.file_dir
+          local next_title = (next_cwd == opts.file_dir) and 'GrepSearch (file dir)' or 'GrepSearch (git root)'
+          make_grep_search({
+            cwd             = next_cwd,
+            default_text    = query,
+            additional_args = opts.additional_args,
+            base_title      = next_title,
+            file_dir        = opts.file_dir,
+            git_root        = opts.git_root,
+          })
+        end)
+      end
+      map('i', '<C-s>', toggle_dir)
+      map('n', '<C-s>', toggle_dir)
+    end or nil),
   }):find()
 end
 
@@ -422,11 +442,14 @@ end, { nargs = '*', bang = true })
 
 vim.api.nvim_create_user_command('GrepSearch', function(opts)
   local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
+  local file_dir = vim.fn.expand('%:p:h')
   make_grep_search({
     cwd             = git_root,
     default_text    = opts.args,
     additional_args = { '--hidden', '--smart-case', '-g', '!.git/', '-g', '!.claude/' },
     base_title      = 'GrepSearch (git root)',
+    file_dir        = file_dir,
+    git_root        = git_root,
   })
 end, { nargs = '*', bang = true })
 
