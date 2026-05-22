@@ -527,6 +527,74 @@ vim.api.nvim_create_user_command('FileSearchFromCurrDir', function(opts)
   })
 end, { nargs = '*', bang = true })
 
+-- セッション管理（telescope ベース）
+local session_dir = vim.fn.expand('~/.vim/sessions')
+vim.fn.mkdir(session_dir, 'p')
+
+local function session_save(name)
+  name = name or 'default'
+  local path = session_dir .. '/' .. name .. '.vim'
+  vim.cmd('mksession! ' .. vim.fn.fnameescape(path))
+  vim.notify('Session saved: ' .. name, vim.log.levels.INFO)
+end
+
+local function session_load(name)
+  local path = session_dir .. '/' .. name .. '.vim'
+  vim.cmd('source ' .. vim.fn.fnameescape(path))
+  vim.notify('Session loaded: ' .. name, vim.log.levels.INFO)
+end
+
+local function telescope_session_picker()
+  local files = vim.fn.glob(session_dir .. '/*.vim', false, true)
+  local names = {}
+  for _, f in ipairs(files) do
+    table.insert(names, vim.fn.fnamemodify(f, ':t:r'))
+  end
+  pickers.new({}, {
+    prompt_title = '📂 Sessions  <CR>=ロード <C-d>=削除',
+    finder = finders.new_table({ results = names }),
+    sorter = conf.generic_sorter({}),
+    attach_mappings = function(prompt_bufnr, map)
+      actions.select_default:replace(function()
+        actions.close(prompt_bufnr)
+        local sel = action_state.get_selected_entry()
+        if sel then session_load(sel[1]) end
+      end)
+      local function delete_session()
+        local picker = action_state.get_current_picker(prompt_bufnr)
+        local sel = action_state.get_selected_entry()
+        if sel then
+          vim.fn.delete(session_dir .. '/' .. sel[1] .. '.vim')
+          picker:delete_selection(function() vim.notify('Session deleted: ' .. sel[1]) end)
+        end
+      end
+      map('i', '<C-d>', delete_session)
+      map('n', '<C-d>', delete_session)
+      return true
+    end,
+    layout_strategy = 'vertical',
+    layout_config   = { height = 0.5, width = 0.4, prompt_position = 'top' },
+  }):find()
+end
+
+vim.api.nvim_create_user_command('Uss', function(opts)
+  session_save(opts.args ~= '' and opts.args or nil)
+end, { nargs = '?' })
+
+vim.keymap.set('n', 'uss',  '<Cmd>Uss<CR>', { desc = 'Session save (default)' })
+vim.keymap.set('n', 'us',   telescope_session_picker, { desc = 'Session load (telescope)' })
+vim.keymap.set('n', 'usos', function()
+  local current = vim.v.this_session
+  local name = (current ~= '') and vim.fn.fnamemodify(current, ':t:r') or 'default'
+  local input = vim.fn.input('save current session? session_name=' .. name .. ' y or n ')
+  vim.cmd('redraw')
+  if input == 'y' then
+    session_save(name)
+  else
+    vim.notify('canceled. session_name=' .. name, vim.log.levels.INFO)
+  end
+end, { desc = 'Session override save' })
+
 -- UI ハイライト（colorscheme 適用後に再定義）
 local function restore_ui_hl()
   vim.api.nvim_set_hl(0, 'TelescopeSelection', { bg = '#87CEEB', fg = '#000000', bold = true })

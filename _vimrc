@@ -68,8 +68,10 @@ nnoremap .b zb
 nnoremap sn :<C-u>set number<CR>
 nnoremap snn :<C-u>set nonumber<CR>
 nnoremap srn :<C-u>setlocal relativenumber!<CR>
-nnoremap <silent> uss :<C-u>Uss<CR>
-nnoremap <silent> usos :call <SID>Unite_session_override_save()<CR>
+if !has('nvim')
+  nnoremap <silent> uss :<C-u>Uss<CR>
+  nnoremap <silent> usos :call <SID>Unite_session_override_save()<CR>
+endif
 nnoremap src :<C-u>source $MYVIMRC<CR>
 nnoremap setp :<C-u>set paste<CR>
 nnoremap tn :tabnew<CR>
@@ -238,17 +240,18 @@ imap <c-x><c-l> <plug>(fzf-complete-line)
 " Advanced customization using autoload functions
 " inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
 
-function! s:Uss(file)
-    execute 'UniteSessionLoad ' . a:file
-    " echo a:file
-endfunction
+if !has('nvim')
+  function! s:Uss(file)
+      execute 'UniteSessionLoad ' . a:file
+  endfunction
 
-nnoremap [fzf]us :<C-u>MyUniteSessionLoad<CR>
-command! MyUniteSessionLoad  call fzf#run({
-      \ 'source': "ls -l ~/.vim/etc/unite/session | sed '1d' | awk '{print $9}'",
-      \ 'sink': function('<sid>Uss'),
-      \ 'options': '+m',
-      \ 'right': '40%'})
+  nnoremap [fzf]us :<C-u>MyUniteSessionLoad<CR>
+  command! MyUniteSessionLoad  call fzf#run({
+        \ 'source': "ls -l ~/.vim/etc/unite/session | sed '1d' | awk '{print $9}'",
+        \ 'sink': function('<sid>Uss'),
+        \ 'options': '+m',
+        \ 'right': '40%'})
+endif
 
 nnoremap [fzf]m :<C-u>FZFMru<CR>
 nnoremap [fzf]f :<C-u>FileSearch<CR>
@@ -381,7 +384,9 @@ nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
 nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
 nnoremap <silent> [unite]b :<C-u>Unite -auto-resize buffer<CR>
 nnoremap <silent> [unite]s :<C-u>Unite -auto-resize session<CR>
-nnoremap <silent> us :<C-u>Unite -auto-resize session<CR>
+if !has('nvim')
+  nnoremap <silent> us :<C-u>Unite -auto-resize session<CR>
+endif
 nnoremap <silent> [unite]t :<C-u>Unite -auto-resize tab<CR>
 nnoremap <silent> ta :<C-u>Unite -auto-resize tab<CR>
 nnoremap <silent> ut :<C-u>Unite -auto-resize tab<CR>
@@ -410,43 +415,45 @@ if executable('rg')
 endif
 "全体に適応 end    ##########
 
-"セッションを保存 start   ##
-let g:unite_source_session_default_session_name = 'default'
+if !has('nvim')
+  "セッションを保存 start   ##
+  let g:unite_source_session_default_session_name = 'default'
 
-command! -nargs=? Uss call s:Unite_session_save(<f-args>)
-function! s:Unite_session_save(...)
-    NERDTreeTabsClose
-    TagbarClose
-    if a:0 >= 1
-        let hogearg = a:1
-        echo "UniteSessionSave ".hogearg
-        execute 'UniteSessionSave ' . a:1
-    else
-        echo "UniteSessionSave ".g:unite_source_session_default_session_name
-        execute 'UniteSessionSave '.g:unite_source_session_default_session_name
-    end
-endfunction
-"セッションを保存 enc    ##
-
-"セッションを上書き保存
-function! s:Unite_session_override_save()
-   let filepath = v:this_session
-    if filepath  == ''
-        let filepath = g:unite_source_session_default_session_name
-    endif
-
-   let filename = fnamemodify(filepath, ":t:r")
-   let inputtext = input("save current session? "."session_name=".filename." y or n ")
-      redraw
-   if inputtext == 'y'
+  command! -nargs=? Uss call s:Unite_session_save(<f-args>)
+  function! s:Unite_session_save(...)
       NERDTreeTabsClose
       TagbarClose
-      echo "UniteSessionSave ".filename
-      execute 'UniteSessionSave ' .filename
-   else
-      echo "canceled save current session. session_name=".filename
-   endif
-endfunction
+      if a:0 >= 1
+          let hogearg = a:1
+          echo "UniteSessionSave ".hogearg
+          execute 'UniteSessionSave ' . a:1
+      else
+          echo "UniteSessionSave ".g:unite_source_session_default_session_name
+          execute 'UniteSessionSave '.g:unite_source_session_default_session_name
+      end
+  endfunction
+  "セッションを保存 enc    ##
+
+  "セッションを上書き保存
+  function! s:Unite_session_override_save()
+     let filepath = v:this_session
+      if filepath  == ''
+          let filepath = g:unite_source_session_default_session_name
+      endif
+
+     let filename = fnamemodify(filepath, ":t:r")
+     let inputtext = input("save current session? "."session_name=".filename." y or n ")
+        redraw
+     if inputtext == 'y'
+        NERDTreeTabsClose
+        TagbarClose
+        echo "UniteSessionSave ".filename
+        execute 'UniteSessionSave ' .filename
+     else
+        echo "canceled save current session. session_name=".filename
+     endif
+  endfunction
+endif
 
 "unite.vimを開いている間のキーマッピング
 autocmd FileType unite call s:unite_my_settings()
