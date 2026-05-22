@@ -181,34 +181,26 @@ require('lazy').setup({
         require('bookmarks.navigation').jump_to_prev(autocmds.get_buffer_bookmarks(bufnr))
       end, { desc = 'Bookmark prev' })
       map('n', 'ml', function()
-        local function getTitleName()
-            local bm_config = require('bookmarks').get_config()
-            local title = '📖 Bookmarks'
-            if bm_config.use_branch_specific then
-              local branch = require('bookmarks.utils').get_current_branch()
-              title = title .. (branch and string.format(' (branch: %s)', branch) or ' (branch: unknown)')
-            end
-            local active_list = bm_config.active_list or 'default'
-            if active_list == 'all' then
-              title = title .. ' [🔍 all lists]'
-            elseif active_list == 'default' then
-              title = title .. ' [📋 default]'
-            else
-              title = title .. string.format(' [📁 %s]', active_list)
-            end
-            title = title .. '  <C-d>=削除'
-            return title
+        local bm_config = require('bookmarks').get_config()
+        local title = '📖 Bookmarks'
+        if bm_config.use_branch_specific then
+          local branch = require('bookmarks.utils').get_current_branch()
+          title = title .. (branch and string.format(' (branch: %s)', branch) or ' (branch: unknown)')
         end
+        local active_list = bm_config.active_list or 'default'
+        if active_list == 'all' then
+          title = title .. ' [🔍 all lists]'
+        elseif active_list == 'default' then
+          title = title .. ' [📋 default]'
+        else
+          title = title .. string.format(' [📁 %s]', active_list)
+        end
+        title = title .. '  <C-l>=レイアウト切替 <C-d>=削除'
 
         require('telescope').extensions.bookmarks.list({
-          prompt_title = getTitleName(),
+          prompt_title    = title,
           layout_strategy = 'horizontal',
-          layout_config = {
-            height = 0.9,
-            width = 0.9,
-            preview_width = 0.6,
-            prompt_position = 'bottom',
-          },
+          layout_config   = { height = 0.9, width = 0.9, preview_width = 0.6, prompt_position = 'bottom' },
           attach_mappings = function(prompt_bufnr, map)
             local function delete_bookmark()
               local as = require('telescope.actions.state')
@@ -216,22 +208,35 @@ require('lazy').setup({
               local selection = as.get_selected_entry()
               if not (selection and selection.value) then return end
               local bmk = selection.value
-              local bm_config = require('bookmarks').get_config()
-              local branch = nil
-              if bm_config.use_branch_specific then
-                branch = require('bookmarks.utils').get_current_branch()
-              end
+              local cfg = require('bookmarks').get_config()
+              local branch = cfg.use_branch_specific and require('bookmarks.utils').get_current_branch() or nil
               require('bookmarks.storage').remove_bookmark(bmk.filename, bmk.line, bmk.project_root, branch, bmk.list)
               local bufnr = vim.fn.bufnr(bmk.filename)
-              if bufnr ~= -1 then
-                require('bookmarks.autocmds').refresh_buffer(bufnr)
-              end
+              if bufnr ~= -1 then require('bookmarks.autocmds').refresh_buffer(bufnr) end
               current_picker:delete_selection(function()
                 vim.notify('Bookmark deleted', vim.log.levels.INFO)
               end)
             end
             map('i', '<C-d>', delete_bookmark)
             map('n', '<C-d>', delete_bookmark)
+
+            local layouts = {
+              { layout_strategy = 'vertical',   layout_config = { height = 0.9, width = 0.9, preview_height = 0.6, prompt_position = 'bottom', preview_cutoff = 1 } },
+              { layout_strategy = 'horizontal', layout_config = { height = 0.9, width = 0.9, preview_width  = 0.6, prompt_position = 'bottom' } },
+            }
+            local layout_idx = 0
+            local function toggle_layout()
+              local picker = require('telescope.actions.state').get_current_picker(prompt_bufnr)
+              layout_idx = (layout_idx % #layouts) + 1
+              local lyt = layouts[layout_idx]
+              picker.layout_strategy = lyt.layout_strategy
+              picker.layout_config   = lyt.layout_config
+              picker.previewer = picker.all_previewers and picker.all_previewers[picker.current_previewer_index or 1]
+              local ok, err = pcall(function() picker:full_layout_update() end)
+              if not ok then vim.notify('layout error: ' .. tostring(err), vim.log.levels.ERROR) end
+            end
+            map('i', '<C-l>', toggle_layout)
+            map('n', '<C-l>', toggle_layout)
             return true
           end,
         })
