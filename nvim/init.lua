@@ -12,6 +12,28 @@ vim.opt.rtp:prepend(lazypath)
 -- ② leader を先に設定（lazy.nvim のキーマップ定義より前に必要）
 vim.g.mapleader = ' '
 
+-- telescope picker 内で <C-l> レイアウト切替を行う関数を生成する
+-- layouts: { { layout_strategy, layout_config }, ... } の順に循環する
+-- require は呼び出し時に解決するため lazy.setup() より前に定義可
+local telescope_layout_presets = {
+  { layout_strategy = 'horizontal', layout_config = { height = 0.9, width = 0.9, preview_width  = 0.4, prompt_position = 'bottom' } },
+  { layout_strategy = 'vertical',   layout_config = { height = 0.9, width = 0.9, preview_height = 0.4, prompt_position = 'bottom', preview_cutoff = 1 } },
+}
+local function make_layout_toggle(prompt_bufnr, layouts)
+  layouts = layouts or telescope_layout_presets
+  local idx = 1  -- プリセット[1]=horizontal が初期状態なので、最初のトグルで[2]=vertical に切り替わる
+  return function()
+    local picker = require('telescope.actions.state').get_current_picker(prompt_bufnr)
+    idx = (idx % #layouts) + 1
+    local lyt = layouts[idx]
+    picker.layout_strategy = lyt.layout_strategy
+    picker.layout_config   = lyt.layout_config
+    picker.previewer = picker.all_previewers and picker.all_previewers[picker.current_previewer_index or 1]
+    local ok, err = pcall(function() picker:full_layout_update() end)
+    if not ok then vim.notify('layout error: ' .. tostring(err), vim.log.levels.ERROR) end
+  end
+end
+
 -- ③ プラグイン定義
 require('lazy').setup({
   -- FZF
@@ -206,8 +228,8 @@ require('lazy').setup({
 
         require('telescope').extensions.bookmarks.list({
           prompt_title    = title,
-          layout_strategy = 'horizontal',
-          layout_config   = { height = 0.9, width = 0.9, preview_width = 0.6, prompt_position = 'bottom' },
+          layout_strategy = telescope_layout_presets[1].layout_strategy,
+          layout_config   = telescope_layout_presets[1].layout_config,
           attach_mappings = function(prompt_bufnr, map)
             local function delete_bookmark()
               local as = require('telescope.actions.state')
@@ -227,21 +249,7 @@ require('lazy').setup({
             map('i', '<C-d>', delete_bookmark)
             map('n', '<C-d>', delete_bookmark)
 
-            local layouts = {
-              { layout_strategy = 'vertical',   layout_config = { height = 0.9, width = 0.9, preview_height = 0.6, prompt_position = 'bottom', preview_cutoff = 1 } },
-              { layout_strategy = 'horizontal', layout_config = { height = 0.9, width = 0.9, preview_width  = 0.6, prompt_position = 'bottom' } },
-            }
-            local layout_idx = 0
-            local function toggle_layout()
-              local picker = require('telescope.actions.state').get_current_picker(prompt_bufnr)
-              layout_idx = (layout_idx % #layouts) + 1
-              local lyt = layouts[layout_idx]
-              picker.layout_strategy = lyt.layout_strategy
-              picker.layout_config   = lyt.layout_config
-              picker.previewer = picker.all_previewers and picker.all_previewers[picker.current_previewer_index or 1]
-              local ok, err = pcall(function() picker:full_layout_update() end)
-              if not ok then vim.notify('layout error: ' .. tostring(err), vim.log.levels.ERROR) end
-            end
+            local toggle_layout = make_layout_toggle(prompt_bufnr)
             map('i', '<C-l>', toggle_layout)
             map('n', '<C-l>', toggle_layout)
             return true
@@ -374,13 +382,16 @@ local make_attach_mappings = function(preview_default_on, extra_mappings)
     map('n', '<C-h>', function(b) open_in_split(b, 'split') end)
     map('i', '<C-f>', layout_actions.toggle_preview)
     map('n', '<C-f>', layout_actions.toggle_preview)
+    local toggle_layout = make_layout_toggle(prompt_bufnr)
+    map('i', '<C-l>', toggle_layout)
+    map('n', '<C-l>', toggle_layout)
     if extra_mappings then extra_mappings(prompt_bufnr, map) end
     return true
   end
 end
 
-local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-f>=Preview <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
-local grep_search_shortcut = '<C-s>=Dir切替 <C-f>=Preview <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
+local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
+local grep_search_shortcut = '<C-s>=Dir切替 <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
 
 local make_file_search   -- forward declaration
 local make_grep_search   -- forward declaration
@@ -421,6 +432,8 @@ end
 
 make_file_search = function(opts)
   pickers.new(opts, {
+    layout_strategy = telescope_layout_presets[1].layout_strategy,
+    layout_config   = telescope_layout_presets[1].layout_config,
     prompt_title = (opts.base_title or 'FileSearch') .. ' [File] ' .. file_search_shortcut,
     finder = finders.new_oneshot_job(opts.files_cmd, {
       entry_maker = make_entry.gen_from_file(opts),
@@ -454,6 +467,8 @@ make_grep_search = function(opts)
   local grep_entry = make_entry.gen_from_vimgrep(opts)
 
   pickers.new(opts, {
+    layout_strategy = telescope_layout_presets[1].layout_strategy,
+    layout_config   = telescope_layout_presets[1].layout_config,
     prompt_title = (opts.base_title or 'Search') .. ' [Grep] ' .. grep_search_shortcut,
     finder = finders.new_job(function(prompt)
       if not prompt or prompt == '' then return nil end
