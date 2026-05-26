@@ -163,11 +163,12 @@ require('lazy').setup({
     end,
     config = function()
       -- Esc でウィンドウを閉じる（_vimrc の noremap <ESC> による上書きを回避）
+      local ta = require('telescope.actions')
       require('telescope').setup({
         defaults = {
           mappings = {
-            i = { ['<esc>'] = require('telescope.actions').close },
-            n = { ['<esc>'] = require('telescope.actions').close },
+            i = { ['<esc>'] = ta.close, ['<C-\\>'] = ta.file_vsplit },
+            n = { ['<esc>'] = ta.close, ['<C-\\>'] = ta.file_vsplit },
           },
         },
       })
@@ -224,7 +225,7 @@ require('lazy').setup({
         else
           title = title .. string.format(' [📁 %s]', active_list)
         end
-        title = title .. '  <C-l>=レイアウト切替 <C-d>=削除'
+        title = title .. '  <C-l>=レイアウト切替 <C-d>=削除 <C-\\>=vsplit'
 
         require('telescope').extensions.bookmarks.list({
           prompt_title    = title,
@@ -378,8 +379,10 @@ local make_attach_mappings = function(preview_default_on, extra_mappings)
     if not preview_default_on then
       vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
     end
-    map('i', '<C-h>', function(b) open_in_split(b, 'split') end)
-    map('n', '<C-h>', function(b) open_in_split(b, 'split') end)
+    map('i', '<C-h>',  function(b) open_in_split(b, 'split') end)
+    map('n', '<C-h>',  function(b) open_in_split(b, 'split') end)
+    map('i', '<C-\\>', function(b) open_in_split(b, 'vsplit') end)
+    map('n', '<C-\\>', function(b) open_in_split(b, 'vsplit') end)
     map('i', '<C-f>', layout_actions.toggle_preview)
     map('n', '<C-f>', layout_actions.toggle_preview)
     local toggle_layout = make_layout_toggle(prompt_bufnr)
@@ -390,8 +393,8 @@ local make_attach_mappings = function(preview_default_on, extra_mappings)
   end
 end
 
-local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
-local grep_search_shortcut = '<C-s>=Dir切替 <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
+local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-\\>=vsplit <C-h>=hsplit'
+local grep_search_shortcut = '<C-s>=Dir切替 <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-\\>=vsplit <C-h>=hsplit'
 
 local make_file_search   -- forward declaration
 local make_grep_search   -- forward declaration
