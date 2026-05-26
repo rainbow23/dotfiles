@@ -348,6 +348,9 @@ function! AirlineGitRelativeCwd() abort
   return substitute(getcwd(), '\\', '/', 'g')
 endfunction
 let g:airline_section_b = '%{AirlineGitRelativeCwd()}'
+let g:airline_section_x = ''
+let g:airline_section_y = ''
+let g:airline_section_z = ''
 
 " section_c: git root 相対パスを表示（git 管理外はファイル名のみ）
 function! AirlineGitRelativePath() abort
