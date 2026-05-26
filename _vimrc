@@ -331,10 +331,25 @@ set laststatus=2
 if !has('nvim')
   set t_Co=256 "vim-air-line-themeを反映させる
 endif
-let g:airline_section_b = '%{getcwd()}' " in section B of the status line display the CWD
+" git root キャッシュ（BufEnter で更新、section_b/c 共用）
+let g:_airline_git_root_cache = ''
+
+function! AirlineGitRelativeCwd() abort
+  let l:dir  = substitute(expand('%:p:h'),           '\\', '/', 'g')
+  let l:root = substitute(g:_airline_git_root_cache, '\\', '/', 'g')
+  if l:root == '' || l:root =~# 'fatal'
+    return substitute(getcwd(), '\\', '/', 'g')
+  endif
+  let l:basename = fnamemodify(l:root, ':t')
+  if stridx(l:dir, l:root) == 0
+    let l:rel = l:dir[len(l:root):]
+    return l:rel == '' ? l:basename : l:basename . l:rel
+  endif
+  return substitute(getcwd(), '\\', '/', 'g')
+endfunction
+let g:airline_section_b = '%{AirlineGitRelativeCwd()}'
 
 " section_c: git root 相対パスを表示（git 管理外はファイル名のみ）
-let g:_airline_git_root_cache = ''
 function! AirlineGitRelativePath() abort
   let l:fp = expand('%:p')
   if l:fp == '' | return '' | endif
@@ -350,7 +365,7 @@ function! AirlineGitRelativePath() abort
   return expand('%:~:.')
 endfunction
 autocmd BufEnter * let g:_airline_git_root_cache = trim(system('git rev-parse --show-toplevel 2>/dev/null'))
-let g:airline_section_c = '%{AirlineGitRelativePath()}'
+let g:airline_section_c = '%t'
 
 let g:airline#extensions#tabline#enabled           = 1   " enable airline tabline
 let g:airline#extensions#tabline#show_close_button = 0   " remove 'X' at the end of the tabline
