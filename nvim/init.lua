@@ -167,8 +167,8 @@ require('lazy').setup({
       require('telescope').setup({
         defaults = {
           mappings = {
-            i = { ['<esc>'] = ta.close, ['<C-\\>'] = ta.file_vsplit },
-            n = { ['<esc>'] = ta.close, ['<C-\\>'] = ta.file_vsplit },
+            i = { ['<esc>'] = ta.close, ['<M-v>'] = ta.file_vsplit },
+            n = { ['<esc>'] = ta.close, ['<M-v>'] = ta.file_vsplit },
           },
         },
       })
@@ -225,7 +225,7 @@ require('lazy').setup({
         else
           title = title .. string.format(' [📁 %s]', active_list)
         end
-        title = title .. '  <C-l>=レイアウト切替 <C-d>=削除 <C-\\>=vsplit'
+        title = title .. '  <C-l>=レイアウト切替 <C-d>=削除 <M-v>=vsplit'
 
         require('telescope').extensions.bookmarks.list({
           prompt_title    = title,
@@ -253,6 +253,17 @@ require('lazy').setup({
             local toggle_layout = make_layout_toggle(prompt_bufnr)
             map('i', '<C-l>', toggle_layout)
             map('n', '<C-l>', toggle_layout)
+
+            local function vsplit_bookmark()
+              local sel = require('telescope.actions.state').get_selected_entry()
+              require('telescope.actions').close(prompt_bufnr)
+              if sel and sel.value then
+                vim.cmd('vsplit ' .. vim.fn.fnameescape(sel.value.filename))
+                vim.api.nvim_win_set_cursor(0, { sel.value.line or 1, 0 })
+              end
+            end
+            map('i', '<M-v>', vsplit_bookmark)
+            map('n', '<M-v>', vsplit_bookmark)
             return true
           end,
         })
@@ -381,8 +392,8 @@ local make_attach_mappings = function(preview_default_on, extra_mappings)
     end
     map('i', '<C-h>',  function(b) open_in_split(b, 'split') end)
     map('n', '<C-h>',  function(b) open_in_split(b, 'split') end)
-    map('i', '<C-\\>', function(b) open_in_split(b, 'vsplit') end)
-    map('n', '<C-\\>', function(b) open_in_split(b, 'vsplit') end)
+    map('i', '<M-v>', function(b) open_in_split(b, 'vsplit') end)
+    map('n', '<M-v>', function(b) open_in_split(b, 'vsplit') end)
     map('i', '<C-f>', layout_actions.toggle_preview)
     map('n', '<C-f>', layout_actions.toggle_preview)
     local toggle_layout = make_layout_toggle(prompt_bufnr)
@@ -393,8 +404,8 @@ local make_attach_mappings = function(preview_default_on, extra_mappings)
   end
 end
 
-local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-\\>=vsplit <C-h>=hsplit'
-local grep_search_shortcut = '<C-s>=Dir切替 <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-\\>=vsplit <C-h>=hsplit'
+local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <M-v>=vsplit <C-h>=hsplit'
+local grep_search_shortcut = '<C-s>=Dir切替 <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <M-v>=vsplit <C-h>=hsplit'
 
 local make_file_search   -- forward declaration
 local make_grep_search   -- forward declaration
