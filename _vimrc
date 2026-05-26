@@ -333,6 +333,25 @@ if !has('nvim')
 endif
 let g:airline_section_b = '%{getcwd()}' " in section B of the status line display the CWD
 
+" section_c: git root 相対パスを表示（git 管理外はファイル名のみ）
+let g:_airline_git_root_cache = ''
+function! AirlineGitRelativePath() abort
+  let l:fp = expand('%:p')
+  if l:fp == '' | return '' | endif
+  let l:root = g:_airline_git_root_cache
+  if l:root == '' || l:root =~# 'fatal'
+    return expand('%:~:.')
+  endif
+  let l:root = substitute(l:root, '\\', '/', 'g')
+  let l:fp   = substitute(l:fp,   '\\', '/', 'g')
+  if stridx(l:fp, l:root) == 0
+    return l:fp[len(l:root) + 1:]
+  endif
+  return expand('%:~:.')
+endfunction
+autocmd BufEnter * let g:_airline_git_root_cache = trim(system('git rev-parse --show-toplevel 2>/dev/null'))
+let g:airline_section_c = '%{AirlineGitRelativePath()}'
+
 let g:airline#extensions#tabline#enabled           = 1   " enable airline tabline
 let g:airline#extensions#tabline#show_close_button = 0   " remove 'X' at the end of the tabline
 let g:airline#extensions#tabline#tabs_label        = ''  " can put text here like BUFFERS to denote buffers (I clear it so nothing is shown)
