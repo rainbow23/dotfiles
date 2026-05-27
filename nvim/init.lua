@@ -526,7 +526,44 @@ vim.api.nvim_create_user_command('GrepSearch', function(opts)
 end, { nargs = '*', bang = true })
 
 vim.api.nvim_create_user_command('BLines', function(opts)
-  builtin.current_buffer_fuzzy_find({ default_text = opts.args })
+  local bufnr    = vim.api.nvim_get_current_buf()
+  local lines    = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+
+  local entries = {}
+  for i, line in ipairs(lines) do
+    table.insert(entries, { lnum = i, text = line, filename = filename })
+  end
+
+  local total = #lines
+  local fzy = require('telescope.algos.fzy')
+  local line_sorter = require('telescope.sorters').Sorter:new({
+    scoring_function = function(_, prompt, line, entry)
+      if prompt == '' then return total - entry.lnum + 1 end
+      if not fzy.has_match(prompt:lower(), line:lower()) then return -1 end
+      return total - entry.lnum + 1
+    end,
+  })
+
+  pickers.new({}, {
+    prompt_title = 'BLines',
+    default_text = opts.args,
+    finder = finders.new_table({
+      results = entries,
+      entry_maker = function(entry)
+        return {
+          value    = entry,
+          display  = string.format('%4d│ %s', entry.lnum, entry.text),
+          ordinal  = entry.text,
+          filename = entry.filename,
+          lnum     = entry.lnum,
+          col      = 1,
+        }
+      end,
+    }),
+    previewer = conf.grep_previewer({}),
+    sorter    = line_sorter,
+  }):find()
 end, { nargs = '*', bang = true })
 
 vim.api.nvim_create_user_command('GitStatus', function(opts)
