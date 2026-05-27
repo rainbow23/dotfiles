@@ -561,8 +561,11 @@ vim.api.nvim_create_user_command('BLines', function(opts)
         }
       end,
     }),
-    previewer = conf.grep_previewer({}),
-    sorter    = line_sorter,
+    layout_strategy = telescope_layout_presets[1].layout_strategy,
+    layout_config   = telescope_layout_presets[1].layout_config,
+    previewer       = conf.grep_previewer({}),
+    sorter          = line_sorter,
+    attach_mappings = make_attach_mappings(true),
   }):find()
 end, { nargs = '*', bang = true })
 
