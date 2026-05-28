@@ -495,10 +495,17 @@ make_grep_search = function(opts)
   local cwd      = opts.cwd or vim.fn.getcwd()
   local git_root = opts.git_root
   local display_cwd
-  if git_root and cwd:find(git_root, 1, true) == 1 then
-    local rel       = cwd:sub(#git_root + 1)  -- '' なら git root と一致
-    local root_name = vim.fn.fnamemodify(git_root, ':t')
-    display_cwd = root_name .. (rel == '' and '' or rel)  -- 例: "dotfiles" / "dotfiles/src/foo"
+  if git_root then
+    -- fnamemodify(':p') + スラッシュ統一で GitBash の /c/Users/... vs C:/Users/... 差異を吸収
+    local cwd_n  = vim.fn.fnamemodify(cwd,      ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+    local root_n = vim.fn.fnamemodify(git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+    if cwd_n:find(root_n, 1, true) == 1 then
+      local rel       = cwd_n:sub(#root_n + 1)  -- '' なら git root と一致
+      local root_name = vim.fn.fnamemodify(root_n, ':t')
+      display_cwd = root_name .. (rel == '' and '' or rel)  -- 例: "dotfiles" / "dotfiles/src/foo"
+    else
+      display_cwd = vim.fn.fnamemodify(cwd, ':~')  -- マッチしない場合は ~ 基準にフォールバック
+    end
   else
     display_cwd = vim.fn.fnamemodify(cwd, ':~')  -- git 管理外は ~ 基準にフォールバック
   end
