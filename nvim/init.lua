@@ -19,11 +19,6 @@ local telescope_layout_presets = {
   { layout_strategy = 'horizontal', layout_config = { height = 0.9, width = 0.9, preview_width  = 0.4, prompt_position = 'bottom' } },
   { layout_strategy = 'vertical',   layout_config = { height = 0.9, width = 0.9, preview_height = 0.4, prompt_position = 'bottom', preview_cutoff = 1 } },
 }
--- GrepSearch 用: prompt_position='top' でrg出力順（昇順）が視覚的に上から下になる
-local grep_layout_presets = {
-  { layout_strategy = 'horizontal', layout_config = { height = 0.9, width = 0.9, preview_width  = 0.4, prompt_position = 'top' } },
-  { layout_strategy = 'vertical',   layout_config = { height = 0.9, width = 0.9, preview_height = 0.4, prompt_position = 'top',    preview_cutoff = 1 } },
-}
 local function make_layout_toggle(prompt_bufnr, layouts)
   layouts = layouts or telescope_layout_presets
   local idx = 1  -- プリセット[1]=horizontal が初期状態なので、最初のトグルで[2]=vertical に切り替わる
@@ -378,7 +373,7 @@ local open_in_split = function(prompt_bufnr, cmd)
   end
 end
 
-local make_attach_mappings = function(preview_default_on, extra_mappings, layouts)
+local make_attach_mappings = function(preview_default_on, extra_mappings)
   return function(prompt_bufnr, map)
     if not preview_default_on then
       vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
@@ -387,7 +382,7 @@ local make_attach_mappings = function(preview_default_on, extra_mappings, layout
     map('n', '<C-h>', function(b) open_in_split(b, 'split') end)
     map('i', '<C-f>', layout_actions.toggle_preview)
     map('n', '<C-f>', layout_actions.toggle_preview)
-    local toggle_layout = make_layout_toggle(prompt_bufnr, layouts)
+    local toggle_layout = make_layout_toggle(prompt_bufnr)
     map('i', '<C-l>', toggle_layout)
     map('n', '<C-l>', toggle_layout)
     if extra_mappings then extra_mappings(prompt_bufnr, map) end
