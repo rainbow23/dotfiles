@@ -19,6 +19,11 @@ local telescope_layout_presets = {
   { layout_strategy = 'horizontal', layout_config = { height = 0.9, width = 0.9, preview_width  = 0.4, prompt_position = 'bottom' } },
   { layout_strategy = 'vertical',   layout_config = { height = 0.9, width = 0.9, preview_height = 0.4, prompt_position = 'bottom', preview_cutoff = 1 } },
 }
+-- GrepSearch 用: prompt_position='top' でrg出力順（昇順）が視覚的に上から下になる
+local grep_layout_presets = {
+  { layout_strategy = 'horizontal', layout_config = { height = 0.9, width = 0.9, preview_width  = 0.4, prompt_position = 'top' } },
+  { layout_strategy = 'vertical',   layout_config = { height = 0.9, width = 0.9, preview_height = 0.4, prompt_position = 'top',    preview_cutoff = 1 } },
+}
 local function make_layout_toggle(prompt_bufnr, layouts)
   layouts = layouts or telescope_layout_presets
   local idx = 1  -- プリセット[1]=horizontal が初期状態なので、最初のトグルで[2]=vertical に切り替わる
@@ -373,7 +378,7 @@ local open_in_split = function(prompt_bufnr, cmd)
   end
 end
 
-local make_attach_mappings = function(preview_default_on, extra_mappings)
+local make_attach_mappings = function(preview_default_on, extra_mappings, layouts)
   return function(prompt_bufnr, map)
     if not preview_default_on then
       vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
@@ -382,7 +387,7 @@ local make_attach_mappings = function(preview_default_on, extra_mappings)
     map('n', '<C-h>', function(b) open_in_split(b, 'split') end)
     map('i', '<C-f>', layout_actions.toggle_preview)
     map('n', '<C-f>', layout_actions.toggle_preview)
-    local toggle_layout = make_layout_toggle(prompt_bufnr)
+    local toggle_layout = make_layout_toggle(prompt_bufnr, layouts)
     map('i', '<C-l>', toggle_layout)
     map('n', '<C-l>', toggle_layout)
     if extra_mappings then extra_mappings(prompt_bufnr, map) end
@@ -466,6 +471,32 @@ make_grep_search = function(opts)
   local grep_args  = vim.tbl_flatten({ conf.vimgrep_arguments, opts.additional_args or {} })
   local grep_entry = make_entry.gen_from_vimgrep(opts)
 
+  -- ファイル名の初回到着順を記録し、ファイル順→行番号順でスコアを合成する
+  -- rg --sort path によりファイルはアルファベット昇順で到着する
+  local file_order   = {}
+  local file_counter = 0
+  local grep_line_sorter = require('telescope.sorters').Sorter:new({
+    discard = false,
+    scoring_function = function(_, _, _, entry)
+      local fn = entry.filename or ''
+      if not file_order[fn] then
+        file_counter = file_counter + 1
+        file_order[fn] = file_counter
+      end
+      -- 高スコア = 視覚的上位。ファイル順位が小さい・行番号が小さいほど高スコア
+      -- 1000    : ファイル数の上限想定値。file_order は 1 始まりの連番なので
+      --           (1000 - order) で「順位が小さいほど大きい値」に変換する。
+      --           ファイルが 1000 個を超えると負値になり順序が崩れるため注意。
+      -- 100000  : ファイル間優先度の重み（乗数）。行番号の最大想定値でもある。
+      --           ファイル順位の差（最小 1）× 100000 が、行番号スコアの最大値
+      --           (100000) を常に上回るため、ファイル順が行番号より必ず優先される。
+      -- 100000 - lnum : 行番号が小さいほど大きい値になり、同一ファイル内で
+      --           上の行が先に表示される。行番号が 100000 を超えるファイルでは
+      --           負値になるが実用上は問題ない。
+      return (1000 - file_order[fn]) * 100000 + (100000 - (entry.lnum or 0))
+    end,
+  })
+
   pickers.new(opts, {
     layout_strategy = telescope_layout_presets[1].layout_strategy,
     layout_config   = telescope_layout_presets[1].layout_config,
@@ -478,7 +509,7 @@ make_grep_search = function(opts)
       return cmd
     end, grep_entry, nil, opts.cwd),
     previewer = conf.grep_previewer(opts),
-    sorter    = sorters.empty(),
+    sorter    = grep_line_sorter,
     attach_mappings = make_attach_mappings(true, (opts.file_dir or opts.git_root) and function(_, map)
       local function toggle_dir(b)
         local query = action_state.get_current_picker(b):_get_prompt()
@@ -518,7 +549,7 @@ vim.api.nvim_create_user_command('GrepSearch', function(opts)
   make_grep_search({
     cwd             = git_root,
     default_text    = opts.args,
-    additional_args = { '--hidden', '--smart-case', '-g', '!.git/', '-g', '!.claude/' },
+    additional_args = { '--hidden', '--smart-case', '--sort', 'path', '-g', '!.git/', '-g', '!.claude/' },
     base_title      = 'GrepSearch (git root)',
     file_dir        = file_dir,
     git_root        = git_root,
