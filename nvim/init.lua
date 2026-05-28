@@ -497,10 +497,11 @@ make_grep_search = function(opts)
     end,
   })
 
+  local display_cwd = vim.fn.fnamemodify(opts.cwd or vim.fn.getcwd(), ':~')
   pickers.new(opts, {
     layout_strategy = telescope_layout_presets[1].layout_strategy,
     layout_config   = telescope_layout_presets[1].layout_config,
-    prompt_title = (opts.base_title or 'Search') .. ' [Grep] ' .. grep_search_shortcut,
+    prompt_title = (opts.base_title or 'Search') .. ' [Grep]  Dir:' .. display_cwd .. '  ' .. grep_search_shortcut,
     finder = finders.new_job(function(prompt)
       if not prompt or prompt == '' then return nil end
       local cmd = vim.deepcopy(grep_args)
