@@ -643,13 +643,38 @@ local function session_load(name)
 end
 
 local function telescope_session_picker()
+  -- 現在の git root を取得してセッションをフィルタリング
+  local git_root = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
+  local gr_norm  = (git_root ~= '' and not git_root:find('fatal'))
+    and vim.fn.fnamemodify(git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/') or nil
+
   local files = vim.fn.glob(session_dir .. '/*.vim', false, true)
   local names = {}
   for _, f in ipairs(files) do
-    table.insert(names, vim.fn.fnamemodify(f, ':t:r'))
+    local include = true
+    if gr_norm then
+      -- セッションの cd 行からプロジェクトルートを取得し現在の git root と照合
+      include = false
+      local fh = io.open(f, 'r')
+      if fh then
+        for line in fh:lines() do
+          local dir = line:match('^cd%s+(.+)$')
+          if dir then
+            local sr = vim.fn.fnamemodify(vim.fn.expand(dir), ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+            if sr == gr_norm then include = true end
+            break
+          end
+        end
+        fh:close()
+      end
+    end
+    if include then
+      table.insert(names, vim.fn.fnamemodify(f, ':t:r'))
+    end
   end
+
   pickers.new({}, {
-    prompt_title = '📂 Sessions  <CR>=ロード <C-d>=削除',
+    prompt_title = '📂 Sessions  <CR>=ロード <C-d>=削除 <C-r>=リネーム <C-o>=上書保存',
     finder = finders.new_table({ results = names }),
     sorter = conf.generic_sorter({}),
     attach_mappings = function(prompt_bufnr, map)
@@ -666,8 +691,37 @@ local function telescope_session_picker()
           picker:delete_selection(function() vim.notify('Session deleted: ' .. sel[1]) end)
         end
       end
+      local function rename_session()
+        local sel = action_state.get_selected_entry()
+        if not sel then return end
+        local old_name = sel[1]
+        actions.close(prompt_bufnr)
+        vim.schedule(function()
+          local new_name = vim.fn.input('Rename session: ', old_name)
+          vim.cmd('redraw')
+          if new_name == '' or new_name == old_name then return end
+          local old_path = session_dir .. '/' .. old_name .. '.vim'
+          local new_path = session_dir .. '/' .. new_name .. '.vim'
+          if vim.fn.rename(old_path, new_path) == 0 then
+            vim.notify('Session renamed: ' .. old_name .. ' → ' .. new_name, vim.log.levels.INFO)
+          else
+            vim.notify('Rename failed', vim.log.levels.ERROR)
+          end
+          telescope_session_picker()
+        end)
+      end
+      local function overwrite_session()
+        local sel = action_state.get_selected_entry()
+        if not sel then return end
+        actions.close(prompt_bufnr)
+        vim.schedule(function() session_save(sel[1]) end)
+      end
       map('i', '<C-d>', delete_session)
       map('n', '<C-d>', delete_session)
+      map('i', '<C-r>', rename_session)
+      map('n', '<C-r>', rename_session)
+      map('i', '<C-o>', overwrite_session)
+      map('n', '<C-o>', overwrite_session)
       return true
     end,
     layout_strategy = 'vertical',
