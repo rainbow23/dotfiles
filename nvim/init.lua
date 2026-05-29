@@ -908,7 +908,7 @@ local function memo_list()
   end
 
   pickers.new({}, {
-    prompt_title = '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-l>=レイアウト切替 <C-t>=新規タブ <M-v>=vsplit <C-h>=hsplit',
+    prompt_title = '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム <C-l>=レイアウト切替 <C-t>=新規タブ <M-v>=vsplit <C-h>=hsplit',
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
@@ -955,6 +955,38 @@ local function memo_list()
       map('n', '<M-v>', function(b) open_memo(b, 'vsplit') end)
       map('i', '<C-h>', function(b) open_memo(b, 'split') end)
       map('n', '<C-h>', function(b) open_memo(b, 'split') end)
+      local function rename_memo()
+        local sel = action_state.get_selected_entry()
+        if not sel then return end
+        local fp, ln = sel.value.filepath, sel.value.line
+        actions.close(prompt_bufnr)
+        vim.schedule(function()
+          local new_text = vim.fn.input('Memo: ', sel.value.text)
+          vim.cmd('redraw')
+          if new_text == '' or new_text == sel.value.text then return end
+          -- JSON を更新する
+          local store = memo_read_json()
+          if store[fp] then
+            for _, e in ipairs(store[fp]) do
+              if e.line == ln then e.text = new_text; break end
+            end
+            memo_write_json(store)
+          end
+          -- バッファが開いていれば extmark も更新する
+          local bufnr = vim.fn.bufnr(fp)
+          if bufnr ~= -1 and buf_memos[bufnr] then
+            local ms = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { ln - 1, 0 }, { ln - 1, -1 }, {})
+            for _, m in ipairs(ms) do
+              vim.api.nvim_buf_del_extmark(bufnr, memo_ns, m[1])
+              buf_memos[bufnr][m[1]] = nil
+              memo_set_extmark(bufnr, ln - 1, new_text)
+            end
+          end
+          memo_list()
+        end)
+      end
+      map('i', '<C-r>', rename_memo)
+      map('n', '<C-r>', rename_memo)
       return true
     end,
     layout_strategy = telescope_layout_presets[1].layout_strategy,
