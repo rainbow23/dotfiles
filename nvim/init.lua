@@ -752,6 +752,202 @@ vim.keymap.set('n', 'usos', function()
   end
 end, { desc = 'Session override save' })
 
+-- メモ管理（extmarks ベース）
+-- ファイルを変更せず仮想行としてメモを表示し、~/.vim/memos.json に永続化する
+-- キーマップ: <leader>ma=追加/編集  <leader>md=削除  <leader>ml=一覧(telescope)
+local memo_ns          = vim.api.nvim_create_namespace('user_memos')
+local memo_file        = vim.fn.expand('~/.vim/memos.json')
+local buf_memos        = {}  -- { [bufnr] = { [extmark_id] = text } }
+local memo_loaded_bufs = {}  -- ロード済みバッファの管理
+
+local function memo_read_json()
+  local f = io.open(memo_file, 'r')
+  if not f then return {} end
+  local s = f:read('*a'); f:close()
+  local ok, t = pcall(vim.fn.json_decode, s)
+  return (ok and type(t) == 'table') and t or {}
+end
+
+local function memo_write_json(data)
+  local f = io.open(memo_file, 'w')
+  if not f then return end
+  f:write(vim.fn.json_encode(data)); f:close()
+end
+
+-- extmark を配置してバッファ内メモテーブルに登録する
+local function memo_set_extmark(bufnr, line0, text)
+  local id = vim.api.nvim_buf_set_extmark(bufnr, memo_ns, line0, 0, {
+    virt_lines       = { { { '  📝 ' .. text, 'MemoHighlight' } } },
+    virt_lines_above = false,
+  })
+  if not buf_memos[bufnr] then buf_memos[bufnr] = {} end
+  buf_memos[bufnr][id] = text
+  return id
+end
+
+-- extmark の現在行を読み取って JSON に書き出す
+-- （extmark はバッファ内の編集に追従して行番号が変わるため、保存時に現在位置を取得する）
+local function memo_flush_buf(bufnr)
+  local ids = buf_memos[bufnr]
+  if not ids then return end
+  local filepath = vim.api.nvim_buf_get_name(bufnr)
+  if filepath == '' then return end
+  local data    = memo_read_json()
+  local entries = {}
+  for id, text in pairs(ids) do
+    local pos = vim.api.nvim_buf_get_extmark_by_id(bufnr, memo_ns, id, {})
+    if pos and pos[1] then
+      table.insert(entries, { line = pos[1] + 1, text = text })  -- JSON は 1-indexed
+    end
+  end
+  data[filepath] = #entries > 0 and entries or nil
+  memo_write_json(data)
+end
+
+-- バッファ読み込み時に JSON からメモを復元して extmark を配置する
+local function memo_load_buf(bufnr)
+  if memo_loaded_bufs[bufnr] then return end
+  memo_loaded_bufs[bufnr] = true
+  local filepath = vim.api.nvim_buf_get_name(bufnr)
+  if filepath == '' then return end
+  local entries = memo_read_json()[filepath]
+  if not entries then return end
+  vim.api.nvim_buf_clear_namespace(bufnr, memo_ns, 0, -1)
+  buf_memos[bufnr] = {}
+  for _, e in ipairs(entries) do
+    memo_set_extmark(bufnr, e.line - 1, e.text)  -- extmark は 0-indexed
+  end
+end
+
+-- 現在行のメモを追加または編集する
+local function memo_add_or_edit()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local line0 = vim.api.nvim_win_get_cursor(0)[1] - 1
+  -- 現在行に既存メモがあれば取得する
+  local marks = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { line0, 0 }, { line0, -1 }, {})
+  local existing_id, existing_text
+  if #marks > 0 then
+    existing_id   = marks[1][1]
+    existing_text = (buf_memos[bufnr] or {})[existing_id] or ''
+  end
+  local input = vim.fn.input('Memo: ', existing_text or '')
+  vim.cmd('redraw')
+  if input == '' then return end
+  if existing_id then
+    vim.api.nvim_buf_del_extmark(bufnr, memo_ns, existing_id)
+    if buf_memos[bufnr] then buf_memos[bufnr][existing_id] = nil end
+  end
+  memo_set_extmark(bufnr, line0, input)
+  memo_flush_buf(bufnr)
+end
+
+-- 現在行のメモを削除する
+local function memo_delete()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local line0 = vim.api.nvim_win_get_cursor(0)[1] - 1
+  local marks = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { line0, 0 }, { line0, -1 }, {})
+  if #marks == 0 then vim.notify('No memo on this line', vim.log.levels.INFO); return end
+  local id = marks[1][1]
+  vim.api.nvim_buf_del_extmark(bufnr, memo_ns, id)
+  if buf_memos[bufnr] then buf_memos[bufnr][id] = nil end
+  memo_flush_buf(bufnr)
+  vim.notify('Memo deleted', vim.log.levels.INFO)
+end
+
+-- Telescope でメモ一覧を表示する
+local function memo_list()
+  local data    = memo_read_json()
+  local results = {}
+  for filepath, entries in pairs(data) do
+    for _, e in ipairs(entries) do
+      table.insert(results, {
+        filepath = filepath,
+        line     = e.line,
+        text     = e.text,
+        display  = vim.fn.fnamemodify(filepath, ':~:.') .. ':' .. e.line .. '  ' .. e.text,
+      })
+    end
+  end
+  table.sort(results, function(a, b)
+    if a.filepath ~= b.filepath then return a.filepath < b.filepath end
+    return a.line < b.line
+  end)
+  pickers.new({}, {
+    prompt_title = '📝 Memos  <CR>=ジャンプ <C-d>=削除',
+    finder = finders.new_table({
+      results = results,
+      entry_maker = function(e)
+        return { value = e, display = e.display, ordinal = e.display, filename = e.filepath, lnum = e.line }
+      end,
+    }),
+    sorter    = conf.generic_sorter({}),
+    previewer = conf.grep_previewer({}),
+    attach_mappings = function(prompt_bufnr, map)
+      actions.select_default:replace(function()
+        local sel = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+        if sel then
+          vim.cmd('edit ' .. vim.fn.fnameescape(sel.value.filepath))
+          vim.api.nvim_win_set_cursor(0, { sel.value.line, 0 })
+        end
+      end)
+      local function delete_memo()
+        local sel = action_state.get_selected_entry()
+        if not sel then return end
+        local picker  = action_state.get_current_picker(prompt_bufnr)
+        local store   = memo_read_json()
+        local fp, ln  = sel.value.filepath, sel.value.line
+        if store[fp] then
+          local kept = {}
+          for _, e in ipairs(store[fp]) do
+            if e.line ~= ln then table.insert(kept, e) end
+          end
+          store[fp] = #kept > 0 and kept or nil
+          memo_write_json(store)
+        end
+        -- バッファが開いていれば extmark も即時削除する
+        local bufnr = vim.fn.bufnr(fp)
+        if bufnr ~= -1 and buf_memos[bufnr] then
+          local ms = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { ln - 1, 0 }, { ln - 1, -1 }, {})
+          for _, m in ipairs(ms) do
+            vim.api.nvim_buf_del_extmark(bufnr, memo_ns, m[1])
+            buf_memos[bufnr][m[1]] = nil
+          end
+        end
+        picker:delete_selection(function() vim.notify('Memo deleted') end)
+      end
+      map('i', '<C-d>', delete_memo)
+      map('n', '<C-d>', delete_memo)
+      return true
+    end,
+    layout_strategy = 'horizontal',
+    layout_config   = { height = 0.8, width = 0.9, preview_width = 0.5, prompt_position = 'top' },
+  }):find()
+end
+
+-- メモのハイライト定義（colorscheme 変更後も維持する）
+local function restore_memo_hl()
+  vim.api.nvim_set_hl(0, 'MemoHighlight', { fg = '#FFD700', italic = true })
+end
+restore_memo_hl()
+vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, { callback = restore_memo_hl })
+
+-- バッファ読み込み時にメモを自動ロードする
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  callback = function(args) memo_load_buf(args.buf) end,
+})
+-- バッファ破棄時にメモテーブルを解放する
+vim.api.nvim_create_autocmd('BufUnload', {
+  callback = function(args)
+    buf_memos[args.buf]        = nil
+    memo_loaded_bufs[args.buf] = nil
+  end,
+})
+
+vim.keymap.set('n', '<leader>ma', memo_add_or_edit, { desc = 'Memo add/edit' })
+vim.keymap.set('n', '<leader>md', memo_delete,      { desc = 'Memo delete' })
+vim.keymap.set('n', '<leader>ml', memo_list,        { desc = 'Memo list (telescope)' })
+
 -- UI ハイライト（colorscheme 適用後に再定義）
 local function restore_ui_hl()
   vim.api.nvim_set_hl(0, 'TelescopeSelection', { bg = '#87CEEB', fg = '#000000', bold = true })
