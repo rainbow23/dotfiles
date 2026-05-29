@@ -1029,6 +1029,22 @@ vim.keymap.set('n', '<leader>ma', memo_add_or_edit, { desc = 'Memo add/edit' })
 vim.keymap.set('n', '<leader>md', memo_delete,      { desc = 'Memo delete' })
 vim.keymap.set('n', '<leader>ml', memo_list,        { desc = 'Memo list (telescope)' })
 
+-- 起動時に stale な ShaDa tmp ファイルを削除する
+-- Windows/GitBash 環境でクラッシュや複数インスタンス起動後に tmp ファイルが残留し
+-- "cannot write ShaDa file!" エラーが出る問題への対処
+-- 5秒以上前の tmp のみ削除することで、別インスタンスが書き込み中の tmp を誤削除しない
+vim.api.nvim_create_autocmd('VimEnter', {
+  callback = function()
+    local shada_dir = vim.fn.stdpath('data') .. '/shada'
+    for _, f in ipairs(vim.fn.glob(shada_dir .. '/main.shada.tmp*', false, true)) do
+      local stat = vim.loop.fs_stat(f)
+      if stat and (os.time() - stat.mtime.sec) > 5 then
+        vim.fn.delete(f)
+      end
+    end
+  end,
+})
+
 -- UI ハイライト（colorscheme 適用後に再定義）
 local function restore_ui_hl()
   vim.api.nvim_set_hl(0, 'TelescopeSelection', { bg = '#87CEEB', fg = '#000000', bold = true })
