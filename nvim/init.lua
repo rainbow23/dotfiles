@@ -364,6 +364,7 @@ local actions        = require('telescope.actions')
 local action_state   = require('telescope.actions.state')
 local layout_actions = require('telescope.actions.layout')
 local builtin        = require('telescope.builtin')
+local previewers     = require('telescope.previewers')
 
 local open_in_split = function(prompt_bufnr, cmd)
   local entry = action_state.get_selected_entry()
@@ -862,6 +863,62 @@ local function memo_delete()
   vim.notify('Memo deleted', vim.log.levels.INFO)
 end
 
+-- メモ一覧用ソーター: ファイル順 → 行番号順を維持しつつ prompt でフィルタリングする
+-- GrepSearch と同じスコアリング式（ファイル順位 × 100000 + 行番号逆順）を使用
+local function make_memo_sorter(results)
+  local file_order   = {}
+  local file_counter = 0
+  for _, r in ipairs(results) do
+    if not file_order[r.filepath] then
+      file_counter = file_counter + 1
+      file_order[r.filepath] = file_counter
+    end
+  end
+  local fzy = require('telescope.algos.fzy')
+  return require('telescope.sorters').Sorter:new({
+    discard = false,
+    scoring_function = function(_, prompt, line, entry)
+      local fn   = (entry.value or {}).filepath or ''
+      local lnum = (entry.value or {}).line or 0
+      local rank = file_order[fn] or 999
+      if prompt ~= '' and not fzy.has_match(prompt:lower(), (line or ''):lower()) then
+        return -1
+      end
+      return (1000 - rank) * 100000 + (100000 - lnum)
+    end,
+  })
+end
+
+-- メモ専用プレビューア: メモテキスト + ファイル周辺行を表示する
+-- grep_previewer はファイル内容のみでメモテキストが見えないため独自実装
+local memo_previewer = previewers.new_buffer_previewer({
+  define_preview = function(self, entry)
+    local filepath = entry.value.filepath
+    local lnum     = entry.value.line
+    local text     = entry.value.text
+    -- ヘッダにメモテキストを表示
+    local header = { '📝  ' .. text, string.rep('─', 60), '' }
+    -- ファイルの前後行を読み込んで表示（メモ行に ▶ マーカーを付ける）
+    local body = {}
+    local f = io.open(filepath, 'r')
+    if f then
+      local all = {}
+      for line in f:lines() do table.insert(all, line) end
+      f:close()
+      local s = math.max(1, lnum - 5)
+      local e = math.min(#all, lnum + 15)
+      for i = s, e do
+        table.insert(body, string.format('%s%4d  %s', i == lnum and '▶ ' or '  ', i, all[i] or ''))
+      end
+    end
+    local lines = {}
+    for _, l in ipairs(header) do table.insert(lines, l) end
+    for _, l in ipairs(body)   do table.insert(lines, l) end
+    vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+    vim.api.nvim_buf_add_highlight(self.state.bufnr, -1, 'MemoHighlight', 0, 0, -1)
+  end,
+})
+
 -- Telescope でメモ一覧を表示する
 local function memo_list()
   local git_root = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
@@ -923,8 +980,8 @@ local function memo_list()
         return { value = e, display = e.display, ordinal = e.display, filename = e.filepath, lnum = e.line }
       end,
     }),
-    sorter    = conf.generic_sorter({}),
-    previewer = conf.grep_previewer({}),
+    sorter    = make_memo_sorter(results),
+    previewer = memo_previewer,
     attach_mappings = function(prompt_bufnr, map)
       actions.select_default:replace(function() open_memo(prompt_bufnr, 'edit') end)
       local function delete_memo()
@@ -1025,9 +1082,84 @@ vim.api.nvim_create_autocmd('BufUnload', {
   end,
 })
 
-vim.keymap.set('n', '<leader>ma', memo_add_or_edit, { desc = 'Memo add/edit' })
-vim.keymap.set('n', '<leader>md', memo_delete,      { desc = 'Memo delete' })
-vim.keymap.set('n', '<leader>ml', memo_list,        { desc = 'Memo list (telescope)' })
+-- 現在のバッファのメモのみを BLines レイアウトで表示する
+local function memo_list_current()
+  local bufnr    = vim.api.nvim_get_current_buf()
+  local filepath = vim.api.nvim_buf_get_name(bufnr)
+  if filepath == '' then vim.notify('No file', vim.log.levels.INFO); return end
+  local entries = memo_read_json()[filepath] or {}
+  local results = {}
+  for _, e in ipairs(entries) do
+    table.insert(results, { filepath = filepath, line = e.line, text = e.text,
+      display = string.format('%4d  %s', e.line, e.text) })
+  end
+  if #results == 0 then vim.notify('No memos in this file', vim.log.levels.INFO); return end
+  pickers.new({}, {
+    prompt_title    = '📝 Memos (current file)  <CR>=ジャンプ <C-d>=削除 <C-l>=レイアウト切替 <C-t>=新規タブ <M-v>=vsplit <C-h>=hsplit',
+    finder          = finders.new_table({
+      results     = results,
+      entry_maker = function(e)
+        return { value = e, display = e.display, ordinal = e.display, filename = e.filepath, lnum = e.line }
+      end,
+    }),
+    sorter          = make_memo_sorter(results),
+    previewer       = memo_previewer,
+    layout_strategy = telescope_layout_presets[1].layout_strategy,
+    layout_config   = telescope_layout_presets[1].layout_config,
+    attach_mappings = function(prompt_bufnr, map)
+      local function open_memo(b, cmd)
+        local sel = action_state.get_selected_entry()
+        actions.close(b)
+        if sel then
+          vim.cmd(cmd .. ' ' .. vim.fn.fnameescape(sel.value.filepath))
+          vim.api.nvim_win_set_cursor(0, { sel.value.line, 0 })
+        end
+      end
+      actions.select_default:replace(function() open_memo(prompt_bufnr, 'edit') end)
+      local function delete_memo()
+        local sel = action_state.get_selected_entry()
+        if not sel then return end
+        local picker = action_state.get_current_picker(prompt_bufnr)
+        local store  = memo_read_json()
+        local fp, ln = sel.value.filepath, sel.value.line
+        if store[fp] then
+          local kept = {}
+          for _, e in ipairs(store[fp]) do
+            if e.line ~= ln then table.insert(kept, e) end
+          end
+          store[fp] = #kept > 0 and kept or nil
+          memo_write_json(store)
+        end
+        local bn = vim.fn.bufnr(fp)
+        if bn ~= -1 and buf_memos[bn] then
+          local ms = vim.api.nvim_buf_get_extmarks(bn, memo_ns, { ln - 1, 0 }, { ln - 1, -1 }, {})
+          for _, m in ipairs(ms) do
+            vim.api.nvim_buf_del_extmark(bn, memo_ns, m[1])
+            buf_memos[bn][m[1]] = nil
+          end
+        end
+        picker:delete_selection(function() vim.notify('Memo deleted') end)
+      end
+      local toggle_layout = make_layout_toggle(prompt_bufnr)
+      map('i', '<C-d>', delete_memo)
+      map('n', '<C-d>', delete_memo)
+      map('i', '<C-l>', toggle_layout)
+      map('n', '<C-l>', toggle_layout)
+      map('i', '<C-t>', function(b) open_memo(b, 'tabedit') end)
+      map('n', '<C-t>', function(b) open_memo(b, 'tabedit') end)
+      map('i', '<M-v>', function(b) open_memo(b, 'vsplit') end)
+      map('n', '<M-v>', function(b) open_memo(b, 'vsplit') end)
+      map('i', '<C-h>', function(b) open_memo(b, 'split') end)
+      map('n', '<C-h>', function(b) open_memo(b, 'split') end)
+      return true
+    end,
+  }):find()
+end
+
+vim.keymap.set('n', '<leader>ma', memo_add_or_edit,    { desc = 'Memo add/edit' })
+vim.keymap.set('n', '<leader>md', memo_delete,         { desc = 'Memo delete' })
+vim.keymap.set('n', '<leader>ml', memo_list,           { desc = 'Memo list (telescope)' })
+vim.keymap.set('n', '<leader>ll', memo_list_current,   { desc = 'Memo list current file' })
 
 -- 起動時に stale な ShaDa tmp ファイルを削除する
 -- Windows/GitBash 環境でクラッシュや複数インスタンス起動後に tmp ファイルが残留し
