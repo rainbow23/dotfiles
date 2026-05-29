@@ -1002,12 +1002,16 @@ restore_memo_hl()
 vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, { callback = restore_memo_hl })
 
 -- バッファ読み込み時にメモを自動ロードする
-vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+-- BufEnter も対象にすることでセッション復元など BufRead が発火しないケースも補足する
+-- memo_loaded_bufs のガードにより二重ロードは発生しない
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile', 'BufEnter' }, {
   callback = function(args) memo_load_buf(args.buf) end,
 })
--- バッファ破棄時にメモテーブルを解放する
+-- バッファ破棄時に extmark の現在行を JSON に保存してからメモテーブルを解放する
+-- （行挿入・削除で extmark が移動した場合、ここで保存しないと再オープン時に位置がずれる）
 vim.api.nvim_create_autocmd('BufUnload', {
   callback = function(args)
+    memo_flush_buf(args.buf)
     buf_memos[args.buf]        = nil
     memo_loaded_bufs[args.buf] = nil
   end,
