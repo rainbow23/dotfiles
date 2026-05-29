@@ -861,6 +861,19 @@ local function memo_list()
   local gr_norm  = has_git
     and vim.fn.fnamemodify(git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/') or nil
 
+  -- パス表示を git root 起点に変換する（gr_norm が nil なら ~ 基準）
+  local function memo_display_path(filepath)
+    if gr_norm then
+      local fp_n = vim.fn.fnamemodify(filepath, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+      if fp_n:find(gr_norm, 1, true) == 1 then
+        local rel       = fp_n:sub(#gr_norm + 1)
+        local root_name = vim.fn.fnamemodify(gr_norm, ':t')
+        return root_name .. (rel == '' and '' or rel)
+      end
+    end
+    return vim.fn.fnamemodify(filepath, ':~:.')
+  end
+
   local data    = memo_read_json()
   local results = {}
   for filepath, entries in pairs(data) do
@@ -874,7 +887,7 @@ local function memo_list()
         filepath = filepath,
         line     = e.line,
         text     = e.text,
-        display  = vim.fn.fnamemodify(filepath, ':~:.') .. ':' .. e.line .. '  ' .. e.text,
+        display  = memo_display_path(filepath) .. ':' .. e.line .. '  ' .. e.text,
       })
     end
     ::continue::
@@ -883,8 +896,19 @@ local function memo_list()
     if a.filepath ~= b.filepath then return a.filepath < b.filepath end
     return a.line < b.line
   end)
+
+  -- ファイルを開いてメモ行にジャンプする共通処理
+  local function open_memo(prompt_bufnr, cmd)
+    local sel = action_state.get_selected_entry()
+    actions.close(prompt_bufnr)
+    if sel then
+      vim.cmd(cmd .. ' ' .. vim.fn.fnameescape(sel.value.filepath))
+      vim.api.nvim_win_set_cursor(0, { sel.value.line, 0 })
+    end
+  end
+
   pickers.new({}, {
-    prompt_title = '📝 Memos  <CR>=ジャンプ <C-d>=削除',
+    prompt_title = '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-l>=レイアウト切替 <C-t>=新規タブ <M-v>=vsplit <C-h>=hsplit',
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
@@ -894,14 +918,7 @@ local function memo_list()
     sorter    = conf.generic_sorter({}),
     previewer = conf.grep_previewer({}),
     attach_mappings = function(prompt_bufnr, map)
-      actions.select_default:replace(function()
-        local sel = action_state.get_selected_entry()
-        actions.close(prompt_bufnr)
-        if sel then
-          vim.cmd('edit ' .. vim.fn.fnameescape(sel.value.filepath))
-          vim.api.nvim_win_set_cursor(0, { sel.value.line, 0 })
-        end
-      end)
+      actions.select_default:replace(function() open_memo(prompt_bufnr, 'edit') end)
       local function delete_memo()
         local sel = action_state.get_selected_entry()
         if not sel then return end
@@ -927,12 +944,21 @@ local function memo_list()
         end
         picker:delete_selection(function() vim.notify('Memo deleted') end)
       end
+      local toggle_layout = make_layout_toggle(prompt_bufnr)
       map('i', '<C-d>', delete_memo)
       map('n', '<C-d>', delete_memo)
+      map('i', '<C-l>', toggle_layout)
+      map('n', '<C-l>', toggle_layout)
+      map('i', '<C-t>', function(b) open_memo(b, 'tabedit') end)
+      map('n', '<C-t>', function(b) open_memo(b, 'tabedit') end)
+      map('i', '<M-v>', function(b) open_memo(b, 'vsplit') end)
+      map('n', '<M-v>', function(b) open_memo(b, 'vsplit') end)
+      map('i', '<C-h>', function(b) open_memo(b, 'split') end)
+      map('n', '<C-h>', function(b) open_memo(b, 'split') end)
       return true
     end,
-    layout_strategy = 'horizontal',
-    layout_config   = { height = 0.8, width = 0.9, preview_width = 0.5, prompt_position = 'top' },
+    layout_strategy = telescope_layout_presets[1].layout_strategy,
+    layout_config   = telescope_layout_presets[1].layout_config,
   }):find()
 end
 
