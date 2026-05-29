@@ -807,16 +807,24 @@ end
 -- バッファ読み込み時に JSON からメモを復元して extmark を配置する
 local function memo_load_buf(bufnr)
   if memo_loaded_bufs[bufnr] then return end
-  memo_loaded_bufs[bufnr] = true
   local filepath = vim.api.nvim_buf_get_name(bufnr)
+  -- filepath が確定してからロード済みフラグを立てる
+  -- BufRead 時点でバッファ名が空の場合、先にフラグを立てると BufEnter でも再試行されなくなる
   if filepath == '' then return end
-  local entries = memo_read_json()[filepath]
-  if not entries then return end
-  vim.api.nvim_buf_clear_namespace(bufnr, memo_ns, 0, -1)
-  buf_memos[bufnr] = {}
-  for _, e in ipairs(entries) do
-    memo_set_extmark(bufnr, e.line - 1, e.text)  -- extmark は 0-indexed
-  end
+  memo_loaded_bufs[bufnr] = true
+  -- vim.schedule で描画サイクル後に extmark を配置する
+  -- BufEnter/BufRead 発火時点ではバッファが描画準備できておらず
+  -- 即時配置した extmark が表示されないことがあるため
+  vim.schedule(function()
+    if not vim.api.nvim_buf_is_valid(bufnr) then return end
+    local entries = memo_read_json()[filepath]
+    if not entries then return end
+    vim.api.nvim_buf_clear_namespace(bufnr, memo_ns, 0, -1)
+    buf_memos[bufnr] = {}
+    for _, e in ipairs(entries) do
+      memo_set_extmark(bufnr, e.line - 1, e.text)  -- extmark は 0-indexed
+    end
+  end)
 end
 
 -- 現在行のメモを追加または編集する
