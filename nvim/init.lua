@@ -856,9 +856,19 @@ end
 
 -- Telescope でメモ一覧を表示する
 local function memo_list()
+  local git_root = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
+  local has_git  = git_root ~= '' and not git_root:find('fatal')
+  local gr_norm  = has_git
+    and vim.fn.fnamemodify(git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/') or nil
+
   local data    = memo_read_json()
   local results = {}
   for filepath, entries in pairs(data) do
+    -- git root 管理下のファイルのみを対象とする（git 管理外なら全件表示）
+    if gr_norm then
+      local fp_norm = vim.fn.fnamemodify(filepath, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+      if fp_norm:find(gr_norm, 1, true) ~= 1 then goto continue end
+    end
     for _, e in ipairs(entries) do
       table.insert(results, {
         filepath = filepath,
@@ -867,6 +877,7 @@ local function memo_list()
         display  = vim.fn.fnamemodify(filepath, ':~:.') .. ':' .. e.line .. '  ' .. e.text,
       })
     end
+    ::continue::
   end
   table.sort(results, function(a, b)
     if a.filepath ~= b.filepath then return a.filepath < b.filepath end
