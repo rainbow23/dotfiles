@@ -1095,7 +1095,7 @@ vim.api.nvim_create_autocmd('BufUnload', {
 -- 現在のバッファのメモのみを BLines レイアウトで表示する
 local function memo_list_current()
   local bufnr    = vim.api.nvim_get_current_buf()
-  local filepath = vim.api.nvim_buf_get_name(bufnr)
+  local filepath = memo_normalize_path(vim.api.nvim_buf_get_name(bufnr))
   if filepath == '' then vim.notify('No file', vim.log.levels.INFO); return end
   local entries = memo_read_json()[filepath] or {}
   local results = {}
