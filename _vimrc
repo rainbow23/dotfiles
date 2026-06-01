@@ -126,36 +126,32 @@ noremap w= <C-w>= <C-g><CR>
 " panel size end  #################################
 
 " Plug 'regedarek/ZoomWin' ###########################################################################
-" 選択したパネルの最大化
-nnoremap <silent> ,, :<C-u>ZoomWin<CR>
+" nvim では init.lua の float window 実装に置き換え済み
+if !has('nvim')
+  " 選択したパネルの最大化
+  nnoremap <silent> ,, :<C-u>ZoomWin<CR>
 
-let g:zoomWinActive = 0
+  let g:zoomWinActive = 0
 
-" ZoomWin()の後に呼ばれる
-fun! ZWStatline(state)
-  if a:state
-    let g:zoomWinActive = 1
-    " Unite session loadでレイアウトが崩れる場合があるので今はtagbarを開かない
-    " :TagbarOpen
+  " ZoomWin()の後に呼ばれる
+  fun! ZWStatline(state)
+    if a:state
+      let g:zoomWinActive = 1
+      let g:airline_disable_statusline = 1
+      set stl=ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin
+      hi statusline ctermfg=14 ctermbg=57
+    else
+      let g:airline_disable_statusline = 0
+      set stl=Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal
+      hi statusline ctermfg=242 ctermbg=black
+    endif
+  endfun
 
-    let g:airline_disable_statusline = 1
-    set stl=ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin_ZoomWin
-    hi statusline ctermfg=14 ctermbg=57
-  else
-    let g:airline_disable_statusline = 0
-    set stl=Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal_Normal
-    hi statusline ctermfg=242 ctermbg=black
+  if !exists("g:ZoomWin_funcref")
+    let g:ZoomWin_funcref= function("ZWStatline")
   endif
-endfun
 
-if !exists("g:ZoomWin_funcref")
-  let g:ZoomWin_funcref= function("ZWStatline")
-endif
-" Plug 'regedarek/ZoomWin' ###########################################################################
-
-if has('nvim')
-" removed 'key', 'oft', 'sn', 'tx' options which do not work with nvim
-let g:zoomwin_localoptlist = ["ai","ar","bh","bin","bl","bomb","bt","cfu","ci","cin","cink","cino","cinw","cms","com","cpt","diff","efm","eol","ep","et","fenc","fex","ff","flp","fo","ft","gp","imi","ims","inde","inex","indk","inf","isk","kmp","lisp","mps","ml","ma","mod","nf","ofu","pi","qe","ro","sw","si","sts","spc","spf","spl","sua","swf","smc","syn","ts","tw","udf","wfh","wfw","wm"]
+  let g:zoomwin_localoptlist = ["ai","ar","bh","bin","bl","bomb","bt","cfu","ci","cin","cink","cino","cinw","cms","com","cpt","diff","efm","eol","ep","et","fenc","fex","ff","flp","fo","ft","gp","imi","ims","inde","inex","indk","inf","isk","kmp","lisp","mps","ml","ma","mod","nf","ofu","pi","qe","ro","sw","si","sts","spc","spf","spl","sua","swf","smc","syn","ts","tw","udf","wfh","wfw","wm"]
 endif
 " Plug 'regedarek/ZoomWin' ###########################################################################
 

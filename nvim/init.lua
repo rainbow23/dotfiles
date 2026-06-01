@@ -329,7 +329,7 @@ require('lazy').setup({
   -- Util
   { 'majutsushi/tagbar',          lazy = false },
   { 'tyru/current-func-info.vim', lazy = false },
-  { 'regedarek/ZoomWin',          lazy = false },
+  -- ZoomWin は float window 実装に置き換えたため削除済み
   { 'vimlab/split-term.vim',      lazy = false },
   { 'osyo-manga/unite-quickfix',  lazy = false },
   { 'ujihisa/unite-colorscheme',  lazy = false },
@@ -1177,10 +1177,57 @@ vim.api.nvim_create_autocmd('VimEnter', {
   end,
 })
 
+-- ZoomWin 代替: エディタ全体を覆う float window で現在バッファを疑似最大化する
+-- ,, でトグル開閉。閉じると airline が復元される
+local zoom_float_id = nil
+
+local function fullscreen_float(bufnr)
+  local width  = math.floor(vim.o.columns * 0.95)
+  local height = math.floor((vim.o.lines - vim.o.cmdheight - 1) * 0.95)
+  local row    = math.floor((vim.o.lines   - height) / 2)
+  local col    = math.floor((vim.o.columns - width)  / 2)
+  local win = vim.api.nvim_open_win(bufnr or 0, true, {
+    relative = 'editor',
+    row      = row,
+    col      = col,
+    width    = width,
+    height   = height,
+    border   = 'rounded',
+    -- style = 'minimal' は winbar・行番号を抑制するため使用しない
+  })
+  -- 不要な UI 要素だけ個別に無効化する
+  vim.wo[win].signcolumn  = 'no'
+  vim.wo[win].foldcolumn  = '0'
+  vim.wo[win].spell       = false
+  return win
+end
+
+local function zoom_toggle()
+  if zoom_float_id and vim.api.nvim_win_is_valid(zoom_float_id) then
+    vim.api.nvim_win_close(zoom_float_id, false)
+    return
+  end
+  local bufnr = vim.api.nvim_get_current_buf()
+  zoom_float_id = fullscreen_float(bufnr)
+  -- winbar にファイル名と変更状態を表示（airline は floating window に対応しないため）
+  vim.wo[zoom_float_id].winbar = ' %f %m'
+  vim.api.nvim_create_autocmd('WinClosed', {
+    pattern  = tostring(zoom_float_id),
+    once     = true,
+    callback = function() zoom_float_id = nil end,
+  })
+end
+
+vim.keymap.set('n', ',,', zoom_toggle, { desc = 'Zoom window toggle (float)' })
+
 -- UI ハイライト（colorscheme 適用後に再定義）
 local function restore_ui_hl()
   vim.api.nvim_set_hl(0, 'TelescopeSelection', { bg = '#87CEEB', fg = '#000000', bold = true })
   vim.api.nvim_set_hl(0, 'TabLineSel',         { bg = '#87CEEB', fg = '#000000', bold = true })
+  -- NormalFloat を Normal にリンク: iTerm 半透明環境で float が白くなるのを防ぐ
+  vim.api.nvim_set_hl(0, 'NormalFloat', { link = 'Normal' })
+  -- float window の枠線を白色にする
+  vim.api.nvim_set_hl(0, 'FloatBorder', { fg = '#FFFFFF' })
 end
 vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, { callback = restore_ui_hl })
 
