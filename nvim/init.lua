@@ -761,12 +761,23 @@ local memo_file        = vim.fn.expand('~/.vim/memos.json')
 local buf_memos        = {}  -- { [bufnr] = { [extmark_id] = text } }
 local memo_loaded_bufs = {}  -- ロード済みバッファの管理
 
+-- パス区切り文字を / に統一する（Windows/GitBash で \ と / が混在する問題を解消）
+local function memo_normalize_path(path)
+  return path:gsub('\\', '/')
+end
+
 local function memo_read_json()
   local f = io.open(memo_file, 'r')
   if not f then return {} end
   local s = f:read('*a'); f:close()
   local ok, t = pcall(vim.fn.json_decode, s)
-  return (ok and type(t) == 'table') and t or {}
+  if not (ok and type(t) == 'table') then return {} end
+  -- 既存 JSON のキーも / に正規化して返す（\ 混在の古いエントリとの互換性を保つ）
+  local normalized = {}
+  for k, v in pairs(t) do
+    normalized[memo_normalize_path(k)] = v
+  end
+  return normalized
 end
 
 local function memo_write_json(data)
@@ -791,7 +802,7 @@ end
 local function memo_flush_buf(bufnr)
   local ids = buf_memos[bufnr]
   if not ids then return end
-  local filepath = vim.api.nvim_buf_get_name(bufnr)
+  local filepath = memo_normalize_path(vim.api.nvim_buf_get_name(bufnr))
   if filepath == '' then return end
   local data    = memo_read_json()
   local entries = {}
@@ -808,7 +819,7 @@ end
 -- バッファ読み込み時に JSON からメモを復元して extmark を配置する
 local function memo_load_buf(bufnr)
   if memo_loaded_bufs[bufnr] then return end
-  local filepath = vim.api.nvim_buf_get_name(bufnr)
+  local filepath = memo_normalize_path(vim.api.nvim_buf_get_name(bufnr))
   -- filepath が確定してからロード済みフラグを立てる
   -- BufRead 時点でバッファ名が空の場合、先にフラグを立てると BufEnter でも再試行されなくなる
   if filepath == '' then return end
