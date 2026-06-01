@@ -1177,9 +1177,10 @@ vim.api.nvim_create_autocmd('VimEnter', {
   end,
 })
 
--- ZoomWin 代替: エディタ全体を覆う float window で現在バッファを疑似最大化する
--- ,, でトグル開閉。閉じると airline が復元される
-local zoom_float_id = nil
+-- ZoomWin 代替: backdrop + float window で tmux popup 風の疑似最大化を実現する
+-- ,, でトグル開閉
+local zoom_float_id    = nil
+local zoom_backdrop_id = nil
 
 local function fullscreen_float(bufnr)
   local width  = math.floor(vim.o.columns * 0.95)
@@ -1187,19 +1188,35 @@ local function fullscreen_float(bufnr)
   local row    = math.floor((vim.o.lines   - height) / 2)
   local col    = math.floor((vim.o.columns - width)  / 2)
   local win = vim.api.nvim_open_win(bufnr or 0, true, {
-    relative = 'editor',
-    row      = row,
-    col      = col,
-    width    = width,
-    height   = height,
-    border   = 'rounded',
-    -- style = 'minimal' は winbar・行番号を抑制するため使用しない
+    relative  = 'editor',
+    row       = row,
+    col       = col,
+    width     = width,
+    height    = height,
+    border    = 'rounded',
+    zindex    = 50,
   })
-  -- 不要な UI 要素だけ個別に無効化する
-  vim.wo[win].signcolumn  = 'no'
-  vim.wo[win].foldcolumn  = '0'
-  vim.wo[win].spell       = false
+  vim.wo[win].signcolumn = 'no'
+  vim.wo[win].foldcolumn = '0'
+  vim.wo[win].spell      = false
   return win
+end
+
+local function create_backdrop()
+  local buf = vim.api.nvim_create_buf(false, true)
+  local win = vim.api.nvim_open_win(buf, false, {
+    relative  = 'editor',
+    row       = 0,
+    col       = 0,
+    width     = vim.o.columns,
+    height    = vim.o.lines,
+    style     = 'minimal',
+    border    = 'none',
+    focusable = false,
+    zindex    = 49,  -- メイン float (50) より手前・通常ウィンドウより奥
+  })
+  vim.wo[win].winhl = 'Normal:ZoomBackdrop'
+  return win, buf
 end
 
 local function zoom_toggle()
@@ -1208,13 +1225,23 @@ local function zoom_toggle()
     return
   end
   local bufnr = vim.api.nvim_get_current_buf()
-  zoom_float_id = fullscreen_float(bufnr)
-  -- winbar にファイル名と変更状態を表示（airline は floating window に対応しないため）
+  local backdrop_win, backdrop_buf = create_backdrop()
+  zoom_backdrop_id = backdrop_win
+  zoom_float_id    = fullscreen_float(bufnr)
+  -- winbar にファイル名と変更状態を表示（airline は floating window に非対応）
   vim.wo[zoom_float_id].winbar = ' %f %m'
   vim.api.nvim_create_autocmd('WinClosed', {
     pattern  = tostring(zoom_float_id),
     once     = true,
-    callback = function() zoom_float_id = nil end,
+    callback = function()
+      zoom_float_id = nil
+      -- backdrop を閉じてスクラッチバッファを削除する
+      if zoom_backdrop_id and vim.api.nvim_win_is_valid(zoom_backdrop_id) then
+        vim.api.nvim_win_close(zoom_backdrop_id, true)
+      end
+      zoom_backdrop_id = nil
+      pcall(vim.api.nvim_buf_delete, backdrop_buf, { force = true })
+    end,
   })
 end
 
@@ -1225,9 +1252,11 @@ local function restore_ui_hl()
   vim.api.nvim_set_hl(0, 'TelescopeSelection', { bg = '#87CEEB', fg = '#000000', bold = true })
   vim.api.nvim_set_hl(0, 'TabLineSel',         { bg = '#87CEEB', fg = '#000000', bold = true })
   -- NormalFloat を Normal にリンク: iTerm 半透明環境で float が白くなるのを防ぐ
-  vim.api.nvim_set_hl(0, 'NormalFloat', { link = 'Normal' })
+  vim.api.nvim_set_hl(0, 'NormalFloat',  { link = 'Normal' })
   -- float window の枠線を白色にする
-  vim.api.nvim_set_hl(0, 'FloatBorder', { fg = '#FFFFFF' })
+  vim.api.nvim_set_hl(0, 'FloatBorder',  { fg = '#FFFFFF' })
+  -- zoom backdrop: tmux popup 風の灰色背景
+  vim.api.nvim_set_hl(0, 'ZoomBackdrop', { bg = '#3a3a3a', fg = '#3a3a3a' })
 end
 vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, { callback = restore_ui_hl })
 
