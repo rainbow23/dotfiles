@@ -813,10 +813,9 @@ local function memo_load_buf(bufnr)
   -- BufRead 時点でバッファ名が空の場合、先にフラグを立てると BufEnter でも再試行されなくなる
   if filepath == '' then return end
   memo_loaded_bufs[bufnr] = true
-  -- vim.schedule で描画サイクル後に extmark を配置する
-  -- BufEnter/BufRead 発火時点ではバッファが描画準備できておらず
-  -- 即時配置した extmark が表示されないことがあるため
-  vim.schedule(function()
+  -- vim.defer_fn で 100ms 遅延してから extmark を配置する
+  -- vim.schedule だけではセッション復元時などにバッファ準備が間に合わない場合がある
+  vim.defer_fn(function()
     if not vim.api.nvim_buf_is_valid(bufnr) then return end
     local entries = memo_read_json()[filepath]
     if not entries then return end
@@ -825,7 +824,7 @@ local function memo_load_buf(bufnr)
     for _, e in ipairs(entries) do
       memo_set_extmark(bufnr, e.line - 1, e.text)  -- extmark は 0-indexed
     end
-  end)
+  end, 100)
 end
 
 -- 現在行のメモを追加または編集する
@@ -1156,10 +1155,21 @@ local function memo_list_current()
   }):find()
 end
 
+-- memo_loaded_bufs フラグをリセットして強制的に再読み込みする
+-- 自動ロードでメモが表示されなかった場合に使用する
+local function memo_force_reload()
+  local bufnr = vim.api.nvim_get_current_buf()
+  memo_loaded_bufs[bufnr] = nil
+  buf_memos[bufnr] = nil
+  vim.api.nvim_buf_clear_namespace(bufnr, memo_ns, 0, -1)
+  memo_load_buf(bufnr)
+end
+
 vim.keymap.set('n', '<leader>ma', memo_add_or_edit,    { desc = 'Memo add/edit' })
 vim.keymap.set('n', '<leader>md', memo_delete,         { desc = 'Memo delete' })
 vim.keymap.set('n', '<leader>ml', memo_list,           { desc = 'Memo list (telescope)' })
 vim.keymap.set('n', '<leader>ll', memo_list_current,   { desc = 'Memo list current file' })
+vim.keymap.set('n', '<leader>mr', memo_force_reload,   { desc = 'Memo force reload' })
 
 -- 起動時に stale な ShaDa tmp ファイルを削除する
 -- Windows/GitBash 環境でクラッシュや複数インスタンス起動後に tmp ファイルが残留し
