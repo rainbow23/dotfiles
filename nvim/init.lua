@@ -392,7 +392,7 @@ local make_attach_mappings = function(preview_default_on, extra_mappings)
 end
 
 local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
-local grep_search_shortcut = '<C-s>=Dir切替 <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
+local grep_search_shortcut = '<C-b>=Buffer切替 <C-s>=Dir切替 <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
 
 local make_file_search   -- forward declaration
 local make_grep_search   -- forward declaration
@@ -496,7 +496,10 @@ make_grep_search = function(opts)
   local cwd      = opts.cwd or vim.fn.getcwd()
   local git_root = opts.git_root
   local display_cwd
-  if git_root then
+  if opts.buf_files then
+    -- バッファ検索モード: ファイル数を表示
+    display_cwd = string.format('buffers (%d files)', #opts.buf_files)
+  elseif git_root then
     -- fnamemodify(':p') + スラッシュ統一で GitBash の /c/Users/... vs C:/Users/... 差異を吸収
     local cwd_n  = vim.fn.fnamemodify(cwd,      ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
     local root_n = vim.fn.fnamemodify(git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
@@ -519,32 +522,114 @@ make_grep_search = function(opts)
       local cmd = vim.deepcopy(grep_args)
       table.insert(cmd, '--')
       table.insert(cmd, prompt)
+      -- buf_files が指定されている場合はそのファイルのみを対象とする
+      if opts.buf_files then
+        for _, f in ipairs(opts.buf_files) do
+          table.insert(cmd, f)
+        end
+      end
       return cmd
     end, grep_entry, nil, opts.cwd),
     previewer = conf.grep_previewer(opts),
     sorter    = grep_line_sorter,
-    attach_mappings = make_attach_mappings(true, (opts.file_dir or opts.git_root) and function(_, map)
-      local function toggle_dir(b)
+    attach_mappings = make_attach_mappings(true, function(prompt_bufnr, map)
+      -- <CR>: 既存ウィンドウに同ファイルが開いていればそこへ移動、なければ現在ウィンドウで開く
+      local function select_entry(b)
+        local sel = action_state.get_selected_entry()
+        if not sel then return end
+        local filename = sel.filename or sel.path or ''
+        local lnum = sel.lnum or 1
+        local col  = (sel.col  or 1) - 1  -- Telescope は 1-based、nvim_win_set_cursor は 0-based
+        if col < 0 then col = 0 end
+        actions.close(b)
+        vim.schedule(function()
+          if filename == '' then return end
+          local abs = vim.fn.fnamemodify(filename, ':p')
+          local target_win = nil
+          for _, win in ipairs(vim.api.nvim_list_wins()) do
+            local buf  = vim.api.nvim_win_get_buf(win)
+            local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ':p')
+            if name == abs then
+              target_win = win
+              break
+            end
+          end
+          if target_win then
+            vim.api.nvim_set_current_win(target_win)
+          else
+            vim.cmd('edit ' .. vim.fn.fnameescape(filename))
+          end
+          vim.api.nvim_win_set_cursor(0, { lnum, col })
+          vim.cmd('normal! zz')
+        end)
+      end
+      map('i', '<CR>', select_entry)
+      map('n', '<CR>', select_entry)
+      -- <C-s>: git root ↔ file dir 切替（file_dir か git_root が設定されているときのみ有効）
+      if opts.file_dir or opts.git_root then
+        local function toggle_dir(b)
+          local query = action_state.get_current_picker(b):_get_prompt()
+          actions.close(b)
+          vim.schedule(function()
+            local next_cwd   = (opts.cwd == opts.file_dir) and opts.git_root or opts.file_dir
+            local next_title = (next_cwd == opts.file_dir) and 'GrepSearch (file dir)' or 'GrepSearch (git root)'
+            make_grep_search({
+              cwd             = next_cwd,
+              default_text    = query,
+              additional_args = opts.additional_args,
+              base_title      = next_title,
+              file_dir        = opts.file_dir,
+              git_root        = opts.git_root,
+            })
+          end)
+        end
+        map('i', '<C-s>', toggle_dir)
+        map('n', '<C-s>', toggle_dir)
+      end
+      -- <C-b>: 通常モード ↔ バッファ検索モード 切替
+      local function toggle_buf(b)
         local query = action_state.get_current_picker(b):_get_prompt()
         actions.close(b)
         vim.schedule(function()
-          local next_cwd   = (opts.cwd == opts.file_dir) and opts.git_root or opts.file_dir
-          local next_title = (next_cwd == opts.file_dir) and 'GrepSearch (file dir)' or 'GrepSearch (git root)'
-          make_grep_search({
-            cwd             = next_cwd,
-            default_text    = query,
-            additional_args = opts.additional_args,
-            base_title      = next_title,
-            file_dir        = opts.file_dir,
-            git_root        = opts.git_root,
-          })
+          if opts.buf_files then
+            -- バッファモード → 通常モードに切り替え
+            make_grep_search({
+              cwd             = opts.git_root or vim.fn.getcwd(),
+              default_text    = query,
+              additional_args = opts.additional_args,
+              base_title      = 'GrepSearch',
+              file_dir        = opts.file_dir,
+              git_root        = opts.git_root,
+            })
+          else
+            -- 通常モード → バッファモードに切り替え
+            local buf_files = {}
+            for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+              if vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].buflisted then
+                local name = vim.api.nvim_buf_get_name(bufnr)
+                if name ~= '' and vim.fn.filereadable(name) == 1 then
+                  table.insert(buf_files, name)
+                end
+              end
+            end
+            make_grep_search({
+              cwd             = opts.cwd,
+              default_text    = query,
+              additional_args = opts.additional_args,
+              base_title      = 'BufGrepSearch',
+              buf_files       = buf_files,
+              file_dir        = opts.file_dir,
+              git_root        = opts.git_root,
+            })
+          end
         end)
       end
-      map('i', '<C-s>', toggle_dir)
-      map('n', '<C-s>', toggle_dir)
-    end or nil),
+      map('i', '<C-b>', toggle_buf)
+      map('n', '<C-b>', toggle_buf)
+    end),
   }):find()
 end
+
 
 vim.api.nvim_create_user_command('FileSearch', function(opts)
   local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
@@ -566,6 +651,30 @@ vim.api.nvim_create_user_command('GrepSearch', function(opts)
     base_title      = 'GrepSearch (git root)',
     file_dir        = file_dir,
     git_root        = git_root,
+  })
+end, { nargs = '*', bang = true })
+
+vim.api.nvim_create_user_command('BufGrepSearch', function(opts)
+  local buf_files = {}
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].buflisted then
+      local name = vim.api.nvim_buf_get_name(bufnr)
+      if name ~= '' and vim.fn.filereadable(name) == 1 then
+        table.insert(buf_files, name)
+      end
+    end
+  end
+  if #buf_files == 0 then
+    vim.notify('No buffer files to search', vim.log.levels.INFO)
+    return
+  end
+  local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
+  make_grep_search({
+    cwd             = git_root ~= '' and not git_root:find('fatal') and git_root or vim.fn.getcwd(),
+    default_text    = opts.args,
+    additional_args = { '--hidden', '--smart-case', '--sort', 'path' },
+    base_title      = 'BufGrepSearch',
+    buf_files       = buf_files,
   })
 end, { nargs = '*', bang = true })
 
