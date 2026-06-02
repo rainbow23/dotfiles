@@ -979,6 +979,7 @@ local function memo_list()
     if sel then
       vim.cmd(cmd .. ' ' .. vim.fn.fnameescape(sel.value.filepath))
       vim.api.nvim_win_set_cursor(0, { sel.value.line, 0 })
+      vim.cmd('normal! zz')
     end
   end
 
@@ -1123,6 +1124,7 @@ local function memo_list_current()
         if sel then
           vim.cmd(cmd .. ' ' .. vim.fn.fnameescape(sel.value.filepath))
           vim.api.nvim_win_set_cursor(0, { sel.value.line, 0 })
+      vim.cmd('normal! zz')
         end
       end
       actions.select_default:replace(function() open_memo(prompt_bufnr, 'edit') end)
