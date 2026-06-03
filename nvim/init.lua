@@ -1268,10 +1268,19 @@ local function memo_list_buffers()
         -- vim.schedule だと Telescope のウィンドウ復元が間に合わないため
         -- defer_fn で少し待ってから処理する
         vim.defer_fn(function()
+          -- bufwinid は現在タブのみ対象のため nvim_list_wins で全タブを横断検索
           local bufnr = vim.fn.bufnr(filepath)
-          local winid = bufnr ~= -1 and vim.fn.bufwinid(bufnr) or -1
-          if winid ~= -1 then
-            vim.api.nvim_set_current_win(winid)
+          local target_win = nil
+          if bufnr ~= -1 then
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+              if vim.api.nvim_win_get_buf(win) == bufnr then
+                target_win = win
+                break
+              end
+            end
+          end
+          if target_win then
+            vim.api.nvim_set_current_win(target_win)
           else
             vim.cmd('edit ' .. vim.fn.fnameescape(filepath))
           end
@@ -1296,8 +1305,9 @@ local function memo_list_buffers()
       map_modes(map, '<C-h>', function(b) memo_open_entry(b, 'split') end)
       return true
     end,
-    layout_strategy = telescope_layout_presets[1].layout_strategy,
-    layout_config   = telescope_layout_presets[1].layout_config,
+    -- フロートレイアウト: 既存の vsplit ウィンドウを破壊しないため center を使用
+    layout_strategy = 'center',
+    layout_config   = { width = 0.8, height = 0.7, preview_cutoff = 1 },
   }):find()
 end
 
