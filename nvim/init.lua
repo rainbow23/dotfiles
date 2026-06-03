@@ -1268,18 +1268,10 @@ local function memo_list_buffers()
         -- vim.schedule だと Telescope のウィンドウ復元が間に合わないため
         -- defer_fn で少し待ってから処理する
         vim.defer_fn(function()
-          -- vim.fn.bufnr() はパターンマッチするため全バッファを直接走査して完全一致で探す
-          local target_bufnr = -1
-          for _, b in ipairs(vim.api.nvim_list_bufs()) do
-            if memo_normalize_path(vim.api.nvim_buf_get_name(b)) == filepath then
-              target_bufnr = b
-              break
-            end
-          end
-          -- win_findbuf でそのバッファを表示しているウィンドウ一覧を取得
-          local wins = target_bufnr ~= -1 and vim.fn.win_findbuf(target_bufnr) or {}
-          if #wins > 0 then
-            vim.api.nvim_set_current_win(wins[1])
+          local bufnr = vim.fn.bufnr(filepath)
+          local winid = bufnr ~= -1 and vim.fn.bufwinid(bufnr) or -1
+          if winid ~= -1 then
+            vim.api.nvim_set_current_win(winid)
           else
             vim.cmd('edit ' .. vim.fn.fnameescape(filepath))
           end
