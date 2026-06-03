@@ -395,7 +395,7 @@ local make_attach_mappings = function(preview_default_on, extra_mappings)
 end
 
 local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
-local grep_search_shortcut = '<C-b>=Buffer切替 <C-s>=Dir切替 <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
+local grep_search_shortcut = '<C-s>=Dir切替 <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
 
 local make_file_search   -- forward declaration
 local make_grep_search   -- forward declaration
@@ -585,37 +585,7 @@ make_grep_search = function(opts)
         end
         map_modes(map, '<C-s>', toggle_dir)
       end
-      -- <C-b>: 通常モード ↔ バッファ検索モード 切替
-      local function toggle_buf(b)
-        local query = action_state.get_current_picker(b):_get_prompt()
-        actions.close(b)
-        vim.schedule(function()
-          if opts.buf_files then
-            -- バッファモード → 通常モードに切り替え
-            make_grep_search({
-              cwd             = opts.git_root or vim.fn.getcwd(),
-              default_text    = query,
-              additional_args = opts.additional_args,
-              base_title      = 'GrepSearch',
-              file_dir        = opts.file_dir,
-              git_root        = opts.git_root,
-            })
-          else
-            -- 通常モード → バッファモードに切り替え
-            local buf_files = get_buf_files()
-            make_grep_search({
-              cwd             = opts.cwd,
-              default_text    = query,
-              additional_args = opts.additional_args,
-              base_title      = 'BufGrepSearch',
-              buf_files       = buf_files,
-              file_dir        = opts.file_dir,
-              git_root        = opts.git_root,
-            })
-          end
-        end)
-      end
-      map_modes(map, '<C-b>', toggle_buf)
+
     end),
   }):find()
 end
@@ -1020,12 +990,13 @@ local memo_previewer = previewers.new_buffer_previewer({
 -- メモエントリを開いてジャンプする共通処理
 local function memo_open_entry(b, cmd)
   local sel = action_state.get_selected_entry()
+  if not sel then return end
   actions.close(b)
-  if sel then
+  vim.schedule(function()
     vim.cmd(cmd .. ' ' .. vim.fn.fnameescape(sel.value.filepath))
     vim.api.nvim_win_set_cursor(0, { sel.value.line, 0 })
     vim.cmd('normal! zz')
-  end
+  end)
 end
 
 -- JSON とバッファ extmark からメモを削除する共通処理
@@ -1221,6 +1192,119 @@ local function memo_force_reload()
   vim.api.nvim_buf_clear_namespace(bufnr, memo_ns, 0, -1)
   memo_load_buf(bufnr)
 end
+
+-- 開いているバッファのメモのみをTelescope一覧表示する
+-- 選択時は既存ウィンドウへジャンプ（なければ現在ウィンドウで開く）
+local function memo_list_buffers()
+  -- ロード済みバッファのファイルパスをセットとして収集
+  local buf_set = {}
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].buflisted then
+      local name = memo_normalize_path(vim.api.nvim_buf_get_name(bufnr))
+      if name ~= '' then buf_set[name] = true end
+    end
+  end
+
+  local git_root = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
+  local has_git  = git_root ~= '' and not git_root:find('fatal')
+  local gr_norm  = has_git
+    and vim.fn.fnamemodify(git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/') or nil
+
+  local function display_path(filepath)
+    if gr_norm then
+      local fp_n = vim.fn.fnamemodify(filepath, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+      if fp_n:find(gr_norm, 1, true) == 1 then
+        local rel       = fp_n:sub(#gr_norm + 1)
+        local root_name = vim.fn.fnamemodify(gr_norm, ':t')
+        return root_name .. (rel == '' and '' or rel)
+      end
+    end
+    return vim.fn.fnamemodify(filepath, ':~:.')
+  end
+
+  -- バッファに含まれるファイルのメモのみを抽出
+  local data    = memo_read_json()
+  local results = {}
+  for filepath, entries in pairs(data) do
+    if buf_set[filepath] then
+      for _, e in ipairs(entries) do
+        table.insert(results, {
+          filepath = filepath,
+          line     = e.line,
+          text     = e.text,
+          display  = display_path(filepath) .. ':' .. e.line .. '  ' .. e.text,
+        })
+      end
+    end
+  end
+  table.sort(results, function(a, b)
+    if a.filepath ~= b.filepath then return a.filepath < b.filepath end
+    return a.line < b.line
+  end)
+
+  if #results == 0 then
+    vim.notify('No memos in open buffers', vim.log.levels.INFO)
+    return
+  end
+
+  pickers.new({}, {
+    prompt_title = '📝 Buffer Memos  <CR>=ジャンプ <C-d>=削除 <C-l>=レイアウト切替 <C-t>=新規タブ <M-v>=vsplit <C-h>=hsplit',
+    finder = finders.new_table({
+      results = results,
+      entry_maker = function(e)
+        return { value = e, display = e.display, ordinal = e.display, filename = e.filepath, lnum = e.line }
+      end,
+    }),
+    sorter    = make_memo_sorter(results),
+    previewer = memo_previewer,
+    attach_mappings = function(prompt_bufnr, map)
+      -- <CR>: 既存ウィンドウへジャンプ（バッファファイルのため通常は存在する）
+      local function jump_to_win()
+        local sel = action_state.get_selected_entry()
+        if not sel then return end
+        local filepath = sel.value.filepath
+        local lnum     = sel.value.line
+        actions.close(prompt_bufnr)
+        vim.schedule(function()
+          local abs = vim.fn.fnamemodify(filepath, ':p')
+          local target_win = nil
+          for _, win in ipairs(vim.api.nvim_list_wins()) do
+            local buf  = vim.api.nvim_win_get_buf(win)
+            local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ':p')
+            if name == abs then target_win = win; break end
+          end
+          if target_win then
+            vim.api.nvim_set_current_win(target_win)
+          else
+            vim.cmd('edit ' .. vim.fn.fnameescape(filepath))
+          end
+          vim.api.nvim_win_set_cursor(0, { lnum, 0 })
+          vim.cmd('normal! zz')
+        end)
+      end
+      actions.select_default:replace(jump_to_win)
+      -- 削除・レイアウト・分割オープン
+      local function delete_memo()
+        local sel = action_state.get_selected_entry()
+        if not sel then return end
+        local picker = action_state.get_current_picker(prompt_bufnr)
+        memo_delete_from_store(sel.value.filepath, sel.value.line)
+        picker:delete_selection(function() vim.notify('Memo deleted') end)
+      end
+      local toggle_layout = make_layout_toggle(prompt_bufnr)
+      map_modes(map, '<C-d>', delete_memo)
+      map_modes(map, '<C-l>', toggle_layout)
+      map_modes(map, '<C-t>', function(b) memo_open_entry(b, 'tabedit') end)
+      map_modes(map, '<M-v>', function(b) memo_open_entry(b, 'vsplit') end)
+      map_modes(map, '<C-h>', function(b) memo_open_entry(b, 'split') end)
+      return true
+    end,
+    layout_strategy = telescope_layout_presets[1].layout_strategy,
+    layout_config   = telescope_layout_presets[1].layout_config,
+  }):find()
+end
+
+vim.api.nvim_create_user_command('MyBuffersMemos', memo_list_buffers, {})
 
 vim.keymap.set('n', '<leader>ma', memo_add_or_edit,    { desc = 'Memo add/edit' })
 vim.keymap.set('n', '<leader>md', memo_delete,         { desc = 'Memo delete' })

@@ -252,7 +252,7 @@ endif
 nnoremap [fzf]m :<C-u>FZFMru<CR>
 nnoremap [fzf]f :<C-u>FileSearch<CR>
 nnoremap [fzf]g :<C-u>GitStatus<CR>
-nnoremap [fzf]b :<C-u>Buffers<CR>
+nnoremap [fzf]b :<C-u>MyBuffersMemos<CR>
 nnoremap [fzf]h :<C-u>History<CR>
 " list tabs
 nnoremap [fzf]w :<C-u>Windows<CR>
