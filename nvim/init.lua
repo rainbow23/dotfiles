@@ -1265,22 +1265,27 @@ local function memo_list_buffers()
         local filepath = sel.value.filepath
         local lnum     = sel.value.line
         actions.close(prompt_bufnr)
-        vim.schedule(function()
-          local abs = vim.fn.fnamemodify(filepath, ':p')
-          local target_win = nil
-          for _, win in ipairs(vim.api.nvim_list_wins()) do
-            local buf  = vim.api.nvim_win_get_buf(win)
-            local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ':p')
-            if name == abs then target_win = win; break end
+        -- vim.schedule だと Telescope のウィンドウ復元が間に合わないため
+        -- defer_fn で少し待ってから処理する
+        vim.defer_fn(function()
+          -- vim.fn.bufnr() はパターンマッチするため全バッファを直接走査して完全一致で探す
+          local target_bufnr = -1
+          for _, b in ipairs(vim.api.nvim_list_bufs()) do
+            if memo_normalize_path(vim.api.nvim_buf_get_name(b)) == filepath then
+              target_bufnr = b
+              break
+            end
           end
-          if target_win then
-            vim.api.nvim_set_current_win(target_win)
+          -- win_findbuf でそのバッファを表示しているウィンドウ一覧を取得
+          local wins = target_bufnr ~= -1 and vim.fn.win_findbuf(target_bufnr) or {}
+          if #wins > 0 then
+            vim.api.nvim_set_current_win(wins[1])
           else
             vim.cmd('edit ' .. vim.fn.fnameescape(filepath))
           end
           vim.api.nvim_win_set_cursor(0, { lnum, 0 })
           vim.cmd('normal! zz')
-        end)
+        end, 50)
       end
       actions.select_default:replace(jump_to_win)
       -- 削除・レイアウト・分割オープン
