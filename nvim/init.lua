@@ -816,12 +816,21 @@ end, { desc = 'Session override save' })
 -- キーマップ: <leader>ma=追加/編集  <leader>md=削除  <leader>ml=一覧(telescope)
 local memo_ns          = vim.api.nvim_create_namespace('user_memos')
 local memo_file        = vim.fn.expand('~/.vim/memos.json')
-local buf_memos        = {}  -- { [bufnr] = { [extmark_id] = text } }
+local buf_memos        = {}  -- { [bufnr] = { [extmark_id] = { text, color } } }
 local memo_loaded_bufs = {}  -- ロード済みバッファの管理
 
 -- パス区切り文字を / に統一する（Windows/GitBash で \ と / が混在する問題を解消）
 local function memo_normalize_path(path)
   return path:gsub('\\', '/')
+end
+
+-- メモ個別色の highlight group 名を返す（なければ MemoHighlight を使用）
+-- ColorScheme 変更後も呼び出し側で再設定できるよう毎回 nvim_set_hl を実行する
+local function memo_hl_group(color)
+  if not color then return 'MemoHighlight' end
+  local name = 'MemoHL_' .. color:sub(2)
+  vim.api.nvim_set_hl(0, name, { fg = color, italic = true })
+  return name
 end
 
 local function memo_read_json()
@@ -845,13 +854,13 @@ local function memo_write_json(data)
 end
 
 -- extmark を配置してバッファ内メモテーブルに登録する
-local function memo_set_extmark(bufnr, line0, text)
+local function memo_set_extmark(bufnr, line0, text, color)
   local id = vim.api.nvim_buf_set_extmark(bufnr, memo_ns, line0, 0, {
-    virt_lines       = { { { '  📝 ' .. text, 'MemoHighlight' } } },
+    virt_lines       = { { { '  📝 ' .. text, memo_hl_group(color) } } },
     virt_lines_above = false,
   })
   if not buf_memos[bufnr] then buf_memos[bufnr] = {} end
-  buf_memos[bufnr][id] = text
+  buf_memos[bufnr][id] = { text = text, color = color }
   return id
 end
 
@@ -864,10 +873,12 @@ local function memo_flush_buf(bufnr)
   if filepath == '' then return end
   local data    = memo_read_json()
   local entries = {}
-  for id, text in pairs(ids) do
+  for id, m in pairs(ids) do
     local pos = vim.api.nvim_buf_get_extmark_by_id(bufnr, memo_ns, id, {})
     if pos and pos[1] then
-      table.insert(entries, { line = pos[1] + 1, text = text })  -- JSON は 1-indexed
+      local entry = { line = pos[1] + 1, text = m.text }  -- JSON は 1-indexed
+      if m.color then entry.color = m.color end
+      table.insert(entries, entry)
     end
   end
   data[filepath] = #entries > 0 and entries or nil
@@ -891,7 +902,7 @@ local function memo_load_buf(bufnr)
     vim.api.nvim_buf_clear_namespace(bufnr, memo_ns, 0, -1)
     buf_memos[bufnr] = {}
     for _, e in ipairs(entries) do
-      memo_set_extmark(bufnr, e.line - 1, e.text)  -- extmark は 0-indexed
+      memo_set_extmark(bufnr, e.line - 1, e.text, e.color)  -- extmark は 0-indexed
     end
   end, 100)
 end
@@ -902,10 +913,12 @@ local function memo_add_or_edit()
   local line0 = vim.api.nvim_win_get_cursor(0)[1] - 1
   -- 現在行に既存メモがあれば取得する
   local marks = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { line0, 0 }, { line0, -1 }, {})
-  local existing_id, existing_text
+  local existing_id, existing_text, existing_color
   if #marks > 0 then
-    existing_id   = marks[1][1]
-    existing_text = (buf_memos[bufnr] or {})[existing_id] or ''
+    existing_id = marks[1][1]
+    local m = (buf_memos[bufnr] or {})[existing_id]
+    existing_text  = m and m.text  or ''
+    existing_color = m and m.color or nil
   end
   local input = vim.fn.input('Memo: ', existing_text or '')
   vim.cmd('redraw')
@@ -914,7 +927,7 @@ local function memo_add_or_edit()
     vim.api.nvim_buf_del_extmark(bufnr, memo_ns, existing_id)
     if buf_memos[bufnr] then buf_memos[bufnr][existing_id] = nil end
   end
-  memo_set_extmark(bufnr, line0, input)
+  memo_set_extmark(bufnr, line0, input, existing_color)
   memo_flush_buf(bufnr)
 end
 
@@ -1043,6 +1056,79 @@ local function make_memo_attach_mappings(extra)
   end
 end
 
+-- カラーピッカーを表示して選択色を callback(hex) で返す
+local function show_color_picker(callback)
+  local color_presets = {
+    { name = 'Gold    #FFD700', hex = '#FFD700' },
+    { name = 'Coral   #FF7F50', hex = '#FF7F50' },
+    { name = 'Sky     #87CEEB', hex = '#87CEEB' },
+    { name = 'Lime    #00FF7F', hex = '#00FF7F' },
+    { name = 'Violet  #EE82EE', hex = '#EE82EE' },
+    { name = 'Orange  #FFA500', hex = '#FFA500' },
+    { name = 'Pink    #FFB6C1', hex = '#FFB6C1' },
+    { name = 'Cyan    #00FFFF', hex = '#00FFFF' },
+    { name = 'Custom  (入力)', hex = nil },
+  }
+  pickers.new({}, {
+    prompt_title = 'Memo Color',
+    finder = finders.new_table({
+      results     = color_presets,
+      entry_maker = function(item)
+        return { value = item, display = item.name, ordinal = item.name }
+      end,
+    }),
+    sorter = require('telescope.config').values.generic_sorter({}),
+    attach_mappings = function(pb)
+      actions.select_default:replace(function()
+        local sel = action_state.get_selected_entry()
+        actions.close(pb)
+        vim.schedule(function()
+          local hex = sel.value.hex
+          if not hex then
+            hex = vim.fn.input('Color (#RRGGBB): ')
+            if hex == '' then return end
+            if not hex:match('^#%x%x%x%x%x%x$') then
+              vim.notify('Invalid color: ' .. hex, vim.log.levels.ERROR); return
+            end
+          end
+          callback(hex)
+        end)
+      end)
+      return true
+    end,
+    layout_strategy = 'center',
+    layout_config   = { width = 40, height = 14 },
+  }):find()
+end
+
+-- カーソル位置にあるメモの色をカラーピッカーで変更する
+local function memo_change_color_at_cursor()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local line0 = vim.api.nvim_win_get_cursor(0)[1] - 1
+  local marks = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { line0, 0 }, { line0, -1 }, {})
+  if #marks == 0 then vim.notify('No memo on this line', vim.log.levels.INFO); return end
+  local id  = marks[1][1]
+  local m   = (buf_memos[bufnr] or {})[id]
+  if not m then return end
+  local text     = m.text
+  local ln       = line0 + 1  -- JSON は 1-indexed
+  local filepath = memo_normalize_path(vim.api.nvim_buf_get_name(bufnr))
+  show_color_picker(function(hex)
+    -- JSON を更新
+    local store = memo_read_json()
+    if store[filepath] then
+      for _, e in ipairs(store[filepath]) do
+        if e.line == ln then e.color = hex; break end
+      end
+      memo_write_json(store)
+    end
+    -- バッファ内 extmark を更新
+    vim.api.nvim_buf_del_extmark(bufnr, memo_ns, id)
+    if buf_memos[bufnr] then buf_memos[bufnr][id] = nil end
+    memo_set_extmark(bufnr, line0, text, hex)
+  end)
+end
+
 -- Telescope でメモ一覧を表示する
 local function memo_list()
   local git_root = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
@@ -1076,6 +1162,7 @@ local function memo_list()
         filepath = filepath,
         line     = e.line,
         text     = e.text,
+        color    = e.color,
         display  = memo_display_path(filepath) .. ':' .. e.line .. '  ' .. e.text,
       })
     end
@@ -1117,9 +1204,10 @@ local function memo_list()
           if bufnr ~= -1 and buf_memos[bufnr] then
             local ms = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { ln - 1, 0 }, { ln - 1, -1 }, {})
             for _, m in ipairs(ms) do
+              local old_color = (buf_memos[bufnr][m[1]] or {}).color
               vim.api.nvim_buf_del_extmark(bufnr, memo_ns, m[1])
               buf_memos[bufnr][m[1]] = nil
-              memo_set_extmark(bufnr, ln - 1, new_text)
+              memo_set_extmark(bufnr, ln - 1, new_text, old_color)
             end
           end
           memo_list()
@@ -1133,11 +1221,50 @@ local function memo_list()
 end
 
 -- メモのハイライト定義（colorscheme 変更後も維持する）
+local memo_color_file = vim.fn.expand('~/.vim/memo_color.json')
+
+local function memo_color_load()
+  local fh = io.open(memo_color_file, 'r')
+  if not fh then return '#FFD700' end
+  local raw = fh:read('*a')
+  fh:close()
+  local ok, obj = pcall(vim.fn.json_decode, raw)
+  if ok and type(obj) == 'table' and type(obj.color) == 'string' then
+    return obj.color
+  end
+  return '#FFD700'
+end
+
+local function memo_color_save(hex)
+  local fh = io.open(memo_color_file, 'w')
+  if fh then
+    fh:write(vim.fn.json_encode({ color = hex }))
+    fh:close()
+  end
+end
+
 local function restore_memo_hl()
-  vim.api.nvim_set_hl(0, 'MemoHighlight', { fg = '#FFD700', italic = true })
+  vim.api.nvim_set_hl(0, 'MemoHighlight', { fg = memo_color_load(), italic = true })
+  -- JSON に保存された個別色の highlight group を再定義する（ColorScheme 変更後に失われるため）
+  local data = memo_read_json()
+  for _, entries in pairs(data) do
+    for _, e in ipairs(entries) do
+      if e.color then
+        vim.api.nvim_set_hl(0, 'MemoHL_' .. e.color:sub(2), { fg = e.color, italic = true })
+      end
+    end
+  end
 end
 restore_memo_hl()
 vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, { callback = restore_memo_hl })
+
+local function pick_memo_color()
+  show_color_picker(function(hex)
+    vim.api.nvim_set_hl(0, 'MemoHighlight', { fg = hex, italic = true })
+    memo_color_save(hex)
+  end)
+end
+vim.api.nvim_create_user_command('MemoColor', pick_memo_color, {})
 
 -- バッファ読み込み時にメモを自動ロードする
 -- BufEnter も対象にすることでセッション復元など BufRead が発火しないケースも補足する
@@ -1163,7 +1290,7 @@ local function memo_list_current()
   local entries = memo_read_json()[filepath] or {}
   local results = {}
   for _, e in ipairs(entries) do
-    table.insert(results, { filepath = filepath, line = e.line, text = e.text,
+    table.insert(results, { filepath = filepath, line = e.line, text = e.text, color = e.color,
       display = string.format('%4d  %s', e.line, e.text) })
   end
   if #results == 0 then vim.notify('No memos in this file', vim.log.levels.INFO); return end
@@ -1179,7 +1306,7 @@ local function memo_list_current()
     previewer       = memo_previewer,
     layout_strategy = telescope_layout_presets[1].layout_strategy,
     layout_config   = telescope_layout_presets[1].layout_config,
-    attach_mappings = make_memo_attach_mappings(),
+    attach_mappings = make_memo_attach_mappings(nil),
   }):find()
 end
 
@@ -1232,6 +1359,7 @@ local function memo_list_buffers()
           filepath = filepath,
           line     = e.line,
           text     = e.text,
+          color    = e.color,
           display  = display_path(filepath) .. ':' .. e.line .. '  ' .. e.text,
         })
       end
@@ -1313,11 +1441,12 @@ end
 
 vim.api.nvim_create_user_command('MyBuffersMemos', memo_list_buffers, {})
 
-vim.keymap.set('n', '<leader>ma', memo_add_or_edit,    { desc = 'Memo add/edit' })
-vim.keymap.set('n', '<leader>md', memo_delete,         { desc = 'Memo delete' })
-vim.keymap.set('n', '<leader>ml', memo_list,           { desc = 'Memo list (telescope)' })
-vim.keymap.set('n', '<leader>ll', memo_list_current,   { desc = 'Memo list current file' })
-vim.keymap.set('n', '<leader>mr', memo_force_reload,   { desc = 'Memo force reload' })
+vim.keymap.set('n', '<leader>ma', memo_add_or_edit,              { desc = 'Memo add/edit' })
+vim.keymap.set('n', '<leader>md', memo_delete,                   { desc = 'Memo delete' })
+vim.keymap.set('n', '<leader>mc', memo_change_color_at_cursor,   { desc = 'Memo change color at cursor' })
+vim.keymap.set('n', '<leader>ml', memo_list,                     { desc = 'Memo list (telescope)' })
+vim.keymap.set('n', '<leader>ll', memo_list_current,             { desc = 'Memo list current file' })
+vim.keymap.set('n', '<leader>mr', memo_force_reload,             { desc = 'Memo force reload' })
 
 -- 起動時に stale な ShaDa tmp ファイルを削除する
 -- Windows/GitBash 環境でクラッシュや複数インスタンス起動後に tmp ファイルが残留し
@@ -1417,6 +1546,7 @@ local function restore_ui_hl()
   vim.api.nvim_set_hl(0, 'ZoomBackdrop', { bg = '#3a3a3a', fg = '#3a3a3a' })
 end
 vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, { callback = restore_ui_hl })
+
 
 -- タブラインにファイル名のみ表示する
 function _G.MyTabLine()
