@@ -1099,6 +1099,13 @@ local function show_color_picker(callback)
     }),
     sorter = require('telescope.config').values.generic_sorter({}),
     attach_mappings = function(pb)
+      -- results ウィンドウの選択行ハイライトを fg なし版に差し替え（着色四角を維持するため）
+      vim.schedule(function()
+        local picker = action_state.get_current_picker(pb)
+        if picker and picker.results_win and vim.api.nvim_win_is_valid(picker.results_win) then
+          vim.wo[picker.results_win].winhighlight = 'TelescopeSelection:ColorPickerSelection'
+        end
+      end)
       actions.select_default:replace(function()
         local sel = action_state.get_selected_entry()
         actions.close(pb)
@@ -1564,6 +1571,8 @@ local function restore_ui_hl()
   vim.api.nvim_set_hl(0, 'FloatBorder',  { fg = '#FFFFFF' })
   -- zoom backdrop: tmux popup 風の灰色背景
   vim.api.nvim_set_hl(0, 'ZoomBackdrop', { bg = '#3a3a3a', fg = '#3a3a3a' })
+  -- カラーピッカー選択行: fg 指定なしで着色テキストを維持する
+  vim.api.nvim_set_hl(0, 'ColorPickerSelection', { bg = '#555555', bold = true })
 end
 vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, { callback = restore_ui_hl })
 
