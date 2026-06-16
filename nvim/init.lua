@@ -818,6 +818,7 @@ local memo_ns          = vim.api.nvim_create_namespace('user_memos')
 local memo_file        = vim.fn.expand('~/.vim/memos.json')
 local buf_memos        = {}  -- { [bufnr] = { [extmark_id] = { text, color } } }
 local memo_loaded_bufs = {}  -- ロード済みバッファの管理
+local memo_last_color  = nil -- 直前にカラーピッカーで選択した色（新規メモに引き継ぐ）
 
 -- パス区切り文字を / に統一する（Windows/GitBash で \ と / が混在する問題を解消）
 local function memo_normalize_path(path)
@@ -927,7 +928,9 @@ local function memo_add_or_edit()
     vim.api.nvim_buf_del_extmark(bufnr, memo_ns, existing_id)
     if buf_memos[bufnr] then buf_memos[bufnr][existing_id] = nil end
   end
-  memo_set_extmark(bufnr, line0, input, existing_color)
+  -- 新規メモは直前のカラーピッカー選択色を引き継ぐ
+  local color = existing_color or memo_last_color
+  memo_set_extmark(bufnr, line0, input, color)
   memo_flush_buf(bufnr)
 end
 
@@ -1141,6 +1144,7 @@ local function memo_change_color_at_cursor()
   local ln       = line0 + 1  -- JSON は 1-indexed
   local filepath = memo_normalize_path(vim.api.nvim_buf_get_name(bufnr))
   show_color_picker(function(hex)
+    memo_last_color = hex
     -- JSON を更新
     local store = memo_read_json()
     if store[filepath] then
