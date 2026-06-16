@@ -1058,23 +1058,43 @@ end
 
 -- カラーピッカーを表示して選択色を callback(hex) で返す
 local function show_color_picker(callback)
+  local square = '██ '           -- U+2588 × 2 + space（各3バイト = 計7バイト）
+  local sq_len = #square         -- ハイライト範囲のバイト終端
   local color_presets = {
-    { name = 'Gold    #FFD700', hex = '#FFD700' },
-    { name = 'Coral   #FF7F50', hex = '#FF7F50' },
-    { name = 'Sky     #87CEEB', hex = '#87CEEB' },
-    { name = 'Lime    #00FF7F', hex = '#00FF7F' },
-    { name = 'Violet  #EE82EE', hex = '#EE82EE' },
-    { name = 'Orange  #FFA500', hex = '#FFA500' },
-    { name = 'Pink    #FFB6C1', hex = '#FFB6C1' },
-    { name = 'Cyan    #00FFFF', hex = '#00FFFF' },
-    { name = 'Custom  (入力)', hex = nil },
+    { name = 'Gold',   hex = '#FFD700' },
+    { name = 'Coral',  hex = '#FF7F50' },
+    { name = 'Sky',    hex = '#87CEEB' },
+    { name = 'Lime',   hex = '#00FF7F' },
+    { name = 'Violet', hex = '#EE82EE' },
+    { name = 'Orange', hex = '#FFA500' },
+    { name = 'Pink',   hex = '#FFB6C1' },
+    { name = 'Cyan',   hex = '#00FFFF' },
+    { name = 'Custom', hex = nil },
   }
+  -- 各色のハイライトグループを事前定義
+  for _, c in ipairs(color_presets) do
+    if c.hex then
+      vim.api.nvim_set_hl(0, 'ColorPickerHL_' .. c.hex:sub(2), { fg = c.hex })
+    end
+  end
   pickers.new({}, {
     prompt_title = 'Memo Color',
     finder = finders.new_table({
       results     = color_presets,
       entry_maker = function(item)
-        return { value = item, display = item.name, ordinal = item.name }
+        local disp, hl
+        if item.hex then
+          disp = square .. item.name .. '  ' .. item.hex
+          hl   = { { { 0, sq_len }, 'ColorPickerHL_' .. item.hex:sub(2) } }
+        else
+          disp = '   ' .. item.name .. '  (入力)'
+          hl   = {}
+        end
+        return {
+          value   = item,
+          display = function() return disp, hl end,
+          ordinal = item.name,
+        }
       end,
     }),
     sorter = require('telescope.config').values.generic_sorter({}),
