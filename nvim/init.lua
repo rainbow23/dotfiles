@@ -1479,6 +1479,11 @@ vim.keymap.set('n', '<leader>ml', memo_list,                     { desc = 'Memo 
 vim.keymap.set('n', '<leader>ll', memo_list_current,             { desc = 'Memo list current file' })
 vim.keymap.set('n', '<leader>mr', memo_force_reload,             { desc = 'Memo force reload' })
 
+-- ターミナルリサイズ時にウィンドウ分割を均等化する（w= 相当）
+vim.api.nvim_create_autocmd('VimResized', {
+  callback = function() vim.cmd('wincmd =') end,
+})
+
 -- 起動時に stale な ShaDa tmp ファイルを削除する
 -- Windows/GitBash 環境でクラッシュや複数インスタンス起動後に tmp ファイルが残留し
 -- "cannot write ShaDa file!" エラーが出る問題への対処
