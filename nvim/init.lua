@@ -560,7 +560,8 @@ make_grep_search = function(opts)
           else
             vim.cmd('edit ' .. vim.fn.fnameescape(filename))
           end
-          vim.api.nvim_win_set_cursor(0, { lnum, col })
+          local safe_lnum = math.min(lnum, vim.api.nvim_buf_line_count(0))
+          vim.api.nvim_win_set_cursor(0, { safe_lnum, col })
           vim.cmd('normal! zz')
         end)
       end
