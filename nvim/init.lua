@@ -555,14 +555,19 @@ make_grep_search = function(opts)
               break
             end
           end
+          local function jump()
+            local safe_lnum = math.max(1, math.min(lnum, vim.api.nvim_buf_line_count(0)))
+            vim.api.nvim_win_set_cursor(0, { safe_lnum, col })
+            vim.cmd('normal! zz')
+          end
           if target_win then
             vim.api.nvim_set_current_win(target_win)
+            jump()
           else
             vim.cmd('edit ' .. vim.fn.fnameescape(filename))
+            -- Windows でバッファロード完了前にカーソル設定するとエラーになるため defer
+            vim.defer_fn(jump, 50)
           end
-          local safe_lnum = math.min(lnum, vim.api.nvim_buf_line_count(0))
-          vim.api.nvim_win_set_cursor(0, { safe_lnum, col })
-          vim.cmd('normal! zz')
         end)
       end
       map_modes(map, '<CR>', select_entry)
