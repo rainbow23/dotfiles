@@ -114,24 +114,31 @@ _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always 
 
 git-commit-show() {
   tput reset
-  local key
-  key=$(
+  local out key selected
+  out=$(
     _glNoGraph ${1:+"$1"} |
       fzf --height=100% --no-sort --reverse --tiebreak=index --no-multi --ansi \
         --preview="$_viewGitLogLine" \
         --preview-window=right:hidden \
         --header "<C-f>=preview, <C-g>=copy message, <C-h>=copy hash, <C-b>=branch list" \
         --bind "enter:execute($_viewGitLogLine | less -R)" \
-        --bind "ctrl-h:execute($_gitLogLineToHash | pbcopy)+abort" \
         --bind "ctrl-g:execute($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)+abort" \
         --bind "q:abort" \
         --bind '?:toggle-preview' \
         --bind='ctrl-f:toggle-preview' \
         --expect=ctrl-b \
+        --expect=ctrl-h \
         --print-query \
-  | sed -n '2p')
+  )
+  key=$(sed -n '2p' <<< "$out")
+  selected=$(sed -n '3p' <<< "$out")
   if [ -s /tmp/git_commit_message ]; then
     git-commit-with-tmp-message
+  elif [ "$key" = ctrl-h ] && [ -n "$selected" ]; then
+    local hash
+    hash=$(echo "$selected" | grep -o '[a-f0-9]\{7\}' | head -1 | cut -d: -f2-)
+    echo "$hash" | pbcopy
+    echo "Copied: $hash"
   elif [ "$key" = ctrl-b ]; then
     git-commit-show-multi-branch
   fi
