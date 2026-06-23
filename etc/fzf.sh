@@ -121,7 +121,7 @@ git-commit-show() {
         --preview="$_viewGitLogLine" \
         --preview-window=right:hidden \
         --header "<C-f>=preview, <C-g>=copy message, <C-h>=copy hash, <C-b>=branch list" \
-        --bind "enter:execute($_viewGitLogLine | less -R)" \
+        --bind "enter:execute($_viewGitLogLine | less -R > /dev/tty)" \
         --bind "ctrl-g:execute($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)+abort" \
         --bind "q:abort" \
         --bind '?:toggle-preview' \
