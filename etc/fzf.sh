@@ -120,21 +120,21 @@ git-commit-show() {
       fzf --height=100% --no-sort --reverse --tiebreak=index --no-multi --ansi \
         --preview="$_viewGitLogLine" \
         --preview-window=right:hidden \
-        --header "<C-f>=preview, <C-g>=copy message, <C-h>=copy hash, <C-b>=branch list" \
+        --header "<C-f>=preview, <C-g>=copy message, <C-y>=copy hash, <C-b>=branch list" \
         --bind "enter:execute($_viewGitLogLine | less -R > /dev/tty)" \
         --bind "ctrl-g:execute($_gitLogLineToHash | xargs git show -s --format=%s > /tmp/git_commit_message)+abort" \
         --bind "q:abort" \
         --bind '?:toggle-preview' \
         --bind='ctrl-f:toggle-preview' \
         --expect=ctrl-b \
-        --expect=ctrl-h \
+        --expect=ctrl-y \
         --print-query \
   )
   key=$(sed -n '2p' <<< "$out")
   selected=$(sed -n '3p' <<< "$out")
   if [ -s /tmp/git_commit_message ]; then
     git-commit-with-tmp-message
-  elif [ "$key" = ctrl-h ] && [ -n "$selected" ]; then
+  elif [ "$key" = ctrl-y ] && [ -n "$selected" ]; then
     local hash
     hash=$(echo "$selected" | grep -o '[a-f0-9]\{7\}' | head -1 | cut -d: -f2-)
     if echo "$OSTYPE" | grep -q "darwin"; then
