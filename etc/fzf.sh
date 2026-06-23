@@ -137,7 +137,11 @@ git-commit-show() {
   elif [ "$key" = ctrl-h ] && [ -n "$selected" ]; then
     local hash
     hash=$(echo "$selected" | grep -o '[a-f0-9]\{7\}' | head -1 | cut -d: -f2-)
-    echo "$hash" | pbcopy
+    if echo "$OSTYPE" | grep -q "darwin"; then
+      echo "$hash" | pbcopy
+    else
+      echo "$hash" | clip
+    fi
     echo "Copied: $hash"
   elif [ "$key" = ctrl-b ]; then
     git-commit-show-multi-branch
