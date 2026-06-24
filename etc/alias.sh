@@ -112,6 +112,13 @@ alias cl='clear'
   # -------------------------------------
   abbrev-alias -g zr='zellij action rename-session'
 
+  # work_YYYYMMDD 名のセッションにアタッチ（なければ新規作成）
+  zellij-work() {
+    local name="work_$(date +%Y%m%d)"
+    zellij attach "$name" 2>/dev/null || zellij --session "$name"
+  }
+  abbrev-alias -g zw='zellij-work'
+
   ## -------------------------------------
   # fzf cd
   # -------------------------------------
