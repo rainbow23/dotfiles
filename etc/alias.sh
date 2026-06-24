@@ -108,6 +108,11 @@ alias cl='clear'
   abbrev-alias -g tl='tmux-list-panes'
 
   ## -------------------------------------
+  # zellij operation
+  # -------------------------------------
+  abbrev-alias -g zr='zellij action rename-session'
+
+  ## -------------------------------------
   # fzf cd
   # -------------------------------------
   abbrev-alias -g cdd='cd-selected-directory'
