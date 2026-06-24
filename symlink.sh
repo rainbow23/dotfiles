@@ -16,3 +16,9 @@ ln -sfn $HOME/dotfiles/nvim/init.lua $HOME/.config/nvim/init.lua
 
 #karabiner設定を追加
 ln -sfn ~/dotfiles/etc/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
+
+# zellij 設定を追加
+if [ ! -d $HOME/.config/zellij ]; then
+    mkdir -p -m 744 $HOME/.config/zellij
+fi
+ln -sfn $HOME/dotfiles/zellij/config.kdl $HOME/.config/zellij/config.kdl

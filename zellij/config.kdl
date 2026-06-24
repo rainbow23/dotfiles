@@ -1,0 +1,83 @@
+// Zellij config - tmux キーバインド互換
+// Prefix: Ctrl+u（tmux と同じ）
+
+keybinds {
+    normal {
+        // Ctrl+u でプレフィックスモード（tmux モード）へ
+        bind "Ctrl u" { SwitchToMode "Tmux"; }
+        // ペイン間移動: C-h（左）、C-l（右）
+        bind "Ctrl h" { MoveFocus "Left"; }
+        bind "Ctrl l" { MoveFocus "Right"; }
+    }
+    tmux {
+        // Ctrl+u を再押しで端末に Ctrl+u を送信してノーマルモードへ戻る
+        bind "Ctrl u" { Write 21; SwitchToMode "Normal"; }
+        // ペイン分割: prefix + | （縦）、prefix + - （横）
+        bind "|" { NewPane "Right"; SwitchToMode "Normal"; }
+        bind "-" { NewPane "Down"; SwitchToMode "Normal"; }
+        // タブ（ウィンドウ）移動: prefix + h/l
+        bind "h" { GoToPreviousTab; SwitchToMode "Normal"; }
+        bind "l" { GoToNextTab; SwitchToMode "Normal"; }
+        // タブ作成: prefix + c
+        bind "c" { NewTab; SwitchToMode "Normal"; }
+        // タブ入れ替え: prefix + Shift+Left/Right（tmux の C-S-Left/Right 相当）
+        bind "Shift Left"  { MoveTab "Left";  SwitchToMode "Normal"; }
+        bind "Shift Right" { MoveTab "Right"; SwitchToMode "Normal"; }
+        // ペインリサイズ: prefix + H/J/K/L
+        bind "H" { Resize "Increase Left"; }
+        bind "J" { Resize "Increase Down"; }
+        bind "K" { Resize "Increase Up"; }
+        bind "L" { Resize "Increase Right"; }
+        // コピーモード: prefix + v / [
+        bind "v" { SwitchToMode "Scroll"; }
+        bind "[" { SwitchToMode "Scroll"; }
+        // ペインを閉じる: prefix + x
+        bind "x" { CloseFocus; SwitchToMode "Normal"; }
+        // ズーム（フルスクリーン）: prefix + z
+        bind "z" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
+        // セッション一覧: prefix + i
+        bind "i" { SwitchToMode "Session"; }
+        // デタッチ: prefix + d
+        bind "d" { Detach; }
+        // タブリネーム: prefix + ,
+        bind "," { SwitchToMode "RenameTab"; TabNameInput 0; }
+        // ペイン移動（矢印キー）
+        bind "Left"  { MoveFocus "Left";  SwitchToMode "Normal"; }
+        bind "Right" { MoveFocus "Right"; SwitchToMode "Normal"; }
+        bind "Up"    { MoveFocus "Up";    SwitchToMode "Normal"; }
+        bind "Down"  { MoveFocus "Down";  SwitchToMode "Normal"; }
+        // キャンセル
+        bind "Esc" { SwitchToMode "Normal"; }
+    }
+    scroll {
+        // vi キーバインド
+        bind "j" { ScrollDown; }
+        bind "k" { ScrollUp; }
+        bind "d" { HalfPageScrollDown; }
+        bind "u" { HalfPageScrollUp; }
+        bind "G" { ScrollToBottom; }
+        bind "g" { ScrollToTop; }
+        // コピー: y
+        bind "y" { Copy; }
+        // 終了
+        bind "q"     { SwitchToMode "Normal"; }
+        bind "Esc"   { SwitchToMode "Normal"; }
+        bind "Ctrl c" { ScrollToBottom; SwitchToMode "Normal"; }
+    }
+}
+
+// マウス有効（tmux の mouse on 相当）
+mouse_mode true
+
+// タブ番号を 1 から開始（tmux の base-index 1 相当）
+// ※ Zellij はデフォルトで 1 始まり
+
+// デフォルトシェル
+// default_shell "zsh"
+
+// ステータスバー表示
+ui {
+    pane_frames {
+        hide_session_name false
+    }
+}
