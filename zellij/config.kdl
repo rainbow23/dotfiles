@@ -8,6 +8,9 @@ keybinds {
         // ペイン間移動: C-h（左）、C-l（右）
         bind "Ctrl h" { MoveFocus "Left"; }
         bind "Ctrl l" { MoveFocus "Right"; }
+        // fzf 等に渡すためデフォルトバインドを無効化
+        unbind "Ctrl n"
+        unbind "Ctrl p"
     }
     tmux {
         // Ctrl+u を再押しで端末に Ctrl+u を送信してノーマルモードへ戻る
