@@ -5,12 +5,18 @@ keybinds {
     normal {
         // Ctrl+u でプレフィックスモード（tmux モード）へ
         bind "Ctrl u" { SwitchToMode "Tmux"; }
-        // ペイン間移動: C-h（左）、C-l（右）
-        bind "Ctrl h" { MoveFocus "Left"; }
-        bind "Ctrl l" { MoveFocus "Right"; }
-        // fzf 等に渡すためデフォルトバインドを無効化
+        // ペイン間移動: Alt+h/l（Ctrl は Neovim/Telescope に渡すため使用しない）
+        bind "Alt h" { MoveFocus "Left"; }
+        bind "Alt l" { MoveFocus "Right"; }
+        bind "Alt j" { MoveFocus "Down"; }
+        bind "Alt k" { MoveFocus "Up"; }
+        // Neovim/fzf/Telescope に渡すためデフォルトバインドを無効化
         unbind "Ctrl n"
         unbind "Ctrl p"
+        unbind "Ctrl f"
+        unbind "Ctrl t"
+        unbind "Ctrl h"
+        unbind "Ctrl l"
     }
     tmux {
         // Ctrl+u を再押しで端末に Ctrl+u を送信してノーマルモードへ戻る
