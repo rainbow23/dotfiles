@@ -39,7 +39,7 @@ keybinds {
         // ズーム（フルスクリーン）: prefix + z
         bind "z" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
         // セッション一覧: prefix + i
-        bind "i" { SwitchToMode "Session"; }
+        bind "i" { LaunchOrFocusPlugin "session-manager" { floating true; }; SwitchToMode "Normal"; }
         // デタッチ: prefix + d
         bind "d" { Detach; }
         // タブリネーム: prefix + ,
