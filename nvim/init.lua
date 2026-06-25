@@ -514,26 +514,60 @@ make_grep_search = function(opts)
   else
     display_cwd = vim.fn.fnamemodify(cwd, ':~')  -- git 管理外は ~ 基準にフォールバック
   end
-  pickers.new(opts, {
+  -- コマンド生成を共通化（Windows デバウンス用に分離）
+  local function make_cmd(prompt)
+    if not prompt or prompt == '' then return nil end
+    local cmd = vim.deepcopy(grep_args)
+    table.insert(cmd, '--')
+    table.insert(cmd, prompt)
+    if opts.buf_files then
+      for _, f in ipairs(opts.buf_files) do table.insert(cmd, f) end
+    end
+    return cmd
+  end
+
+  -- Windows: ペースト時の連続入力で rg が大量起動するのを防ぐためデバウンスを使用
+  -- macOS/Linux: 従来通り new_job（キーストロークごとに rg を起動）
+  local is_windows    = vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1
+  local DEBOUNCE_MS   = 200
+  local debounce_timer = is_windows and vim.loop.new_timer() or nil
+  local picker_obj
+
+  picker_obj = pickers.new(opts, {
     layout_strategy = telescope_layout_presets[1].layout_strategy,
     layout_config   = telescope_layout_presets[1].layout_config,
     prompt_title = (opts.base_title or 'Search') .. ' [Grep]  Dir:' .. display_cwd .. '  ' .. grep_search_shortcut,
-    finder = finders.new_job(function(prompt)
-      if not prompt or prompt == '' then return nil end
-      local cmd = vim.deepcopy(grep_args)
-      table.insert(cmd, '--')
-      table.insert(cmd, prompt)
-      -- buf_files が指定されている場合はそのファイルのみを対象とする
-      if opts.buf_files then
-        for _, f in ipairs(opts.buf_files) do
-          table.insert(cmd, f)
-        end
-      end
-      return cmd
-    end, grep_entry, nil, opts.cwd),
+    finder = is_windows
+      and finders.new_table({ results = {} })  -- Windows: 空テーブルで起動しデバウンス後にリフレッシュ
+      or  finders.new_job(make_cmd, grep_entry, nil, opts.cwd),
     previewer = conf.grep_previewer(opts),
     sorter    = grep_line_sorter,
     attach_mappings = make_attach_mappings(true, function(prompt_bufnr, map)
+      -- Windows: TextChangedI をデバウンスして rg を一回だけ起動する
+      if is_windows and debounce_timer then
+        vim.schedule(function()
+          local pbuf = picker_obj and picker_obj.prompt_bufnr
+          if not pbuf or not vim.api.nvim_buf_is_valid(pbuf) then return end
+          local function do_refresh()
+            if not vim.api.nvim_buf_is_valid(pbuf) then return end
+            local prompt = picker_obj:_get_prompt()
+            local cmd = make_cmd(prompt)
+            if not cmd then return end
+            picker_obj:refresh(
+              finders.new_oneshot_job(cmd, { entry_maker = grep_entry, cwd = opts.cwd }),
+              { reset_prompt = false }
+            )
+          end
+          if opts.default_text and opts.default_text ~= '' then do_refresh() end
+          vim.api.nvim_create_autocmd({ 'TextChangedI', 'TextChanged' }, {
+            buffer = pbuf,
+            callback = function()
+              debounce_timer:stop()
+              debounce_timer:start(DEBOUNCE_MS, 0, vim.schedule_wrap(do_refresh))
+            end,
+          })
+        end)
+      end
       -- <CR>: 既存ウィンドウに同ファイルが開いていればそこへ移動、なければ現在ウィンドウで開く
       local function select_entry(b)
         local sel = action_state.get_selected_entry()
@@ -593,7 +627,8 @@ make_grep_search = function(opts)
       end
 
     end),
-  }):find()
+  })
+  picker_obj:find()
 end
 
 
