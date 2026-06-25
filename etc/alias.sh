@@ -119,6 +119,17 @@ alias cl='clear'
   }
   abbrev-alias -g zw='zellij-work'
 
+  # セッション一覧をfzfで選択してアタッチ
+  zellij-select() {
+    local session
+    session=$(zellij list-sessions 2>/dev/null \
+      | sed 's/\x1b\[[0-9;]*[mK]//g' \
+      | awk '{print $1}' \
+      | fzf --prompt='zellij session> ' --height=40%)
+    [ -n "$session" ] && zellij attach "$session"
+  }
+  abbrev-alias -g za='zellij-select'
+
   ## -------------------------------------
   # fzf cd
   # -------------------------------------
