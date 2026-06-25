@@ -128,7 +128,7 @@ alias cl='clear'
       | fzf --prompt='zellij session> ' --height=40%)
     [ -n "$session" ] && zellij attach "$session"
   }
-  abbrev-alias -g za='zellij-select'
+  abbrev-alias -g zs='zellij-select'
 
   ## -------------------------------------
   # fzf cd
