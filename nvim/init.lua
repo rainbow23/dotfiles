@@ -529,11 +529,30 @@ make_grep_search = function(opts)
   -- Windows: rg を一度だけ実行する oneshot finder を生成
   local is_windows = vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1
   local picker_obj
+  local base_title = (opts.base_title or 'Search') .. ' [Grep]  Dir:' .. display_cwd .. '  '
+    .. (is_windows and '<C-e>=再検索 ' or '') .. grep_search_shortcut
+
+  local function set_picker_title(title)
+    if not picker_obj then return end
+    local win = picker_obj.prompt_win
+    if win and vim.api.nvim_win_is_valid(win) then
+      pcall(vim.api.nvim_win_set_config, win, { title = ' ' .. title .. ' ', title_pos = 'left' })
+    end
+  end
 
   local function make_oneshot_finder(prompt)
     local cmd = make_cmd(prompt)
     if not cmd then return finders.new_table({ results = {} }) end
-    return finders.new_oneshot_job(cmd, { entry_maker = grep_entry, cwd = opts.cwd })
+    vim.schedule(function() set_picker_title('実行中...') end)
+    local done = false
+    local function wrapped_entry(line)
+      if not done then
+        done = true
+        vim.schedule(function() set_picker_title(base_title) end)
+      end
+      return grep_entry(line)
+    end
+    return finders.new_oneshot_job(cmd, { entry_maker = wrapped_entry, cwd = opts.cwd })
   end
 
   -- Windows: 初期クエリで rg を一度実行。<C-e> で現在プロンプトを使い再実行
@@ -541,8 +560,7 @@ make_grep_search = function(opts)
   picker_obj = pickers.new(opts, {
     layout_strategy = telescope_layout_presets[1].layout_strategy,
     layout_config   = telescope_layout_presets[1].layout_config,
-    prompt_title = (opts.base_title or 'Search') .. ' [Grep]  Dir:' .. display_cwd .. '  '
-      .. (is_windows and '<C-e>=再検索 ' or '') .. grep_search_shortcut,
+    prompt_title = base_title,
     finder = is_windows
       and make_oneshot_finder(opts.default_text)
       or  finders.new_job(make_cmd, grep_entry, nil, opts.cwd),
