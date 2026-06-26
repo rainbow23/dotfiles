@@ -528,9 +528,8 @@ make_grep_search = function(opts)
 
   -- Windows: ペースト時の連続入力で rg が大量起動するのを防ぐためデバウンスを使用
   -- macOS/Linux: 従来通り new_job（キーストロークごとに rg を起動）
-  local is_windows    = vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1
-  local DEBOUNCE_MS   = 200
-  local debounce_timer = is_windows and vim.loop.new_timer() or nil
+  local is_windows  = vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1
+  local DEBOUNCE_MS = 200
   local picker_obj
 
   picker_obj = pickers.new(opts, {
@@ -543,11 +542,13 @@ make_grep_search = function(opts)
     previewer = conf.grep_previewer(opts),
     sorter    = grep_line_sorter,
     attach_mappings = make_attach_mappings(true, function(prompt_bufnr, map)
-      -- Windows: TextChangedI をデバウンスして rg を一回だけ起動する
-      if is_windows and debounce_timer then
+      -- Windows: vim.defer_fn + タイムスタンプ比較でデバウンス
+      -- vim.loop.new_timer の stop/start 連打は Windows で不安定なため使用しない
+      if is_windows then
         vim.schedule(function()
           local pbuf = picker_obj and picker_obj.prompt_bufnr
           if not pbuf or not vim.api.nvim_buf_is_valid(pbuf) then return end
+          local last_change_ms = 0
           local function do_refresh()
             if not vim.api.nvim_buf_is_valid(pbuf) then return end
             local prompt = picker_obj:_get_prompt()
@@ -562,8 +563,11 @@ make_grep_search = function(opts)
           vim.api.nvim_create_autocmd({ 'TextChangedI', 'TextChanged' }, {
             buffer = pbuf,
             callback = function()
-              debounce_timer:stop()
-              debounce_timer:start(DEBOUNCE_MS, 0, vim.schedule_wrap(do_refresh))
+              last_change_ms = vim.loop.now()
+              local t = last_change_ms
+              vim.defer_fn(function()
+                if last_change_ms == t then do_refresh() end
+              end, DEBOUNCE_MS)
             end,
           })
         end)
