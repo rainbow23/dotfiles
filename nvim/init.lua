@@ -514,7 +514,7 @@ make_grep_search = function(opts)
   else
     display_cwd = vim.fn.fnamemodify(cwd, ':~')  -- git 管理外は ~ 基準にフォールバック
   end
-  -- コマンド生成を共通化（Windows デバウンス用に分離）
+  -- コマンド生成を共通化
   local function make_cmd(prompt)
     if not prompt or prompt == '' then return nil end
     local cmd = vim.deepcopy(grep_args)
@@ -526,50 +526,35 @@ make_grep_search = function(opts)
     return cmd
   end
 
-  -- Windows: ペースト時の連続入力で rg が大量起動するのを防ぐためデバウンスを使用
-  -- macOS/Linux: 従来通り new_job（キーストロークごとに rg を起動）
-  local is_windows  = vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1
-  local DEBOUNCE_MS = 200
+  -- Windows: rg を一度だけ実行する oneshot finder を生成
+  local is_windows = vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1
   local picker_obj
 
+  local function make_oneshot_finder(prompt)
+    local cmd = make_cmd(prompt)
+    if not cmd then return finders.new_table({ results = {} }) end
+    return finders.new_oneshot_job(cmd, { entry_maker = grep_entry, cwd = opts.cwd })
+  end
+
+  -- Windows: 初期クエリで rg を一度実行。<C-e> で現在プロンプトを使い再実行
+  -- macOS/Linux: 従来通り new_job（キーストロークごとに rg を起動）
   picker_obj = pickers.new(opts, {
     layout_strategy = telescope_layout_presets[1].layout_strategy,
     layout_config   = telescope_layout_presets[1].layout_config,
-    prompt_title = (opts.base_title or 'Search') .. ' [Grep]  Dir:' .. display_cwd .. '  ' .. grep_search_shortcut,
+    prompt_title = (opts.base_title or 'Search') .. ' [Grep]  Dir:' .. display_cwd .. '  '
+      .. (is_windows and '<C-e>=再検索 ' or '') .. grep_search_shortcut,
     finder = is_windows
-      and finders.new_table({ results = {} })  -- Windows: 空テーブルで起動しデバウンス後にリフレッシュ
+      and make_oneshot_finder(opts.default_text)
       or  finders.new_job(make_cmd, grep_entry, nil, opts.cwd),
     previewer = conf.grep_previewer(opts),
     sorter    = grep_line_sorter,
     attach_mappings = make_attach_mappings(true, function(prompt_bufnr, map)
-      -- Windows: vim.defer_fn + タイムスタンプ比較でデバウンス
-      -- vim.loop.new_timer の stop/start 連打は Windows で不安定なため使用しない
+      -- Windows: <C-e> でプロンプトのクエリを使って rg を再実行
       if is_windows then
-        vim.schedule(function()
-          local pbuf = picker_obj and picker_obj.prompt_bufnr
-          if not pbuf or not vim.api.nvim_buf_is_valid(pbuf) then return end
-          local last_change_ms = 0
-          local function do_refresh()
-            if not vim.api.nvim_buf_is_valid(pbuf) then return end
-            local prompt = picker_obj:_get_prompt()
-            local cmd = make_cmd(prompt)
-            if not cmd then return end
-            picker_obj:refresh(
-              finders.new_oneshot_job(cmd, { entry_maker = grep_entry, cwd = opts.cwd }),
-              { reset_prompt = false }
-            )
-          end
-          if opts.default_text and opts.default_text ~= '' then do_refresh() end
-          vim.api.nvim_create_autocmd({ 'TextChangedI', 'TextChanged' }, {
-            buffer = pbuf,
-            callback = function()
-              last_change_ms = vim.loop.now()
-              local t = last_change_ms
-              vim.defer_fn(function()
-                if last_change_ms == t then do_refresh() end
-              end, DEBOUNCE_MS)
-            end,
-          })
+        map_modes(map, '<C-e>', function()
+          local prompt = action_state.get_current_picker(prompt_bufnr):_get_prompt()
+          if prompt == '' then return end
+          picker_obj:refresh(make_oneshot_finder(prompt), { reset_prompt = false })
         end)
       end
       -- <CR>: 既存ウィンドウに同ファイルが開いていればそこへ移動、なければ現在ウィンドウで開く
@@ -649,9 +634,15 @@ end, { nargs = '*', bang = true })
 vim.api.nvim_create_user_command('GrepSearch', function(opts)
   local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
   local file_dir = vim.fn.expand('%:p:h')
+  local query = opts.args
+  if (vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1) and query == '' then
+    query = vim.fn.input('Grep: ')
+    vim.cmd('redraw')
+    if query == '' then return end
+  end
   make_grep_search({
     cwd             = git_root,
-    default_text    = opts.args,
+    default_text    = query,
     additional_args = { '--hidden', '--smart-case', '--sort', 'path', '-g', '!.git/', '-g', '!.claude/' },
     base_title      = 'GrepSearch (git root)',
     file_dir        = file_dir,
@@ -666,9 +657,15 @@ vim.api.nvim_create_user_command('BufGrepSearch', function(opts)
     return
   end
   local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
+  local query = opts.args
+  if (vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1) and query == '' then
+    query = vim.fn.input('BufGrep: ')
+    vim.cmd('redraw')
+    if query == '' then return end
+  end
   make_grep_search({
     cwd             = git_root ~= '' and not git_root:find('fatal') and git_root or vim.fn.getcwd(),
-    default_text    = opts.args,
+    default_text    = query,
     additional_args = { '--hidden', '--smart-case', '--sort', 'path' },
     base_title      = 'BufGrepSearch',
     buf_files       = buf_files,
