@@ -210,7 +210,8 @@ endif
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
   \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit' }
+  \ 'ctrl-v': 'vsplit',
+  \ 'alt-v':  'vsplit' }
 
 " fzfからファイルにジャンプできるようにする
 let g:fzf_buffers_jump = 1
@@ -257,7 +258,7 @@ nnoremap [fzf]h :<C-u>History<CR>
 " list tabs
 nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]l :<C-u>BLines<CR>
-nnoremap [fzf]s :<C-u>GrepSearch<CR>
+nnoremap [fzf]s :<C-u>GrepSearch2<CR>
 nnoremap [fzf]S :<C-u>FileSearchFromCurrDir<CR>
 
 let g:fzf_layout = { 'down': '~30%' }
@@ -290,8 +291,7 @@ command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
 
  " Make Ripgrep ONLY search file contents and not filenames
-if !has('nvim')
-  command! -bang -nargs=* GrepSearch
+  command! -bang -nargs=* GrepSearch2
     \ call fzf#vim#grep(
     \   'rg --column --line-number --hidden --smart-case -g !.git/ --no-heading --color=always ^ $(git rev-parse --show-toplevel) '.shellescape(<q-args>), 1,
     \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
@@ -304,7 +304,6 @@ if !has('nvim')
     \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
     \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
     \   <bang>0)
-endif
 
 "FZF end  ####################################################################
 
