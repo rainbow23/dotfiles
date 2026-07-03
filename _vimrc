@@ -104,7 +104,8 @@ function! s:CopyFilePath()
   if has('mac') || has('macunix')
     call system('echo -n ' . shellescape(l:path) . ' | pbcopy')
   elseif has('win32') || has('win64')
-    call system('echo ' . l:path . ' | clip')
+    let l:escaped = substitute(l:path, '\\', '\\\\', 'g')
+    call system('echo ' . l:escaped . ' | clip')
   endif
   echo 'コピーしました: ' . l:path
 endfunction
