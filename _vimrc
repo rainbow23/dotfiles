@@ -104,8 +104,10 @@ function! s:CopyFilePath()
   if has('mac') || has('macunix')
     call system('echo -n ' . shellescape(l:path) . ' | pbcopy')
   elseif has('win32') || has('win64')
-    let l:escaped = substitute(l:path, '\\', '\\\\', 'g')
-    call system('echo ' . l:escaped . ' | clip')
+    let l:tmp = tempname()
+    call writefile([l:path], l:tmp)
+    call system('clip < ' . l:tmp)
+    call delete(l:tmp)
   endif
   echo 'コピーしました: ' . l:path
 endfunction
