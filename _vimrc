@@ -98,7 +98,17 @@ nnoremap mvd :<C-u>cd %:h<CR> :pwd<CR>
 " fullpathでファイル名表示
 nnoremap <C-G> :echo expand('%:p') <CR>
 nnoremap <Leader>pj :echo cfi#format("%s", "")<CR>
-nnoremap <Leader>p :echo expand('%:p') <CR>
+function! s:CopyFilePath()
+  let l:path = expand('%:p')
+  let @+ = l:path
+  if has('mac') || has('macunix')
+    call system('echo -n ' . shellescape(l:path) . ' | pbcopy')
+  elseif has('win32') || has('win64')
+    call system('echo ' . l:path . ' | clip')
+  endif
+  echo 'コピーしました: ' . l:path
+endfunction
+nnoremap <Leader>p :call <SID>CopyFilePath()<CR>
 
 nnoremap [buffer]    <Nop>
 nmap     <Leader>b [buffer]
