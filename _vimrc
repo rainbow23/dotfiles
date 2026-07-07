@@ -100,18 +100,23 @@ nnoremap <C-G> :echo expand('%:p') <CR>
 nnoremap <Leader>pj :echo cfi#format("%s", "")<CR>
 function! s:CopyFilePath()
   let l:path = expand('%:p')
-  let @+ = l:path
+  let l:copy_path = l:path
   if has('mac') || has('macunix')
     call system('echo -n ' . shellescape(l:path) . ' | pbcopy')
   elseif has('win32') || has('win64')
+    " GitBash 用に C:\... → /c/... 形式に変換
+    let l:copy_path = substitute(l:path, '^\([A-Za-z]\):', '/\L\1', '')
+    let l:copy_path = substitute(l:copy_path, '\\', '/', 'g')
     let l:tmp = tempname()
-    call writefile([l:path], l:tmp)
+    call writefile([l:copy_path], l:tmp)
     call system('clip < ' . l:tmp)
     call delete(l:tmp)
   endif
-  echo 'コピーしました: ' . l:path
+  echo 'コピーしました: ' . l:copy_path
 endfunction
 nnoremap <Leader>p :call <SID>CopyFilePath()<CR>
+
+
 
 nnoremap [buffer]    <Nop>
 nmap     <Leader>b [buffer]
