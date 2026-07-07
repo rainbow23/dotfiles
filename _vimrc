@@ -107,10 +107,7 @@ function! s:CopyFilePath()
     " GitBash 用に C:\... → /c/... 形式に変換
     let l:copy_path = substitute(l:path, '^\([A-Za-z]\):', '/\L\1', '')
     let l:copy_path = substitute(l:copy_path, '\\', '/', 'g')
-    let l:tmp = tempname()
-    call writefile([l:copy_path], l:tmp)
-    call system('clip < ' . l:tmp)
-    call delete(l:tmp)
+    call system('printf "%s" "' . l:copy_path . '" | clip')
   endif
   echo 'コピーしました: ' . l:copy_path
 endfunction
