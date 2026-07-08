@@ -251,14 +251,19 @@ imap <c-x><c-l> <plug>(fzf-complete-line)
 " Advanced customization using autoload functions
 " inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
 
-function! s:FzfSessionLoad(file)
-  execute 'source ' . fnameescape(expand('~/.vim/sessions/') . a:file)
-  echo 'Session loaded: ' . fnamemodify(a:file, ':r')
+function! s:FzfSessionLoad(name)
+  let l:path = glob(expand('~/.vim/sessions/') . a:name)
+  if l:path != ''
+    execute 'source ' . fnameescape(l:path)
+    echo 'Session loaded: ' . fnamemodify(a:name, ':r')
+  else
+    echo 'Session file not found: ' . a:name
+  endif
 endfunction
 
 nnoremap [fzf]us :<C-u>MySessionLoad<CR>
 command! MySessionLoad call fzf#run(fzf#wrap({
-      \ 'source': 'ls ' . expand('~/.vim/sessions/'),
+      \ 'source': map(split(glob(expand('~/.vim/sessions/') . '*.vim'), '\n'), 'fnamemodify(v:val, ":t")'),
       \ 'sink': function('<sid>FzfSessionLoad'),
       \ 'options': '--prompt "Sessions> " --header "CR=ロード"',
       \ 'down': '40%'}))
