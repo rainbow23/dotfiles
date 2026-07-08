@@ -251,18 +251,17 @@ imap <c-x><c-l> <plug>(fzf-complete-line)
 " Advanced customization using autoload functions
 " inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
 
-if !has('nvim')
-  function! s:Uss(file)
-      execute 'UniteSessionLoad ' . a:file
-  endfunction
+function! s:FzfSessionLoad(file)
+  execute 'source ' . fnameescape(expand('~/.vim/sessions/') . a:file)
+  echo 'Session loaded: ' . fnamemodify(a:file, ':r')
+endfunction
 
-  nnoremap [fzf]us :<C-u>MyUniteSessionLoad<CR>
-  command! MyUniteSessionLoad  call fzf#run({
-        \ 'source': "ls -l ~/.vim/etc/unite/session | sed '1d' | awk '{print $9}'",
-        \ 'sink': function('<sid>Uss'),
-        \ 'options': '+m',
-        \ 'right': '40%'})
-endif
+nnoremap [fzf]us :<C-u>MySessionLoad<CR>
+command! MySessionLoad call fzf#run(fzf#wrap({
+      \ 'source': 'ls ' . expand('~/.vim/sessions/'),
+      \ 'sink': function('<sid>FzfSessionLoad'),
+      \ 'options': '--prompt "Sessions> " --header "CR=ロード"',
+      \ 'down': '40%'}))
 
 nnoremap [fzf]m :<C-u>FZFMru<CR>
 nnoremap [fzf]f :<C-u>FileSearch<CR>
