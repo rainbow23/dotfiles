@@ -710,6 +710,19 @@ local function session_load(name)
   vim.notify('Session loaded: ' .. name, vim.log.levels.INFO)
 end
 
+-- ディレクトリ → git root のキャッシュ（同一ディレクトリへの git 呼び出しを 1 回に抑える）
+local session_git_root_cache = {}
+
+local function dir_git_root(dir)
+  local cached = session_git_root_cache[dir]
+  if cached ~= nil then return cached end
+  local root = vim.fn.system(
+    'git -C ' .. vim.fn.shellescape(dir) .. ' rev-parse --show-toplevel 2>/dev/null'
+  ):gsub('\n', '')
+  session_git_root_cache[dir] = root
+  return root
+end
+
 local function telescope_session_picker()
   -- 現在の git root を取得してセッションをフィルタリング
   -- git rev-parse の出力形式のまま保持し、セッション側も同じコマンドで取得して比較する
@@ -731,10 +744,7 @@ local function telescope_session_picker()
           local dir = line:match('^cd%s+(.+)$')
           if dir then
             local expanded = vim.fn.expand(dir)
-            local session_root = vim.fn.system(
-              'git -C ' .. vim.fn.shellescape(expanded) .. ' rev-parse --show-toplevel 2>/dev/null'
-            ):gsub('\n', '')
-            if session_root == git_root then include = true end
+            if dir_git_root(expanded) == git_root then include = true end
             break
           end
         end
@@ -804,7 +814,7 @@ vim.api.nvim_create_user_command('Uss', function(opts)
 end, { nargs = '?' })
 
 vim.keymap.set('n', 'uss',  '<Cmd>Uss<CR>', { desc = 'Session save (default)' })
-vim.keymap.set('n', 'us',   telescope_session_picker, { desc = 'Session load (telescope)' })
+vim.keymap.set('n', 'usl',  telescope_session_picker, { desc = 'Session load (telescope)' })
 vim.keymap.set('n', 'usos', function()
   local current = vim.v.this_session
   local name = (current ~= '') and vim.fn.fnamemodify(current, ':t:r') or 'default'
