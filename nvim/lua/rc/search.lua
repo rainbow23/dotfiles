@@ -328,6 +328,12 @@ vim.api.nvim_create_user_command('GitStatus', function(opts)
   builtin.git_status({ default_text = opts.args })
 end, { nargs = '*', bang = true })
 
+-- [fzf]m（vimrc.d/search-keymaps.vim）用: fzf 版 MRU を telescope oldfiles で置き換え
+-- plain vim では vimrc.d/fzf.vim が同名コマンドを定義する
+vim.api.nvim_create_user_command('FZFMru', function(opts)
+  builtin.oldfiles({ default_text = opts.args })
+end, { nargs = '*', bang = true })
+
 vim.api.nvim_create_user_command('FileSearchFromCurrDir', function(opts)
   make_file_search({
     cwd       = vim.fn.getcwd(),

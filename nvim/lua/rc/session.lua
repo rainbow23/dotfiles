@@ -117,6 +117,10 @@ vim.api.nvim_create_user_command('Uss', function(opts)
   session_save(opts.args ~= '' and opts.args or nil)
 end, { nargs = '?' })
 
+-- [fzf]us（vimrc.d/search-keymaps.vim）用: fzf 版を telescope 実装で置き換え
+-- plain vim では vimrc.d/fzf.vim が同名コマンドを定義する
+vim.api.nvim_create_user_command('MySessionLoad', telescope_session_picker, {})
+
 vim.keymap.set('n', 'uss',  '<Cmd>Uss<CR>', { desc = 'Session save (default)' })
 vim.keymap.set('n', 'us',   telescope_session_picker, { desc = 'Session load (telescope)' })
 vim.keymap.set('n', 'usos', function()
