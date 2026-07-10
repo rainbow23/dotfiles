@@ -710,33 +710,35 @@ local function session_load(name)
   vim.notify('Session loaded: ' .. name, vim.log.levels.INFO)
 end
 
--- ディレクトリ → git root のキャッシュ（同一ディレクトリへの git 呼び出しを 1 回に抑える）
+-- git root の判定は git コマンドではなく .git を上方向に探す純 Lua 探索で行う
+-- （GitBash ではプロセス起動が遅く、git 呼び出しがピッカー表示の律速になるため。
+--   両者とも Vim 側のパスを同じ関数で正規化して比較するので /c/... と C:/... の
+--   形式差異問題も発生しない）
+local session_is_windows = vim.fn.has('win32') == 1
+
 local session_git_root_cache = {}
 
 local function dir_git_root(dir)
   local cached = session_git_root_cache[dir]
   if cached ~= nil then return cached end
-  local root = vim.fn.system(
-    'git -C ' .. vim.fn.shellescape(dir) .. ' rev-parse --show-toplevel 2>/dev/null'
-  ):gsub('\n', '')
+  local found = vim.fs.find('.git', { path = dir, upward = true })[1]
+  local root = found and vim.fs.normalize(vim.fs.dirname(found)) or ''
+  if session_is_windows then root = root:lower() end
   session_git_root_cache[dir] = root
   return root
 end
 
 local function telescope_session_picker()
   -- 現在の git root を取得してセッションをフィルタリング
-  -- git rev-parse の出力形式のまま保持し、セッション側も同じコマンドで取得して比較する
-  -- （GitBash では expand('~') が C:/... を返し git が /c/... を返すため fnamemodify での
-  --   正規化では吸収できない。同一コマンド出力同士を比較することで形式差異を回避する）
-  local git_root = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
-  local has_git  = git_root ~= '' and not git_root:find('fatal')
+  local git_root = dir_git_root(vim.fn.getcwd())
+  local has_git  = git_root ~= ''
 
   local files = vim.fn.glob(session_dir .. '/*.vim', false, true)
   local names = {}
   for _, f in ipairs(files) do
     local include = true
     if has_git then
-      -- セッションの cd 行からディレクトリを取得し、git -C でその git root を求めて照合
+      -- セッションの cd 行からディレクトリを取得し、その git root を求めて照合
       include = false
       local fh = io.open(f, 'r')
       if fh then
