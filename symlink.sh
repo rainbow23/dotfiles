@@ -7,12 +7,12 @@ ln -sfn $HOME/dotfiles/zsh/_zshenv $HOME/.zshenv
 ln -sfn $HOME/dotfiles/_ideavimrc $HOME/.ideavimrc
 ln -sfn $HOME/dotfiles/_tmux.conf $HOME/.tmux.conf
 ln -sfn $HOME/dotfiles/_tmuxp  $HOME/.tmuxp
-# ln -sfn $HOME/dotfiles/i3wm/_config /$HOME/.config/i3/config
-ln -sfn $HOME/dotfiles/_ctags $HOME/.ctags.d/kotlin.ctags
-if [ ! -d $HOME/.config/nvim ];then
-    mkdir -p -m 744 $HOME/.config/nvim
+# nvim は lua/ モジュールを含むためディレクトリごとリンクする
+# 既存の実ディレクトリが残っていると nvim/nvim という入れ子リンクができるため退避する
+if [ -d $HOME/.config/nvim ] && [ ! -L $HOME/.config/nvim ]; then
+    mv $HOME/.config/nvim $HOME/.config/nvim.bak
 fi
-ln -sfn $HOME/dotfiles/nvim/init.lua $HOME/.config/nvim/init.lua
+ln -sfn $HOME/dotfiles/nvim $HOME/.config/nvim
 
 #karabiner設定を追加
 ln -sfn ~/dotfiles/etc/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
