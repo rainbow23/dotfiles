@@ -12,7 +12,6 @@ return {
       require('rc.patches.bookmarks')
     end,
     config = function()
-      local util = require('rc.util')
       require('bookmarks').setup({})
       local autocmds = require('bookmarks.autocmds')
       local map      = vim.keymap.set
@@ -70,8 +69,6 @@ return {
 
         require('telescope').extensions.bookmarks.list({
           prompt_title    = title,
-          layout_strategy = util.telescope_layout_presets[1].layout_strategy,
-          layout_config   = util.telescope_layout_presets[1].layout_config,
           attach_mappings = function(prompt_bufnr, pmap)
             local function delete_bookmark()
               local as = require('telescope.actions.state')
@@ -88,12 +85,9 @@ return {
                 vim.notify('Bookmark deleted', vim.log.levels.INFO)
               end)
             end
+            -- <C-l>（レイアウト切替）は plugins/telescope.lua の defaults.mappings で全 picker 共通に定義済み
             pmap('i', '<C-d>', delete_bookmark)
             pmap('n', '<C-d>', delete_bookmark)
-
-            local toggle_layout = util.make_layout_toggle(prompt_bufnr)
-            pmap('i', '<C-l>', toggle_layout)
-            pmap('n', '<C-l>', toggle_layout)
             return true
           end,
         })

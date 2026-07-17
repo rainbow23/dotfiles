@@ -11,10 +11,8 @@ local action_state   = require('telescope.actions.state')
 local layout_actions = require('telescope.actions.layout')
 local builtin        = require('telescope.builtin')
 
-local util                     = require('rc.util')
-local map_modes                = util.map_modes
-local make_layout_toggle       = util.make_layout_toggle
-local telescope_layout_presets = util.telescope_layout_presets
+local util      = require('rc.util')
+local map_modes = util.map_modes
 
 local open_in_split = function(prompt_bufnr, cmd)
   local entry = action_state.get_selected_entry()
@@ -29,10 +27,9 @@ local make_attach_mappings = function(preview_default_on, extra_mappings)
     if not preview_default_on then
       vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
     end
-    local toggle_layout = make_layout_toggle(prompt_bufnr)
+    -- <C-l>（レイアウト切替）は plugins/telescope.lua の defaults.mappings で全 picker 共通に定義済み
     map_modes(map, '<C-h>', function(b) open_in_split(b, 'split') end)
     map_modes(map, '<C-f>', layout_actions.toggle_preview)
-    map_modes(map, '<C-l>', toggle_layout)
     if extra_mappings then extra_mappings(prompt_bufnr, map) end
     return true
   end
@@ -86,8 +83,6 @@ end
 
 make_file_search = function(opts)
   pickers.new(opts, {
-    layout_strategy = telescope_layout_presets[1].layout_strategy,
-    layout_config   = telescope_layout_presets[1].layout_config,
     prompt_title = (opts.base_title or 'FileSearch') .. ' [File] ' .. file_search_shortcut,
     finder = finders.new_oneshot_job(opts.files_cmd, {
       entry_maker = make_entry.gen_from_file(opts),
@@ -159,8 +154,6 @@ make_grep_search = function(opts)
     display_cwd = vim.fn.fnamemodify(cwd, ':~')  -- git 管理外は ~ 基準にフォールバック
   end
   pickers.new(opts, {
-    layout_strategy = telescope_layout_presets[1].layout_strategy,
-    layout_config   = telescope_layout_presets[1].layout_config,
     prompt_title = (opts.base_title or 'Search') .. ' [Grep]  Dir:' .. display_cwd .. '  ' .. grep_search_shortcut,
     finder = finders.new_job(function(prompt)
       if not prompt or prompt == '' then return nil end
@@ -316,8 +309,6 @@ vim.api.nvim_create_user_command('BLines', function(opts)
         }
       end,
     }),
-    layout_strategy = telescope_layout_presets[1].layout_strategy,
-    layout_config   = telescope_layout_presets[1].layout_config,
     previewer       = conf.grep_previewer({}),
     sorter          = line_sorter,
     attach_mappings = make_attach_mappings(true),

@@ -7,10 +7,8 @@ local actions      = require('telescope.actions')
 local action_state = require('telescope.actions.state')
 local previewers   = require('telescope.previewers')
 
-local util               = require('rc.util')
-local map_modes          = util.map_modes
-local make_layout_toggle = util.make_layout_toggle
-local telescope_layout_presets = util.telescope_layout_presets
+local util      = require('rc.util')
+local map_modes = util.map_modes
 
 local memo_ns          = vim.api.nvim_create_namespace('user_memos')
 local memo_file        = vim.fn.expand('~/.vim/memos.json')
@@ -246,9 +244,8 @@ local function make_memo_attach_mappings(extra)
       memo_delete_from_store(sel.value.filepath, sel.value.line)
       picker:delete_selection(function() vim.notify('Memo deleted') end)
     end
-    local toggle_layout = make_layout_toggle(prompt_bufnr)
+    -- <C-l>（レイアウト切替）は plugins/telescope.lua の defaults.mappings で全 picker 共通に定義済み
     map_modes(map, '<C-d>', delete_memo)
-    map_modes(map, '<C-l>', toggle_layout)
     map_modes(map, '<C-t>', function(b) memo_open_entry(b, 'tabedit') end)
     map_modes(map, '<M-v>', function(b) memo_open_entry(b, 'vsplit') end)
     map_modes(map, '<C-h>', function(b) memo_open_entry(b, 'split') end)
@@ -444,8 +441,6 @@ local function memo_list()
       end
       map_modes(map, '<C-r>', rename_memo)
     end),
-    layout_strategy = telescope_layout_presets[1].layout_strategy,
-    layout_config   = telescope_layout_presets[1].layout_config,
   }):find()
 end
 
@@ -533,8 +528,6 @@ local function memo_list_current()
     }),
     sorter          = make_memo_sorter(results),
     previewer       = memo_previewer,
-    layout_strategy = telescope_layout_presets[1].layout_strategy,
-    layout_config   = telescope_layout_presets[1].layout_config,
     attach_mappings = make_memo_attach_mappings(nil),
   }):find()
 end
@@ -654,9 +647,7 @@ local function memo_list_buffers()
         memo_delete_from_store(sel.value.filepath, sel.value.line)
         picker:delete_selection(function() vim.notify('Memo deleted') end)
       end
-      local toggle_layout = make_layout_toggle(prompt_bufnr)
       map_modes(map, '<C-d>', delete_memo)
-      map_modes(map, '<C-l>', toggle_layout)
       map_modes(map, '<C-t>', function(b) memo_open_entry(b, 'tabedit') end)
       map_modes(map, '<M-v>', function(b) memo_open_entry(b, 'vsplit') end)
       map_modes(map, '<C-h>', function(b) memo_open_entry(b, 'split') end)
