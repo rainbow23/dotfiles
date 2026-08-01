@@ -76,6 +76,14 @@ vim.lsp.config('lua_ls', {
 
 vim.lsp.enable({ 'kotlin_language_server', 'ts_ls', 'sqlls', 'vimls', 'bashls', 'lua_ls' })
 
+-- C#（.NET for Android）: Roslyn Language Server
+-- サーバーは mason 管理外で dotnet tool として導入する（導入手順は docs/dotnet-android-lsp.md）
+-- 未導入マシンで .cs を開いた際の起動エラーを避けるため、実行ファイルがある場合のみ有効化する
+if vim.fn.executable('roslyn-language-server') == 1
+  or vim.fn.executable('Microsoft.CodeAnalysis.LanguageServer') == 1 then
+  vim.lsp.enable('roslyn_ls')
+end
+
 -- Java（nvim-jdtls）
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'java',
