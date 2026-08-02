@@ -8,6 +8,69 @@ LSP は Microsoft 公式の Roslyn Language Server（VS Code の C# 拡張と同
   PATH にあるマシンでのみ自動有効化される）
 - サーバー本体は mason 管理外。以下の手順で dotnet tool として導入する
 
+## macOS での導入手順（動作確認済み）
+
+Homebrew で導入する。環境変数の設定は [zsh/_zshenv](../zsh/_zshenv) に組み込み済み。
+
+### 1. .NET SDK
+
+```bash
+brew install dotnet
+```
+
+Homebrew 版は `bin`（muxer のシムのみ）と `libexec`（実体 + ランタイム）が
+分離している点が要注意。**`DOTNET_ROOT` と PATH を _zshenv で設定済み**なので、
+新しいシェルを開けば有効になる（下記「よくある落とし穴」参照）。
+
+### 2. Android ワークロード
+
+```bash
+dotnet workload install android
+```
+
+### 3. Roslyn Language Server
+
+```bash
+dotnet tool install -g roslyn-language-server --prerelease --source https://pkgs.dev.azure.com/azure-public/vside/_packaging/vs-impl/nuget/v3/index.json
+```
+
+インストール先は `~/.dotnet/tools`（PATH は _zshenv で追加済み）。確認:
+
+```bash
+exec $SHELL -l
+which dotnet roslyn-language-server
+echo "DOTNET_ROOT=$DOTNET_ROOT"
+```
+
+`dotnet` が `/opt/homebrew/opt/dotnet/libexec/dotnet` を指していれば正しい。
+
+### 4. サンプルプロジェクトで動作確認
+
+android テンプレートが未登録な環境向けに、テンプレート非依存の最小サンプルを
+[docs/samples/dotnet-android/](samples/dotnet-android/) に用意した。任意の場所にコピーして使う:
+
+```bash
+cp -r ~/dotfiles/docs/samples/dotnet-android ~/dotnet-android-sample
+cd ~/dotnet-android-sample
+dotnet workload restore
+dotnet restore
+```
+
+`dotnet build` は Android SDK Platform（android.jar）が無いと XA5207 で失敗するが、
+**補完に必要なのは参照アセンブリ（Mono.Android.dll）だけで、フルビルドは不要**。
+
+その後 nvim で `MainActivity.cs` を開くと roslyn_ls がアタッチし、数秒で
+「Roslyn project initialization complete」が表示され、`Android.*` 型が補完される。
+
+### よくある落とし穴（macOS / Homebrew）
+
+- **`You must install .NET to run this application`（roslyn LS が exit 131）**:
+  apphost がランタイムを PATH 上の `dotnet` から探すが、`/opt/homebrew/bin/dotnet` は
+  シムのみでランタイムを含まない `bin` を指すため失敗する。
+  **ランタイム同梱の `libexec` を PATH 前方に置く**ことで解決する（_zshenv 設定済み）。
+  `DOTNET_ROOT` の設定だけでは不十分な点に注意（roslyn の wrapper が
+  PATH 上の dotnet から `DOTNET_ROOT` を再導出して inner プロセスに渡すため）。
+
 ## GitBash（Windows）での導入手順
 
 ### 1. .NET SDK

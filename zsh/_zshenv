@@ -49,6 +49,19 @@ export PATH="$PATH:/Users/rainbow/Documents/flutter/flutter/bin"
 # claude code
 export PATH="$HOME/.local/bin:$PATH"
 
+# -------------------------------------
+# .NET（Homebrew）: .NET for Android の nvim 補完（roslyn_ls）用
+# -------------------------------------
+# Homebrew の dotnet は bin（muxer のシムのみ）と libexec（実体 + ランタイム）が
+# 分離している。roslyn LS の apphost はランタイムを PATH 上の dotnet から探すため、
+# ランタイム同梱の libexec を PATH の前方に置かないと "You must install .NET" で落ちる。
+if [ -d /opt/homebrew/opt/dotnet/libexec ]; then
+    export DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec
+    export PATH="/opt/homebrew/opt/dotnet/libexec:$PATH"
+fi
+# roslyn-language-server（dotnet tool）のインストール先
+export PATH="$PATH:$HOME/.dotnet/tools"
+
 # ls の色設定（macOS LSCOLORS）
 # 各変数は「前景色 + 背景色」の2文字: a=黒 b=赤 c=緑 d=茶 e=青 f=紫 g=水 h=灰 x=デフォルト
 # 大文字=bold
