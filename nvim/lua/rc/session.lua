@@ -24,31 +24,40 @@ local function session_load(name)
   vim.notify('Session loaded: ' .. name, vim.log.levels.INFO)
 end
 
+-- パスを正規化してドライブ表記の揺れを吸収する
+-- （GitBash では git が /c/... を、mksession が C:/... を書くため、両者を c:/... に揃える。
+--   セッションごとに git を起動しないことで Sessions 画面の表示を高速化する）
+local function normalize_path(p)
+  p = p:gsub('\\', '/')                                            -- \ を / に統一
+  p = p:gsub('^/(%a)/', function(d) return d:lower() .. ':/' end)  -- /c/... → c:/...
+  p = p:gsub('^(%a):',  function(d) return d:lower() .. ':' end)   -- C:/... → c:/...
+  p = p:gsub('/+$', '')                                            -- 末尾スラッシュ除去
+  return p
+end
+
 local function telescope_session_picker()
   -- 現在の git root を取得してセッションをフィルタリング
-  -- git rev-parse の出力形式のまま保持し、セッション側も同じコマンドで取得して比較する
-  -- （GitBash では expand('~') が C:/... を返し git が /c/... を返すため fnamemodify での
-  --   正規化では吸収できない。同一コマンド出力同士を比較することで形式差異を回避する）
-  local git_root = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
-  local has_git  = git_root ~= '' and not git_root:find('fatal')
+  local git_root  = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
+  local has_git   = git_root ~= '' and not git_root:find('fatal')
+  local root_norm = has_git and normalize_path(git_root) or ''
 
   local files = vim.fn.glob(session_dir .. '/*.vim', false, true)
   local names = {}
   for _, f in ipairs(files) do
     local include = true
     if has_git then
-      -- セッションの cd 行からディレクトリを取得し、git -C でその git root を求めて照合
+      -- セッションの cd 行からディレクトリを取得し、git root 配下かを前方一致で判定する
       include = false
       local fh = io.open(f, 'r')
       if fh then
         for line in fh:lines() do
           local dir = line:match('^cd%s+(.+)$')
           if dir then
-            local expanded = vim.fn.expand(dir)
-            local session_root = vim.fn.system(
-              'git -C ' .. vim.fn.shellescape(expanded) .. ' rev-parse --show-toplevel 2>/dev/null'
-            ):gsub('\n', '')
-            if session_root == git_root then include = true end
+            local session_norm = normalize_path(vim.fn.expand(dir))
+            if session_norm == root_norm
+              or session_norm:sub(1, #root_norm + 1) == root_norm .. '/' then
+              include = true
+            end
             break
           end
         end
