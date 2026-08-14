@@ -12,6 +12,11 @@ vim.opt.rtp:prepend(lazypath)
 -- ② leader を先に設定（lazy.nvim のキーマップ定義より前に必要）
 vim.g.mapleader = ' '
 
+-- ②' プラグインロード前の設定（lua/config/）
+-- プラグインのキーマップ登録より前に g: 変数を確定させる必要があるもの
+require('config.nerdtree')      -- g:NERDTreeMapActivateNode（'l' で開く）
+require('config.bufexplorer')   -- g:bufExplorerDisableDefaultKeyMapping
+
 -- ③ プラグイン定義（lua/plugins/*.lua を自動読込）
 require('lazy').setup('plugins')
 
@@ -22,6 +27,11 @@ vim.cmd('source ' .. vim.fn.expand('~/dotfiles/_vimrc'))
 -- autochdir を無効化: bookmarks.nvim が getcwd() を project_root として使うため
 -- autochdir が有効だとファイルごとに project_root が変わり複数ファイルのブックマークが表示されない
 vim.opt.autochdir = false
+
+-- ⑤' プラグインロード後の設定（lua/config/）
+require('config.telescope')   -- telescope setup（rc/ の各機能より前に）
+require('config.toggleterm')  -- toggleterm setup + tig float
+require('config.bookmarks')   -- bookmarks setup + キーマップ + highlight
 
 -- ⑥ 機能モジュール（lua/rc/）
 require('rc.search')   -- telescope 版 FileSearch/GrepSearch/BLines など

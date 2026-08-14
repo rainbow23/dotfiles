@@ -732,7 +732,8 @@ nnoremap ,t :NERDTreeToggle<CR>
 
 " Plug 'scrooloose/nerdtree' #########################################################
 let NERDTreeShowBookmarks=1
-let g:NERDTreeMapActivateNode ='l'
+" g:NERDTreeMapActivateNode ('l' で開く) は nvim/lua/config/nerdtree.lua で設定
+" (プラグインのキーマップ登録より前に設定する必要があるため init.lua が lazy より前に require)
 let g:NERDTreeMapOpenVSplit ='v'
 
 autocmd VimEnter * if exists('*NERDTreeAddKeyMap') | call NERDTreeAddKeyMap({

@@ -17,15 +17,22 @@ dotfiles/
 │   ├── search-keymaps.vim  # 検索系キーマップと fzf 共通設定（vim/nvim 共通）
 │   └── fzf.vim             # fzf ベースの実装（telescope 置き換え済みコマンドは plain vim のみ）
 └── nvim/                   # nvim 設定（~/.config/nvim にディレクトリごとリンク）
-    ├── init.lua            # ローダー: bootstrap → lazy → _vimrc source → require
+    ├── init.lua            # ローダー: bootstrap → config(pre) → lazy → _vimrc → config(post) → rc
     ├── lazy-lock.json      # lazy.nvim のロックファイル
     └── lua/
-        ├── plugins/        # lazy.nvim のプラグイン定義（自動読込）
+        ├── plugins/        # プラグインの読み込み定義のみ（設定値は持たない）
         │   ├── core.lua        # 設定不要（g: 変数のみで動く）プラグイン群
-        │   ├── telescope.lua   # telescope 本体と共通設定
-        │   ├── bookmarks.lua   # bookmarks.nvim（spec + config）
-        │   ├── toggleterm.lua  # toggleterm（tig float）
-        │   └── lsp.lua         # LSP/補完系のプラグイン定義のみ
+        │   ├── nerdtree.lua    # NERDTree 本体と関連プラグイン
+        │   ├── telescope.lua   # telescope 本体
+        │   ├── bookmarks.lua   # bookmarks.nvim（init のモンキーパッチのみ）
+        │   ├── toggleterm.lua  # toggleterm
+        │   └── lsp.lua         # LSP/補完系のプラグイン定義
+        ├── config/         # 各プラグインの設定値（lazy 非依存。手動配置でも require で読める）
+        │   ├── nerdtree.lua    # g:NERDTreeMapActivateNode（ロード前に require）
+        │   ├── bufexplorer.lua # g:bufExplorerDisableDefaultKeyMapping（ロード前に require）
+        │   ├── telescope.lua   # telescope setup / 共通レイアウト・マッピング
+        │   ├── toggleterm.lua  # toggleterm setup + tig float
+        │   └── bookmarks.lua   # bookmarks setup + キーマップ + highlight
         └── rc/             # 自作の機能モジュール
             ├── util.lua        # telescope 共通ユーティリティ（レイアウトプリセット等）
             ├── search.lua      # FileSearch/GrepSearch/BLines/FZFMru（telescope）
@@ -59,10 +66,12 @@ dotfiles/
 init.lua
  ├── ① lazy.nvim bootstrap
  ├── ② mapleader 設定
+ ├── ②' require('config.*')（ロード前設定）  … プラグインロード前に確定が必要な g: 変数
  ├── ③ require('lazy').setup('plugins')   … lua/plugins/*.lua を自動読込
  ├── ④ source ~/dotfiles/_vimrc
  │       └── vimrc.d/search-keymaps.vim / vimrc.d/fzf.vim を source
  ├── ⑤ nvim 向け上書き（autochdir 無効化）
+ ├── ⑤' require('config.*')（ロード後設定）  … telescope/toggleterm/bookmarks の setup 等
  └── ⑥ require('rc.*')                    … 機能モジュール
 ```
 

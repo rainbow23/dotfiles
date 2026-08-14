@@ -36,10 +36,8 @@ return {
   { 'thinca/vim-qfreplace',      lazy = false },
   { 't9md/vim-quickhl',          lazy = false },
   -- File / Buffer
-  { 'preservim/nerdtree',             lazy = false },
-  { 'jistr/vim-nerdtree-tabs',        lazy = false },
-  { 'Xuyuanp/nerdtree-git-plugin',    lazy = false },
-  { 'jlanzarotta/bufexplorer',        lazy = false, init = function() vim.g.bufExplorerDisableDefaultKeyMapping = 1 end },
+  -- NERDTree 系は plugins/nerdtree.lua（設定は config/nerdtree.lua）を参照
+  { 'jlanzarotta/bufexplorer',        lazy = false },  -- 設定は config/bufexplorer.lua
   { 'christoomey/vim-tmux-navigator', lazy = false },
   -- Git
   { 'tpope/vim-fugitive',          lazy = false },
