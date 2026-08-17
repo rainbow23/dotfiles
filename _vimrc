@@ -104,10 +104,8 @@ function! s:CopyFilePath()
   if has('mac') || has('macunix')
     call system('echo -n ' . shellescape(l:path) . ' | pbcopy')
   elseif has('win32') || has('win64')
-    " GitBash 用に C:\... → /c/... 形式に変換
-    let l:copy_path = substitute(l:path, '^\([A-Za-z]\):', '/\L\1', '')
-    let l:copy_path = substitute(l:copy_path, '\\', '/', 'g')
-    call system('printf "%s" "' . l:copy_path . '" | clip')
+    " GitBash 特有の変換・クリップボード処理は vimrc.d/gitbash.vim に分離
+    let l:copy_path = GitBashCopyPath(l:path)
   endif
   echo 'コピーしました: ' . l:copy_path
 endfunction
@@ -223,6 +221,9 @@ nnoremap <Leader>. :<C-u>tabedit $HOME/dotfiles/_vimrc<CR>
 execute 'source' fnameescape(expand('~/dotfiles/vimrc.d/search-keymaps.vim'))
 execute 'source' fnameescape(expand('~/dotfiles/vimrc.d/fzf.vim'))
 "FZF end  ####################################################################
+
+" GitBash (Windows) 特有の設定
+execute 'source' fnameescape(expand('~/dotfiles/vimrc.d/gitbash.vim'))
 
 "EasyAlign start ####################################################################
 " Start interactive EasyAlign in visual mode (e.g. vipga)

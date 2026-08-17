@@ -15,7 +15,8 @@ dotfiles/
 ├── docs/                   # ドキュメント
 ├── vimrc.d/                # _vimrc から source する分割 VimScript 設定
 │   ├── search-keymaps.vim  # 検索系キーマップと fzf 共通設定（vim/nvim 共通）
-│   └── fzf.vim             # fzf ベースの実装（telescope 置き換え済みコマンドは plain vim のみ）
+│   ├── fzf.vim             # fzf ベースの実装（telescope 置き換え済みコマンドは plain vim のみ）
+│   └── gitbash.vim         # GitBash(Windows) 特有の設定（パス変換+clip コピー）
 └── nvim/                   # nvim 設定（~/.config/nvim にディレクトリごとリンク）
     ├── init.lua            # ローダー: bootstrap → config(pre) → lazy → _vimrc → config(post) → rc
     ├── lazy-lock.json      # lazy.nvim のロックファイル
