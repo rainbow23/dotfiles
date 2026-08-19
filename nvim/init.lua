@@ -32,6 +32,7 @@ vim.opt.autochdir = false
 require('config.telescope')   -- telescope setup（rc/ の各機能より前に）
 require('config.toggleterm')  -- toggleterm setup + tig float
 require('config.bookmarks')   -- bookmarks setup + キーマップ + highlight
+require('config.aerial')      -- aerial setup + キーマップ（画面右のアウトライン）
 
 -- ⑥ 機能モジュール（lua/rc/）
 require('rc.search')   -- telescope 版 FileSearch/GrepSearch/BLines など

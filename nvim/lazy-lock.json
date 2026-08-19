@@ -2,6 +2,7 @@
   "ZoomWin": { "branch": "master", "commit": "da618cba6cee26ab237a048786ffb5c35937da91" },
   "accelerated-jk": { "branch": "master", "commit": "156c5158b72059404f6b8aaf15b59f87dd0aaa88" },
   "ack.vim": { "branch": "master", "commit": "36e40f9ec91bdbf6f1adf408522a73a6925c3042" },
+  "aerial.nvim": { "branch": "nvim-0.11", "commit": "c5e56945d9703f7079ccff484b35d0e4c231dd6c" },
   "auto-pairs": { "branch": "master", "commit": "39f06b873a8449af8ff6a3eee716d3da14d63a76" },
   "bclose.vim": { "branch": "master", "commit": "99018b4a2dd18aea1cbd3aa23565b01a0f8c5b73" },
   "bookmarks.nvim": { "branch": "main", "commit": "718a5a5ccf06b914d32eded8395d9b4993b401f6" },
