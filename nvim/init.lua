@@ -14,6 +14,7 @@ vim.g.mapleader = ' '
 
 -- ②' プラグインロード前の設定（lua/config/）
 -- プラグインのキーマップ登録より前に g: 変数を確定させる必要があるもの
+require('config.win32')         -- g:sqlite_clib_path（bookmarks.nvim 依存、Windows のみ）
 require('config.nerdtree')      -- g:NERDTreeMapActivateNode（'l' で開く）
 require('config.bufexplorer')   -- g:bufExplorerDisableDefaultKeyMapping
 
