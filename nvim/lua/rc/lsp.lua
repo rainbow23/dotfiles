@@ -51,10 +51,28 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
     map('gd',         vim.lsp.buf.definition)
     map('gr', function()
-      local util = require('rc.util')
+      local util         = require('rc.util')
+      local action_state = require('telescope.actions.state')
       require('telescope.builtin').lsp_references({
-        prompt_title    = 'LSP References  ' .. util.shortcut_common,
-        attach_mappings = util.make_attach_mappings(true),
+        prompt_title    = 'LSP References  <C-x>=Quickfix ' .. util.shortcut_common,
+        attach_mappings = util.make_attach_mappings(true, function(_, lmap)
+          util.map_modes(lmap, '<C-x>', function(b)
+            local picker = action_state.get_current_picker(b)
+            local qflist = {}
+            for entry in picker.manager:iter() do
+              if entry.filename then
+                table.insert(qflist, {
+                  filename = entry.filename,
+                  lnum     = entry.lnum or 1,
+                  col      = entry.col  or 1,
+                  text     = entry.text or '',
+                })
+              end
+            end
+            vim.fn.setqflist(qflist, 'r')
+            vim.schedule(function() vim.cmd('copen') end)
+          end)
+        end),
       })
     end)
     map('K',          vim.lsp.buf.hover)
