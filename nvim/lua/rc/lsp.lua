@@ -50,7 +50,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
       vim.keymap.set('n', keys, func, { buffer = bufnr, silent = true })
     end
     map('gd',         vim.lsp.buf.definition)
-    map('gr',         vim.lsp.buf.references)
+    map('gr',         require('telescope.builtin').lsp_references)
     map('K',          vim.lsp.buf.hover)
     map('<leader>rn', vim.lsp.buf.rename)
     map('<leader>ca', vim.lsp.buf.code_action)
