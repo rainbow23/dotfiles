@@ -11,9 +11,8 @@ local previewers     = require('telescope.previewers')
 local util      = require('rc.util')
 local map_modes = util.map_modes
 
--- vsplit キーは環境によって異なる（GitBash/Windows: <M-v>、mac/unix: <C-v>）
-local vsplit_key     = vim.fn.has('win32') == 1 and '<M-v>' or '<C-v>'
-local memo_shortcut  = '<C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ ' .. vsplit_key .. '=vsplit <C-h>=hsplit'
+local vsplit_key    = util.vsplit_key
+local memo_shortcut = util.shortcut_common
 
 local memo_ns          = vim.api.nvim_create_namespace('user_memos')
 local memo_file        = vim.fn.expand('~/.vim/memos.json')
