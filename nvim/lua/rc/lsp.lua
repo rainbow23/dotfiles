@@ -51,16 +51,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
     map('gd',         vim.lsp.buf.definition)
     map('gr', function()
+      local util = require('rc.util')
       require('telescope.builtin').lsp_references({
-        prompt_title = 'LSP References  <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit',
-        attach_mappings = function(_, map_fn)
-          local map_modes      = require('rc.util').map_modes
-          local actions        = require('telescope.actions')
-          local layout_actions = require('telescope.actions.layout')
-          map_modes(map_fn, '<C-h>', actions.select_horizontal)
-          map_modes(map_fn, '<C-f>', layout_actions.toggle_preview)
-          return true
-        end,
+        prompt_title    = 'LSP References  ' .. util.shortcut_common,
+        attach_mappings = util.make_attach_mappings(true),
       })
     end)
     map('K',          vim.lsp.buf.hover)

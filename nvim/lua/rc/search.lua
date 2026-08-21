@@ -6,37 +6,16 @@ local conf         = require('telescope.config').values
 local finders      = require('telescope.finders')
 local pickers      = require('telescope.pickers')
 local make_entry   = require('telescope.make_entry')
-local actions        = require('telescope.actions')
-local action_state   = require('telescope.actions.state')
-local layout_actions = require('telescope.actions.layout')
-local builtin        = require('telescope.builtin')
+local actions      = require('telescope.actions')
+local action_state = require('telescope.actions.state')
+local builtin      = require('telescope.builtin')
 
-local util      = require('rc.util')
-local map_modes = util.map_modes
+local util               = require('rc.util')
+local map_modes          = util.map_modes
+local make_attach_mappings = util.make_attach_mappings
 
-local open_in_split = function(prompt_bufnr, cmd)
-  local entry = action_state.get_selected_entry()
-  actions.close(prompt_bufnr)
-  if entry then
-    vim.cmd(cmd .. ' ' .. (entry.path or entry.filename or entry.value))
-  end
-end
-
-local make_attach_mappings = function(preview_default_on, extra_mappings)
-  return function(prompt_bufnr, map)
-    if not preview_default_on then
-      vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
-    end
-    -- <C-l>（レイアウト切替）は plugins/telescope.lua の defaults.mappings で全 picker 共通に定義済み
-    map_modes(map, '<C-h>', function(b) open_in_split(b, 'split') end)
-    map_modes(map, '<C-f>', layout_actions.toggle_preview)
-    if extra_mappings then extra_mappings(prompt_bufnr, map) end
-    return true
-  end
-end
-
-local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
-local grep_search_shortcut = '<C-s>=Dir切替 <C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ <C-v>=vsplit <C-h>=hsplit'
+local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers ' .. util.shortcut_common
+local grep_search_shortcut = '<C-s>=Dir切替 '            .. util.shortcut_common
 
 local make_file_search   -- forward declaration
 local make_grep_search   -- forward declaration
