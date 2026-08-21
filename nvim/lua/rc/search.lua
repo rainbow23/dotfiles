@@ -36,27 +36,25 @@ end
 
 local open_oldfiles_with_back = function(file_opts)
   builtin.oldfiles({
-    prompt_title = 'Old Files  <C-r>=FileSearchに戻る',
-    attach_mappings = function(prompt_bufnr, map)
+    prompt_title    = 'Old Files  <C-r>=FileSearchに戻る ' .. util.shortcut_common,
+    attach_mappings = make_attach_mappings(false, function(_, map)
       map_modes(map, '<C-r>', function(b)
         actions.close(b)
         vim.schedule(function() make_file_search(file_opts) end)
       end)
-      return true
-    end,
+    end),
   })
 end
 
 local open_buffers_with_back = function(file_opts)
   builtin.buffers({
-    prompt_title = 'Buffers  <C-b>=FileSearchに戻る',
-    attach_mappings = function(prompt_bufnr, map)
+    prompt_title    = 'Buffers  <C-b>=FileSearchに戻る ' .. util.shortcut_common,
+    attach_mappings = make_attach_mappings(false, function(_, map)
       map_modes(map, '<C-b>', function(b)
         actions.close(b)
         vim.schedule(function() make_file_search(file_opts) end)
       end)
-      return true
-    end,
+    end),
   })
 end
 
@@ -273,7 +271,7 @@ vim.api.nvim_create_user_command('BLines', function(opts)
   })
 
   pickers.new({}, {
-    prompt_title = 'BLines',
+    prompt_title = 'BLines  ' .. util.shortcut_common,
     default_text = opts.args,
     finder = finders.new_table({
       results = entries,
@@ -295,13 +293,21 @@ vim.api.nvim_create_user_command('BLines', function(opts)
 end, { nargs = '*', bang = true })
 
 vim.api.nvim_create_user_command('GitStatus', function(opts)
-  builtin.git_status({ default_text = opts.args })
+  builtin.git_status({
+    default_text    = opts.args,
+    prompt_title    = 'GitStatus  ' .. util.shortcut_common,
+    attach_mappings = make_attach_mappings(true),
+  })
 end, { nargs = '*', bang = true })
 
 -- [fzf]m（vimrc.d/search-keymaps.vim）用: fzf 版 MRU を telescope oldfiles で置き換え
 -- plain vim では vimrc.d/fzf.vim が同名コマンドを定義する
 vim.api.nvim_create_user_command('FZFMru', function(opts)
-  builtin.oldfiles({ default_text = opts.args })
+  builtin.oldfiles({
+    default_text    = opts.args,
+    prompt_title    = 'MRU  ' .. util.shortcut_common,
+    attach_mappings = make_attach_mappings(false),
+  })
 end, { nargs = '*', bang = true })
 
 vim.api.nvim_create_user_command('FileSearchFromCurrDir', function(opts)
