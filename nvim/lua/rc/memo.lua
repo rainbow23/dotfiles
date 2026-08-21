@@ -1,11 +1,12 @@
 -- メモ管理（extmarks ベース）
 -- ファイルを変更せず仮想行としてメモを表示し、~/.vim/memos.json に永続化する
 -- キーマップ: <leader>ma=追加/編集  <leader>md=削除  <leader>ml=一覧(telescope)
-local finders      = require('telescope.finders')
-local pickers      = require('telescope.pickers')
-local actions      = require('telescope.actions')
-local action_state = require('telescope.actions.state')
-local previewers   = require('telescope.previewers')
+local finders        = require('telescope.finders')
+local pickers        = require('telescope.pickers')
+local actions        = require('telescope.actions')
+local action_state   = require('telescope.actions.state')
+local layout_actions = require('telescope.actions.layout')
+local previewers     = require('telescope.previewers')
 
 local util      = require('rc.util')
 local map_modes = util.map_modes
@@ -244,11 +245,11 @@ local function make_memo_attach_mappings(extra)
       memo_delete_from_store(sel.value.filepath, sel.value.line)
       picker:delete_selection(function() vim.notify('Memo deleted') end)
     end
-    -- <C-l>（レイアウト切替）は plugins/telescope.lua の defaults.mappings で全 picker 共通に定義済み
     map_modes(map, '<C-d>', delete_memo)
     map_modes(map, '<C-t>', function(b) memo_open_entry(b, 'tabedit') end)
-    map_modes(map, '<M-v>', function(b) memo_open_entry(b, 'vsplit') end)
+    map_modes(map, '<C-v>', function(b) memo_open_entry(b, 'vsplit') end)
     map_modes(map, '<C-h>', function(b) memo_open_entry(b, 'split') end)
+    map_modes(map, '<C-f>', layout_actions.toggle_preview)
     if extra then extra(prompt_bufnr, map) end
     return true
   end
@@ -400,7 +401,7 @@ local function memo_list()
   end)
 
   pickers.new({}, {
-    prompt_title = '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム <C-l>=レイアウト切替 <C-t>=新規タブ <M-v>=vsplit <C-h>=hsplit',
+    prompt_title = '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム ' .. util.shortcut_common,
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
@@ -519,7 +520,7 @@ local function memo_list_current()
   end
   if #results == 0 then vim.notify('No memos in this file', vim.log.levels.INFO); return end
   pickers.new({}, {
-    prompt_title    = '📝 Memos (current file)  <CR>=ジャンプ <C-d>=削除 <C-l>=レイアウト切替 <C-t>=新規タブ <M-v>=vsplit <C-h>=hsplit',
+    prompt_title    = '📝 Memos (current file)  <CR>=ジャンプ <C-d>=削除 ' .. util.shortcut_common,
     finder          = finders.new_table({
       results     = results,
       entry_maker = function(e)
@@ -598,7 +599,7 @@ local function memo_list_buffers()
   end
 
   pickers.new({}, {
-    prompt_title = '📝 Buffer Memos  <CR>=ジャンプ <C-d>=削除 <C-l>=レイアウト切替 <C-t>=新規タブ <M-v>=vsplit <C-h>=hsplit',
+    prompt_title = '📝 Buffer Memos  <CR>=ジャンプ <C-d>=削除 ' .. util.shortcut_common,
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
@@ -649,8 +650,9 @@ local function memo_list_buffers()
       end
       map_modes(map, '<C-d>', delete_memo)
       map_modes(map, '<C-t>', function(b) memo_open_entry(b, 'tabedit') end)
-      map_modes(map, '<M-v>', function(b) memo_open_entry(b, 'vsplit') end)
+      map_modes(map, '<C-v>', function(b) memo_open_entry(b, 'vsplit') end)
       map_modes(map, '<C-h>', function(b) memo_open_entry(b, 'split') end)
+      map_modes(map, '<C-f>', layout_actions.toggle_preview)
       return true
     end,
     -- フロートレイアウト: 既存の vsplit ウィンドウを破壊しないため center を使用
