@@ -56,6 +56,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
     map('<leader>ca', vim.lsp.buf.code_action)
     map('[d',         vim.diagnostic.goto_prev)
     map(']d',         vim.diagnostic.goto_next)
+
+    -- インレイヒント（対応サーバーのみ有効化）
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client and client:supports_method('textDocument/inlayHint') then
+      vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+    end
   end,
 })
 
@@ -82,6 +88,14 @@ vim.lsp.enable({ 'kotlin_language_server', 'ts_ls', 'sqlls', 'vimls', 'bashls', 
 if vim.fn.executable('roslyn-language-server') == 1
   or vim.fn.executable('Microsoft.CodeAnalysis.LanguageServer') == 1 then
   vim.lsp.enable('roslyn_ls')
+end
+
+-- Swift: sourcekit-lsp が使えるときだけ有効化（Xcode 同梱のため未導入環境ではスキップ）
+if vim.fn.executable('sourcekit-lsp') == 1 then
+  vim.lsp.config('sourcekit', {
+    filetypes = { 'swift' },
+  })
+  vim.lsp.enable('sourcekit')
 end
 
 -- Java（nvim-jdtls）

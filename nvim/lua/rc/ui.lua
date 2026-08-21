@@ -2,6 +2,8 @@
 local function restore_ui_hl()
   vim.api.nvim_set_hl(0, 'TelescopeSelection', { bg = '#87CEEB', fg = '#000000', bold = true })
   vim.api.nvim_set_hl(0, 'TabLineSel',         { bg = '#87CEEB', fg = '#000000', bold = true })
+  -- 非活性タブ: 文字色は活性時と同じ黒。背景を明るい灰にして可読性を確保する
+  vim.api.nvim_set_hl(0, 'TabLine',            { bg = '#d0d0d0', fg = '#000000' })
   -- NormalFloat を Normal にリンク: iTerm 半透明環境で float が白くなるのを防ぐ
   vim.api.nvim_set_hl(0, 'NormalFloat',  { link = 'Normal' })
   -- float window の枠線を白色にする

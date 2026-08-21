@@ -1,0 +1,4 @@
+# delta --diff-so-fancy でコミットの diff を表示 (main/log ビューで D キー)
+bind main D !sh -c "git show %(commit) | delta --diff-so-fancy | less -R"
+bind diff D !sh -c "git show %(commit) | delta --diff-so-fancy | less -R"
+bind log  D !sh -c "git show %(commit) | delta --diff-so-fancy | less -R"

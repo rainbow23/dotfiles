@@ -14,5 +14,11 @@ if [ -d $HOME/.config/nvim ] && [ ! -L $HOME/.config/nvim ]; then
 fi
 ln -sfn $HOME/dotfiles/nvim $HOME/.config/nvim
 
+ln -sfn $HOME/dotfiles/_tigrc $HOME/.tigrc
+
+# zellij 設定
+mkdir -p $HOME/.config/zellij
+ln -sfn $HOME/dotfiles/zellij/config.kdl $HOME/.config/zellij/config.kdl
+
 #karabiner設定を追加
 ln -sfn ~/dotfiles/etc/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
