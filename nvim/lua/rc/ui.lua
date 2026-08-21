@@ -34,3 +34,13 @@ vim.opt.tabline = '%!v:lua.MyTabLine()'
 vim.api.nvim_create_autocmd('VimResized', {
   callback = function() vim.cmd('wincmd =') end,
 })
+
+-- InsertLeave（Esc）時に英語 IME へ自動切替（im-select が必要）
+-- macOS: brew install im-select
+-- Windows/GitBash: https://github.com/daipeihust/im-select から im-select.exe を PATH に配置
+if vim.fn.executable('im-select') == 1 then
+  local im_en = vim.fn.has('mac') == 1 and 'com.apple.keylayout.ABC' or '1033'
+  vim.api.nvim_create_autocmd('InsertLeave', {
+    callback = function() vim.fn.system('im-select ' .. im_en) end,
+  })
+end
