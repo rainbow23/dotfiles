@@ -11,6 +11,10 @@ local previewers     = require('telescope.previewers')
 local util      = require('rc.util')
 local map_modes = util.map_modes
 
+-- vsplit キーは環境によって異なる（GitBash/Windows: <M-v>、mac/unix: <C-v>）
+local vsplit_key     = vim.fn.has('win32') == 1 and '<M-v>' or '<C-v>'
+local memo_shortcut  = '<C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ ' .. vsplit_key .. '=vsplit <C-h>=hsplit'
+
 local memo_ns          = vim.api.nvim_create_namespace('user_memos')
 local memo_file        = vim.fn.expand('~/.vim/memos.json')
 local buf_memos        = {}  -- { [bufnr] = { [extmark_id] = { text, color } } }
@@ -245,11 +249,11 @@ local function make_memo_attach_mappings(extra)
       memo_delete_from_store(sel.value.filepath, sel.value.line)
       picker:delete_selection(function() vim.notify('Memo deleted') end)
     end
-    map_modes(map, '<C-d>', delete_memo)
-    map_modes(map, '<C-t>', function(b) memo_open_entry(b, 'tabedit') end)
-    map_modes(map, '<C-v>', function(b) memo_open_entry(b, 'vsplit') end)
-    map_modes(map, '<C-h>', function(b) memo_open_entry(b, 'split') end)
-    map_modes(map, '<C-f>', layout_actions.toggle_preview)
+    map_modes(map, '<C-d>',    delete_memo)
+    map_modes(map, '<C-t>',    function(b) memo_open_entry(b, 'tabedit') end)
+    map_modes(map, vsplit_key, function(b) memo_open_entry(b, 'vsplit') end)
+    map_modes(map, '<C-h>',    function(b) memo_open_entry(b, 'split') end)
+    map_modes(map, '<C-f>',    layout_actions.toggle_preview)
     if extra then extra(prompt_bufnr, map) end
     return true
   end
@@ -401,7 +405,7 @@ local function memo_list()
   end)
 
   pickers.new({}, {
-    prompt_title = '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム ' .. util.shortcut_common,
+    prompt_title = '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム ' .. memo_shortcut,
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
@@ -520,7 +524,7 @@ local function memo_list_current()
   end
   if #results == 0 then vim.notify('No memos in this file', vim.log.levels.INFO); return end
   pickers.new({}, {
-    prompt_title    = '📝 Memos (current file)  <CR>=ジャンプ <C-d>=削除 ' .. util.shortcut_common,
+    prompt_title    = '📝 Memos (current file)  <CR>=ジャンプ <C-d>=削除 ' .. memo_shortcut,
     finder          = finders.new_table({
       results     = results,
       entry_maker = function(e)
@@ -599,7 +603,7 @@ local function memo_list_buffers()
   end
 
   pickers.new({}, {
-    prompt_title = '📝 Buffer Memos  <CR>=ジャンプ <C-d>=削除 ' .. util.shortcut_common,
+    prompt_title = '📝 Buffer Memos  <CR>=ジャンプ <C-d>=削除 ' .. memo_shortcut,
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
@@ -648,11 +652,11 @@ local function memo_list_buffers()
         memo_delete_from_store(sel.value.filepath, sel.value.line)
         picker:delete_selection(function() vim.notify('Memo deleted') end)
       end
-      map_modes(map, '<C-d>', delete_memo)
-      map_modes(map, '<C-t>', function(b) memo_open_entry(b, 'tabedit') end)
-      map_modes(map, '<C-v>', function(b) memo_open_entry(b, 'vsplit') end)
-      map_modes(map, '<C-h>', function(b) memo_open_entry(b, 'split') end)
-      map_modes(map, '<C-f>', layout_actions.toggle_preview)
+      map_modes(map, '<C-d>',    delete_memo)
+      map_modes(map, '<C-t>',    function(b) memo_open_entry(b, 'tabedit') end)
+      map_modes(map, vsplit_key, function(b) memo_open_entry(b, 'vsplit') end)
+      map_modes(map, '<C-h>',    function(b) memo_open_entry(b, 'split') end)
+      map_modes(map, '<C-f>',    layout_actions.toggle_preview)
       return true
     end,
     -- フロートレイアウト: 既存の vsplit ウィンドウを破壊しないため center を使用
