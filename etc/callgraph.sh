@@ -22,8 +22,7 @@ usage() {
   -r, --root DIR         探索ルート（既定: git のトップレベル、無ければカレント）
   -d, --depth N          最大深さ（既定: 5）
   -o, --output FILE      出力先ファイル（既定: callgraph.txt）
-                         tee で標準出力と同時に書き出し、
-                         最後に outputPath と内容を再表示する
+                         tee で標準出力と同時に書き出し、最後に outputPath を表示する
   -m, --memo-file PATH   メモファイル（既定: ~/.vim/memos.json）
       --direction out|in 呼び出し先（既定）/ 呼び出し元
       --format tree|md|json  出力形式（既定: tree）
@@ -113,7 +112,7 @@ if [ "$status" -ne 0 ]; then
     exit "$status"
 fi
 
-# 出力パスと、出力ファイルの内容を表示する
+# 出力パスを表示する（内容は tee で既に標準出力へ流れているため再表示しない）
 # 相対指定でも絶対パスで示す（realpath は環境差があるため PWD を前置する）
 case "$out" in
     /* | [A-Za-z]:[/\\]*) out_abs=$out ;;
@@ -122,4 +121,3 @@ esac
 
 echo
 echo "outputPath: $out_abs"
-cat "$out"
