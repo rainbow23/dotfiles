@@ -134,6 +134,56 @@ local function memo_add_or_edit()
   memo_flush_buf(bufnr)
 end
 
+-- 定型メモのテンプレート
+-- callgraph ツール（etc/callgraph.sh）はここの text を抽出キーワードとして受け取る
+local memo_templates = {
+  {
+    text  = '検索: この関数を起点とした呼び出しを調べる',
+    color = '#00FF7F',  -- 起点メモを通常メモと見分けるための固定色
+  },
+}
+
+-- 定型メモを現在行に追加する（テンプレートが1件ならピッカーを出さず即挿入）
+local function memo_add_template()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local line0 = vim.api.nvim_win_get_cursor(0)[1] - 1
+
+  local function insert(tpl)
+    -- 同じ行の既存メモは置き換える（memo_add_or_edit と同じ挙動）
+    local marks = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { line0, 0 }, { line0, -1 }, {})
+    for _, m in ipairs(marks) do
+      vim.api.nvim_buf_del_extmark(bufnr, memo_ns, m[1])
+      if buf_memos[bufnr] then buf_memos[bufnr][m[1]] = nil end
+    end
+    memo_set_extmark(bufnr, line0, tpl.text, tpl.color)
+    memo_flush_buf(bufnr)
+    vim.notify('Memo: ' .. tpl.text, vim.log.levels.INFO)
+  end
+
+  if #memo_templates == 1 then insert(memo_templates[1]); return end
+
+  pickers.new({}, {
+    prompt_title = '📝 Memo Template  <CR>=挿入',
+    finder = finders.new_table({
+      results     = memo_templates,
+      entry_maker = function(t)
+        return { value = t, display = t.text, ordinal = t.text }
+      end,
+    }),
+    sorter = require('telescope.config').values.generic_sorter({}),
+    attach_mappings = function(prompt_bufnr)
+      actions.select_default:replace(function()
+        local sel = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+        if sel then vim.schedule(function() insert(sel.value) end) end
+      end)
+      return true
+    end,
+    layout_strategy = 'center',
+    layout_config   = { width = 70, height = 10 },
+  }):find()
+end
+
 -- 現在行のメモを削除する
 local function memo_delete()
   local bufnr = vim.api.nvim_get_current_buf()
@@ -669,6 +719,7 @@ vim.api.nvim_create_user_command('MyBuffersMemos', memo_list_buffers, {})
 vim.keymap.set('n', '<leader>ma', memo_add_or_edit,              { desc = 'Memo add/edit' })
 vim.keymap.set('n', '<leader>md', memo_delete,                   { desc = 'Memo delete' })
 vim.keymap.set('n', '<leader>mc', memo_change_color_at_cursor,   { desc = 'Memo change color at cursor' })
+vim.keymap.set('n', '<leader>mf', memo_add_template,             { desc = 'Memo add template (呼び出し調査の起点)' })
 vim.keymap.set('n', '<leader>ml', memo_list,                     { desc = 'Memo list (telescope)' })
 vim.keymap.set('n', '<leader>ll', memo_list_current,             { desc = 'Memo list current file' })
 vim.keymap.set('n', '<leader>mr', memo_force_reload,             { desc = 'Memo force reload' })
