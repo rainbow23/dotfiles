@@ -28,6 +28,10 @@ Memo に付けた「起点マーク」から、LSP を使って関数の呼び�
 etc/callgraph.sh
 ```
 
+結果は `tee` で標準出力とファイルへ同時に書き出し、最後にそのファイルの内容を再表示する。
+出力先の既定は `callgraph.txt`（`-o` または環境変数 `CALLGRAPH_OUT` で変更可、`.gitignore` 済み）。
+進捗メッセージは stderr に出るため、ファイルにはツリーだけが残る。
+
 ```
 memo_add_or_edit  (nvim/lua/rc/memo.lua:112)
 　→memo_set_extmark  (nvim/lua/rc/memo.lua:58)
@@ -48,7 +52,7 @@ memo_add_or_edit  (nvim/lua/rc/memo.lua:112)
 | `-k, --keyword TEXT` | 上記の定型文 | 抽出キーワード（位置引数でも指定可） |
 | `-r, --root DIR` | git トップレベル | 探索ルート。ここから外れた定義は辿らない |
 | `-d, --depth N` | 5 | 最大深さ。打ち切りは `…` で表示 |
-| `-o, --output FILE` | 標準出力 | 出力先 |
+| `-o, --output FILE` | `callgraph.txt` | 出力先。tee で標準出力にも同時に流す |
 | `-m, --memo-file PATH` | `~/.vim/memos.json` | メモファイル |
 | `--direction out\|in` | out | 呼び出し先 / 呼び出し元 |
 | `--format tree\|md\|json` | tree | 出力形式 |
@@ -56,6 +60,9 @@ memo_add_or_edit  (nvim/lua/rc/memo.lua:112)
 | `--external` | off | ルート外（ライブラリ等）の定義も葉として出力 |
 | `--no-loc` | off | 関数名のみ出力し `ファイル:行` を省く |
 | `-q, --quiet` | off | 進捗メッセージ（stderr）を抑制 |
+
+異常終了時は終了コードをそのまま返し、ファイルの再表示は行わない
+（パイプの終了ステータスは tee のものになるため、nvim の終了コードは一時ファイルで受け渡している）。
 
 マーカーの意味: `(既出)` 別ツリーで展開済み / `(循環)` 祖先に同じ関数 / `…` 深さ打ち切り / `(外部)` ルート外。
 

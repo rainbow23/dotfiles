@@ -21,7 +21,8 @@ usage() {
                          既定: 検索: この関数を起点とした呼び出しを調べる
   -r, --root DIR         探索ルート（既定: git のトップレベル、無ければカレント）
   -d, --depth N          最大深さ（既定: 5）
-  -o, --output FILE      出力先ファイル（既定: 標準出力）
+  -o, --output FILE      出力先ファイル（既定: callgraph.txt）
+                         tee で標準出力と同時に書き出し、最後に内容を再表示する
   -m, --memo-file PATH   メモファイル（既定: ~/.vim/memos.json）
       --direction out|in 呼び出し先（既定）/ 呼び出し元
       --format tree|md|json  出力形式（既定: tree）
@@ -33,6 +34,7 @@ usage() {
 
 環境変数:
   NVIM_BIN               使用する nvim の実行ファイル（既定: nvim）
+  CALLGRAPH_OUT          出力先ファイルの既定値（既定: callgraph.txt）
 
 例:
   etc/callgraph.sh
@@ -41,18 +43,40 @@ usage() {
 USAGE
 }
 
-# --root 未指定なら git のトップレベルを使う
-root=""
+# 引数の先読み: ヘルプ、ルート指定の有無、出力先を取り出す
+# 出力先はこのスクリプト側で tee に渡すため、Lua へ渡す引数からは取り除く
+# （先頭から取り出して末尾へ積み直すことで、空白を含む引数も壊さずに組み直す）
+out=""
 args_has_root=0
-
-# ヘルプとルート指定の有無だけ先読みする（他の引数は Lua 側で解釈する）
-for a in "$@"; do
-    case "$a" in
-        -h|--help) usage; exit 0 ;;
-        -r|--root) args_has_root=1 ;;
+argc=$#
+i=0
+while [ "$i" -lt "$argc" ]; do
+    arg=$1
+    shift
+    i=$((i + 1))
+    case "$arg" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -o|--output)
+            out=$1
+            shift
+            i=$((i + 1))
+            ;;
+        -r|--root)
+            args_has_root=1
+            set -- "$@" "$arg"
+            ;;
+        *)
+            set -- "$@" "$arg"
+            ;;
     esac
 done
 
+[ -n "$out" ] || out=${CALLGRAPH_OUT:-callgraph.txt}
+
+# --root 未指定なら git のトップレベルを使う
 if [ "$args_has_root" -eq 0 ]; then
     if root=$(git rev-parse --show-toplevel 2>/dev/null) && [ -n "$root" ]; then
         set -- --root "$root" "$@"
@@ -70,4 +94,25 @@ if [ ! -f "$CALLGRAPH_LUA" ]; then
     exit 1
 fi
 
-exec "$NVIM" -l "$CALLGRAPH_LUA" "$@"
+# tee で標準出力とファイルへ同時に書き出す
+# パイプの終了ステータスは tee のものになるため、nvim の結果は一時ファイルで受け渡す
+# if で受けるのは set -e による即時終了を避けるため（そのままだと終了コードを記録できない）
+status_file=$(mktemp)
+{
+    if "$NVIM" -l "$CALLGRAPH_LUA" "$@"; then
+        echo 0 > "$status_file"
+    else
+        echo $? > "$status_file"
+    fi
+} | tee "$out"
+status=$(cat "$status_file")
+rm -f "$status_file"
+
+if [ "$status" -ne 0 ]; then
+    exit "$status"
+fi
+
+# 出力ファイルの内容を表示する
+echo
+echo "===== $out ====="
+cat "$out"
