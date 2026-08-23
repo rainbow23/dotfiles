@@ -12,13 +12,18 @@ local function restore_ui_hl()
   vim.api.nvim_set_hl(0, 'ZoomBackdrop', { bg = '#3a3a3a', fg = '#3a3a3a' })
   -- カラーピッカー選択行: fg 指定なしで着色テキストを維持する
   vim.api.nvim_set_hl(0, 'ColorPickerSelection', { bg = '#555555', bold = true })
-  -- render-markdown: 見出し・コードブロックを白背景・黒文字にする
+  -- render-markdown: 見出しを bold のみ（色なし）、コードを無色化
+  vim.api.nvim_set_hl(0, 'RenderMarkdownHeading', { bold = true })
   for i = 1, 6 do
-    vim.api.nvim_set_hl(0, 'RenderMarkdownH' .. i .. 'Bg', { bg = '#FFFFFF', fg = '#000000' })
+    vim.api.nvim_set_hl(0, 'markdownH' .. i,                { bold = true })
+    vim.api.nvim_set_hl(0, 'markdownH' .. i .. 'Delimiter', { link = 'Normal' })
+    vim.api.nvim_set_hl(0, '@markup.heading.' .. i .. '.markdown', { bold = true })
   end
-  vim.api.nvim_set_hl(0, 'RenderMarkdownCode',       { bg = '#FFFFFF', fg = '#000000' })
-  -- インラインコード（`backtick`）のハイライトを除去
-  vim.api.nvim_set_hl(0, 'RenderMarkdownCodeInline', {})
+  vim.api.nvim_set_hl(0, 'markdownCode',                { link = 'Normal' })
+  vim.api.nvim_set_hl(0, 'markdownCodeBlock',           { link = 'Normal' })
+  vim.api.nvim_set_hl(0, 'markdownCodeDelimiter',       { link = 'Normal' })
+  vim.api.nvim_set_hl(0, '@markup.raw.markdown_inline', { link = 'Normal' })
+  vim.api.nvim_set_hl(0, 'RenderMarkdownCodeInline',    { link = 'Normal' })
 end
 vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, { callback = restore_ui_hl })
 
@@ -36,6 +41,14 @@ function _G.MyTabLine()
   return s .. '%#TabLineFill#%T'
 end
 vim.opt.tabline = '%!v:lua.MyTabLine()'
+
+-- Markdown: treesitter の言語注入（コードブロック内の色付け）を無効化
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'markdown',
+  callback = function()
+    pcall(vim.treesitter.query.set, 'markdown', 'injections', '')
+  end,
+})
 
 -- ターミナルリサイズ時にウィンドウ分割を均等化する（w= 相当）
 vim.api.nvim_create_autocmd('VimResized', {

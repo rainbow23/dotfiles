@@ -1,19 +1,23 @@
 -- Markdown バッファ内レンダリング（プラグイン定義は plugins/render-markdown.lua）
 require('render-markdown').setup({
-  -- 見出し: 色は restore_ui_hl（rc/ui.lua）で RenderMarkdownH1Bg〜H6Bg を上書き
   heading = {
     enabled = true,
     sign = false,
+    backgrounds = {},  -- 見出し背景色を無効化
+    -- 見出しを bold のみ（色なし）: RenderMarkdownHeading は rc/ui.lua で定義
+    foregrounds = { 'RenderMarkdownHeading', 'RenderMarkdownHeading', 'RenderMarkdownHeading',
+                    'RenderMarkdownHeading', 'RenderMarkdownHeading', 'RenderMarkdownHeading' },
   },
-  -- コードブロック: 色は restore_ui_hl（rc/ui.lua）で RenderMarkdownCode を上書き
   code = {
     enabled = true,
     sign = false,
     style = 'full',
+    highlight = '',           -- コードブロック背景色を無効化
+    highlight_language = '',  -- 言語ラベルのハイライトを無効化
   },
-  -- インラインコード（`backtick`）のハイライトを無効化
   inline_code = {
-    enabled = false,
+    enabled = true,
+    highlight = '',  -- インラインコードのハイライトを無効化
   },
   -- チェックボックスをアイコン化する
   checkbox = {
