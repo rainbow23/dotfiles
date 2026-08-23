@@ -42,11 +42,19 @@ function _G.MyTabLine()
 end
 vim.opt.tabline = '%!v:lua.MyTabLine()'
 
--- Markdown: treesitter の言語注入（コードブロック内の色付け）を無効化
+-- Markdown: syntax ファイルによるハイライト上書きを FileType で打ち消す
+-- （VimEnter では markdown syntax ロード前のため効かない）
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'markdown',
   callback = function()
     pcall(vim.treesitter.query.set, 'markdown', 'injections', '')
+    vim.api.nvim_set_hl(0, 'markdownCode',          { link = 'Normal' })
+    vim.api.nvim_set_hl(0, 'markdownCodeBlock',      { link = 'Normal' })
+    vim.api.nvim_set_hl(0, 'markdownCodeDelimiter',  { link = 'Normal' })
+    for i = 1, 6 do
+      vim.api.nvim_set_hl(0, 'markdownH' .. i,                { bold = true })
+      vim.api.nvim_set_hl(0, 'markdownH' .. i .. 'Delimiter', { link = 'Normal' })
+    end
   end,
 })
 
