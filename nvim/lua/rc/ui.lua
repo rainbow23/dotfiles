@@ -12,6 +12,13 @@ local function restore_ui_hl()
   vim.api.nvim_set_hl(0, 'ZoomBackdrop', { bg = '#3a3a3a', fg = '#3a3a3a' })
   -- カラーピッカー選択行: fg 指定なしで着色テキストを維持する
   vim.api.nvim_set_hl(0, 'ColorPickerSelection', { bg = '#555555', bold = true })
+  -- render-markdown: 見出し・コードブロックを白背景・黒文字にする
+  for i = 1, 6 do
+    vim.api.nvim_set_hl(0, 'RenderMarkdownH' .. i .. 'Bg', { bg = '#FFFFFF', fg = '#000000' })
+  end
+  vim.api.nvim_set_hl(0, 'RenderMarkdownCode',       { bg = '#FFFFFF', fg = '#000000' })
+  -- インラインコード（`backtick`）のハイライトを除去
+  vim.api.nvim_set_hl(0, 'RenderMarkdownCodeInline', {})
 end
 vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, { callback = restore_ui_hl })
 
