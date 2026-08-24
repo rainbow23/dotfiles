@@ -111,6 +111,21 @@ function! s:CopyFilePath()
 endfunction
 nnoremap <Leader>p :call <SID>CopyFilePath()<CR>
 
+function! s:CopyFilePathWithLine()
+  let l:path = expand('%:p')
+  let l:line = line('.')
+  let l:text = getline('.')
+  let l:result = l:path . ':' . l:line . ': ' . l:text
+  if has('mac') || has('macunix')
+    call system('echo -n ' . shellescape(l:result) . ' | pbcopy')
+  elseif has('win32') || has('win64')
+    let l:result = GitBashCopyPath(l:path) . ':' . l:line . ': ' . l:text
+    call system('echo ' . shellescape(l:result) . ' | clip')
+  endif
+  echo 'コピーしました: ' . l:result
+endfunction
+nnoremap <Leader>pl :call <SID>CopyFilePathWithLine()<CR>
+
 
 
 nnoremap [buffer]    <Nop>
