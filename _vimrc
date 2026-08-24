@@ -104,14 +104,27 @@ function! s:CopyFilePath()
   if has('mac') || has('macunix')
     call system('echo -n ' . shellescape(l:path) . ' | pbcopy')
   elseif has('win32') || has('win64')
-    " GitBash 用に C:\... → /c/... 形式に変換
-    let l:copy_path = substitute(l:path, '^\([A-Za-z]\):', '/\L\1', '')
-    let l:copy_path = substitute(l:copy_path, '\\', '/', 'g')
-    call system('printf "%s" "' . l:copy_path . '" | clip')
+    " GitBash 特有の変換・クリップボード処理は vimrc.d/gitbash.vim に分離
+    let l:copy_path = GitBashCopyPath(l:path)
   endif
   echo 'コピーしました: ' . l:copy_path
 endfunction
 nnoremap <Leader>p :call <SID>CopyFilePath()<CR>
+
+function! s:CopyFilePathWithLine()
+  let l:path = expand('%:p')
+  let l:line = line('.')
+  let l:text = getline('.')
+  let l:result = l:path . ':' . l:line . ': ' . l:text
+  if has('mac') || has('macunix')
+    call system('echo -n ' . shellescape(l:result) . ' | pbcopy')
+  elseif has('win32') || has('win64')
+    let l:result = GitBashCopyPath(l:path) . ':' . l:line . ': ' . l:text
+    call system('echo ' . shellescape(l:result) . ' | clip')
+  endif
+  echo 'コピーしました: ' . l:result
+endfunction
+nnoremap <Leader>pl :call <SID>CopyFilePathWithLine()<CR>
 
 
 
@@ -216,116 +229,16 @@ nnoremap <Leader>. :<C-u>tabedit $HOME/dotfiles/_vimrc<CR>
 
 
 "FZF start ####################################################################
-if has("mac")
-    set rtp+=~/.fzf
-elseif has("unix")
-    set rtp+=~/.fzf
-endif
-
-let g:fzf_action = {
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit' }
-
-" fzfからファイルにジャンプできるようにする
-let g:fzf_buffers_jump = 1
-
-" nvim のターミナルモードで Esc がfzfに届かない問題の対策
-let $FZF_DEFAULT_OPTS = '--bind esc:abort'
-if has('nvim')
-  autocmd! FileType fzf tnoremap <buffer> <Esc> <Esc>
-endif
-
-nnoremap [fzf] <Nop>
-nmap <Leader>f [fzf]
-
-" Mapping selecting mappings
-nmap <leader><tab> <plug>(fzf-maps-n)
-xmap <leader><tab> <plug>(fzf-maps-x)
-omap <leader><tab> <plug>(fzf-maps-o)
-" Insert mode completion
-" imap <c-x><c-k> <plug>(fzf-complete-word)
-imap <c-x><c-f> <plug>(fzf-complete-path)
-imap <c-x><c-j> <plug>(fzf-complete-file-ag)
-imap <c-x><c-l> <plug>(fzf-complete-line)
-" Advanced customization using autoload functions
-" inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
-
-function! s:FzfSessionLoad(name)
-  let l:path = glob(expand('~/.vim/sessions/') . a:name)
-  if l:path != ''
-    execute 'source ' . fnameescape(l:path)
-    echo 'Session loaded: ' . fnamemodify(a:name, ':r')
-  else
-    echo 'Session file not found: ' . a:name
-  endif
-endfunction
-
-nnoremap [fzf]us :<C-u>MySessionLoad<CR>
-command! MySessionLoad call fzf#run(fzf#wrap({
-      \ 'source': map(split(glob(expand('~/.vim/sessions/') . '*.vim'), '\n'), 'fnamemodify(v:val, ":t")'),
-      \ 'sink': function('<sid>FzfSessionLoad'),
-      \ 'options': '--prompt "Sessions> " --header "CR=ロード"',
-      \ 'down': '40%'}))
-
-nnoremap [fzf]m :<C-u>FZFMru<CR>
-nnoremap [fzf]f :<C-u>FileSearch<CR>
-nnoremap [fzf]g :<C-u>GitStatus<CR>
-nnoremap [fzf]b :<C-u>MyBuffersMemos<CR>
-nnoremap [fzf]h :<C-u>History<CR>
-" list tabs
-nnoremap [fzf]w :<C-u>Windows<CR>
-nnoremap [fzf]l :<C-u>BLines<CR>
-nnoremap [fzf]s :<C-u>GrepSearch<CR>
-nnoremap [fzf]S :<C-u>FileSearchFromCurrDir<CR>
-
-let g:fzf_layout = { 'down': '~30%' }
-let s:fzf_base_options = extend({'options': ''}, g:fzf_layout)
-
-" batの代わりにcatを使用（パフォーマンス検証用）
-let $FZF_PREVIEW_COMMAND = 'cat {}'
-
-
-function! s:rg_raw(command_suffix, ...)
-  if !executable('rg')
-    return s:warn('rg is not found')
-  endif
-  let s:cmd='rg --column --line-number --no-heading --color=always --smart-case -- ' .
-    \ a:command_suffix
-  return call('fzf#vim#grep', extend([s:cmd, 1], a:000))
-endfunction
-
-function! s:rg(query, ...)
-  let query = empty(a:query) ? '' : a:query
-  let args  = copy(a:000)
-  " echo a:000 >> [{'options': '', 'dir': '/Users/goodscientist1023/dotfiles', 'down': '~30%'}]
-  return call('s:rg_raw', insert(args, fzf#shellescape(query), 0))
-endfunction
-
-command! -bang -nargs=* FZFMru call fzf#vim#history(fzf#vim#with_preview('right:50%:hidden', '?'))
-
-
-command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
-
- " Make Ripgrep ONLY search file contents and not filenames
-if !has('nvim')
-  command! -bang -nargs=* GrepSearch
-    \ call fzf#vim#grep(
-    \   'rg --column --line-number --hidden --smart-case -g !.git/ --no-heading --color=always ^ $(git rev-parse --show-toplevel) '.shellescape(<q-args>), 1,
-    \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
-    \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
-    \   <bang>0)
-
-  command! -bang -nargs=* SearchFromCurrDir
-    \ call fzf#vim#grep(
-    \   'rg --column --line-number --hidden --smart-case --no-heading --color=always ^ $(pwd) '.shellescape(<q-args>), 1,
-    \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
-    \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4.. -e'}, 'right:30%', '?'),
-    \   <bang>0)
-endif
-
+" fzf/検索系は vimrc.d/ で一元管理する
+"   search-keymaps.vim : キーマップと共通設定（vim/nvim 共通）
+"   fzf.vim            : fzf ベースの実装（telescope 置き換え済みコマンドは plain vim のみ）
+"   nvim の telescope 実装は nvim/lua/rc/search.lua, rc/session.lua
+execute 'source' fnameescape(expand('~/dotfiles/vimrc.d/search-keymaps.vim'))
+execute 'source' fnameescape(expand('~/dotfiles/vimrc.d/fzf.vim'))
 "FZF end  ####################################################################
+
+" GitBash (Windows) 特有の設定
+execute 'source' fnameescape(expand('~/dotfiles/vimrc.d/gitbash.vim'))
 
 "EasyAlign start ####################################################################
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -383,7 +296,7 @@ function! AirlineGitRelativePath() abort
   return expand('%:~:.')
 endfunction
 autocmd BufEnter * let g:_airline_git_root_cache = trim(system('git rev-parse --show-toplevel 2>/dev/null'))
-let g:airline_section_c = '%t'
+let g:airline_section_c = '%{AirlineGitRelativePath()}'
 
 let g:airline#extensions#tabline#enabled           = 1   " enable airline tabline
 let g:airline#extensions#tabline#show_close_button = 0   " remove 'X' at the end of the tabline
@@ -828,14 +741,15 @@ vmap [nerdcommenter]s <plug>NERDCommenterSexy<CR>
 
 
 " Plug 'scrooloose/nerdtree' start ####################################################
-nnoremap ,t :NERDTreeToggle<CR>
+nnoremap ,t :NERDTreeFind<CR>
 " l:右パネルにファイルを表示、カーソルも右パネルに移動
 " gl:右パネルにファイルを表示、カーソルは左パネルから移動しない
 " Plug 'scrooloose/nerdtree' end ######################################################
 
 " Plug 'scrooloose/nerdtree' #########################################################
 let NERDTreeShowBookmarks=1
-let g:NERDTreeMapActivateNode ='l'
+" g:NERDTreeMapActivateNode ('l' で開く) は nvim/lua/config/nerdtree.lua で設定
+" (プラグインのキーマップ登録より前に設定する必要があるため init.lua が lazy より前に require)
 let g:NERDTreeMapOpenVSplit ='v'
 
 autocmd VimEnter * if exists('*NERDTreeAddKeyMap') | call NERDTreeAddKeyMap({
@@ -1111,42 +1025,6 @@ function! WhatFunctionAreWeIn()
   call winrestview(view)
   return tempstring.position
 endfunction
-" Plug 'svermeulen/vim-easyclip' ##################################################
-" クリップボードにコピーしたものを履歴として残す。vim再起動時に復元
-" pastetoggle は nvim で廃止されたため無効化
-let g:EasyClipUseGlobalPasteToggle = 0
-let g:EasyClipShareYanks = 1
-
-" easycilpからコピーした一覧を取得
-function! s:yank_list()
-  redir => ys
-  silent Yanks
-  redir END
-  return split(ys, '\n')[1:]
-endfunction
-
-" 引数からPasteコマンドで貼り付け
-function! s:yank_handler(reg)
-  if empty(a:reg)
-    echo "aborted register paste"
-  else
-    let token = split(a:reg, ' ')
-    execute 'Paste' . token[0]
-  endif
-endfunction
-
-" fzfを使って一覧を呼び出して貼り付け
-command! FZFYank call fzf#run({
-\ 'source': <sid>yank_list(),
-\ 'sink': function('<sid>yank_handler'),
-\ 'options': '-m --prompt="FZFYank> "',
-\ 'down':    '40%'
-\ })
-" マッピングはお好みで
-nnoremap [fzf]y :<C-U>FZFYank<CR>
-inoremap [fzf]y <C-O>:<C-U>FZFYank<CR>
-" Plug 'svermeulen/vim-easyclip' ##################################################
-
 " Plug 'lambdalisue/kensaku-search.vim' start #####################################
 " kensaku-search.vim はデフォルトマッピングを提供していないため、
 " ユーザーが以下のように <CR> に対して <Plug>(kensaku-search-replace) を割り当てる必要があります。

@@ -1,3 +1,4 @@
 /vimrepos/*
 .claude
 .DS_Store
+callgraph.txt
