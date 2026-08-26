@@ -807,7 +807,7 @@ local function memo_add_from_list()
 end
 
 vim.keymap.set('n', '<leader>ma', memo_add_or_edit,              { desc = 'Memo add/edit' })
-vim.keymap.set('n', '<leader>ms', memo_add_from_list,            { desc = 'Memo add from candidates list' })
+vim.keymap.set('n', '<leader>mal', memo_add_from_list,           { desc = 'Memo add from candidates list' })
 vim.keymap.set('n', '<leader>my', memo_copy_at_cursor,           { desc = 'Memo copy text at cursor' })
 vim.keymap.set('n', '<leader>md', memo_delete,                   { desc = 'Memo delete' })
 vim.keymap.set('n', '<leader>mc', memo_change_color_at_cursor,   { desc = 'Memo change color at cursor' })
