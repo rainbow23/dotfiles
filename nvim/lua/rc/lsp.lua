@@ -49,13 +49,27 @@ vim.api.nvim_create_autocmd('LspAttach', {
     local map = function(keys, func)
       vim.keymap.set('n', keys, func, { buffer = bufnr, silent = true })
     end
-    map('gd',         vim.lsp.buf.definition)
+    map('gd', function()
+      vim.lsp.buf.definition()
+      vim.defer_fn(function() vim.cmd('normal! zz') end, 100)
+    end)
     map('gr', function()
       local util         = require('rc.util')
       local action_state = require('telescope.actions.state')
       require('telescope.builtin').lsp_references({
         prompt_title    = 'LSP References  <C-x>=Quickfix ' .. util.shortcut_common,
-        attach_mappings = util.make_attach_mappings(true, function(_, lmap)
+        attach_mappings = util.make_attach_mappings(true, function(prompt_bufnr, lmap)
+          local actions_mod = require('telescope.actions')
+          actions_mod.select_default:replace(function(b)
+            local sel = action_state.get_selected_entry()
+            actions_mod.close(b)
+            vim.schedule(function()
+              if not sel then return end
+              vim.cmd('edit ' .. vim.fn.fnameescape(sel.filename))
+              vim.api.nvim_win_set_cursor(0, { sel.lnum, (sel.col or 1) - 1 })
+              vim.cmd('normal! zz')
+            end)
+          end)
           util.map_modes(lmap, '<C-x>', function(b)
             local picker = action_state.get_current_picker(b)
             local qflist = {}

@@ -184,6 +184,19 @@ local function memo_add_template()
   }):find()
 end
 
+-- 現在行のメモテキストをクリップボードにコピーする
+local function memo_copy_at_cursor()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local line0 = vim.api.nvim_win_get_cursor(0)[1] - 1
+  local marks  = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { line0, 0 }, { line0, -1 }, {})
+  if #marks == 0 then vim.notify('No memo on this line', vim.log.levels.INFO); return end
+  local m = (buf_memos[bufnr] or {})[marks[1][1]]
+  if not m then return end
+  vim.fn.setreg('+', m.text)
+  vim.fn.setreg('"', m.text)
+  vim.notify('Copied: ' .. m.text)
+end
+
 -- 現在行のメモを削除する
 local function memo_delete()
   local bufnr = vim.api.nvim_get_current_buf()
@@ -230,8 +243,8 @@ local memo_previewer = previewers.new_buffer_previewer({
     local filepath = entry.value.filepath
     local lnum     = entry.value.line
     local text     = entry.value.text
-    -- ヘッダにメモテキストを表示
-    local header = { '📝  ' .. text, string.rep('─', 60), '' }
+    -- ヘッダにメモテキストとファイルパスを表示
+    local header = { '📝  ' .. text, filepath, string.rep('─', 60), '' }
     -- ファイルの前後行を読み込んで表示（メモ行に ▶ マーカーを付ける）
     local body = {}
     local f = io.open(filepath, 'r')
@@ -443,7 +456,7 @@ local function memo_list()
         line     = e.line,
         text     = e.text,
         color    = e.color,
-        display  = memo_display_path(filepath) .. ':' .. e.line .. '  ' .. e.text,
+        display  = e.text .. '  ' .. vim.fn.fnamemodify(filepath, ':t'),
       })
     end
     ::continue::
@@ -636,7 +649,7 @@ local function memo_list_buffers()
           line     = e.line,
           text     = e.text,
           color    = e.color,
-          display  = display_path(filepath) .. ':' .. e.line .. '  ' .. e.text,
+          display  = e.text .. '  ' .. vim.fn.fnamemodify(filepath, ':t'),
         })
       end
     end
@@ -716,7 +729,68 @@ end
 
 vim.api.nvim_create_user_command('MyBuffersMemos', memo_list_buffers, {})
 
+-- 候補テキストファイルからメモを選択して現在行に追加する
+-- 候補ファイル: ~/.vim/memo_candidates.txt（1行1候補）
+local memo_candidates_file = vim.fn.expand('~/.vim/memo_candidates.txt')
+
+local function memo_add_from_list()
+  local f = io.open(memo_candidates_file, 'r')
+  if not f then
+    vim.notify('候補ファイルが見つかりません: ' .. memo_candidates_file, vim.log.levels.ERROR)
+    return
+  end
+  local candidates = {}
+  for line in f:lines() do
+    if line ~= '' then table.insert(candidates, line) end
+  end
+  f:close()
+  if #candidates == 0 then
+    vim.notify('候補ファイルが空です: ' .. memo_candidates_file, vim.log.levels.INFO)
+    return
+  end
+
+  local bufnr = vim.api.nvim_get_current_buf()
+  local line0 = vim.api.nvim_win_get_cursor(0)[1] - 1
+
+  pickers.new({}, {
+    prompt_title = '📝 Memo 候補  <CR>=選択して編集',
+    finder = finders.new_table({
+      results     = candidates,
+      entry_maker = function(c)
+        return { value = c, display = c, ordinal = c }
+      end,
+    }),
+    sorter = require('telescope.config').values.generic_sorter({}),
+    attach_mappings = function(prompt_bufnr)
+      actions.select_default:replace(function()
+        local sel = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+        vim.schedule(function()
+          local selected_text = sel and sel.value or ''
+          local input = vim.fn.input('Memo: ', selected_text)
+          vim.cmd('redraw')
+          if input == '' then return end
+          -- 既存メモは置き換える
+          local marks = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { line0, 0 }, { line0, -1 }, {})
+          for _, m in ipairs(marks) do
+            vim.api.nvim_buf_del_extmark(bufnr, memo_ns, m[1])
+            if buf_memos[bufnr] then buf_memos[bufnr][m[1]] = nil end
+          end
+          local color = memo_last_color
+          memo_set_extmark(bufnr, line0, input, color)
+          memo_flush_buf(bufnr)
+        end)
+      end)
+      return true
+    end,
+    layout_strategy = 'center',
+    layout_config   = { width = 70, height = 20 },
+  }):find()
+end
+
 vim.keymap.set('n', '<leader>ma', memo_add_or_edit,              { desc = 'Memo add/edit' })
+vim.keymap.set('n', '<leader>ms', memo_add_from_list,            { desc = 'Memo add from candidates list' })
+vim.keymap.set('n', '<leader>my', memo_copy_at_cursor,           { desc = 'Memo copy text at cursor' })
 vim.keymap.set('n', '<leader>md', memo_delete,                   { desc = 'Memo delete' })
 vim.keymap.set('n', '<leader>mc', memo_change_color_at_cursor,   { desc = 'Memo change color at cursor' })
 vim.keymap.set('n', '<leader>mf', memo_add_template,             { desc = 'Memo add template (呼び出し調査の起点)' })
