@@ -456,7 +456,6 @@ local function memo_list()
         line     = e.line,
         text     = e.text,
         color    = e.color,
-        display  = e.text .. '  ' .. vim.fn.fnamemodify(filepath, ':t'),
       })
     end
     ::continue::
@@ -465,6 +464,16 @@ local function memo_list()
     if a.filepath ~= b.filepath then return a.filepath < b.filepath end
     return a.line < b.line
   end)
+  -- メモ列の最大表示幅を計算してファイル名列を縦揃えする（全角対応）
+  local max_tw = 0
+  for _, r in ipairs(results) do
+    local w = vim.fn.strdisplaywidth(r.text)
+    if w > max_tw then max_tw = w end
+  end
+  for _, r in ipairs(results) do
+    local pad = string.rep(' ', max_tw - vim.fn.strdisplaywidth(r.text))
+    r.display = r.text .. pad .. '  ' .. vim.fn.fnamemodify(r.filepath, ':t')
+  end
 
   pickers.new({}, {
     prompt_title = '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム ' .. memo_shortcut,
@@ -649,7 +658,6 @@ local function memo_list_buffers()
           line     = e.line,
           text     = e.text,
           color    = e.color,
-          display  = e.text .. '  ' .. vim.fn.fnamemodify(filepath, ':t'),
         })
       end
     end
@@ -658,6 +666,16 @@ local function memo_list_buffers()
     if a.filepath ~= b.filepath then return a.filepath < b.filepath end
     return a.line < b.line
   end)
+  -- メモ列の最大表示幅を計算してファイル名列を縦揃えする（全角対応）
+  local max_tw = 0
+  for _, r in ipairs(results) do
+    local w = vim.fn.strdisplaywidth(r.text)
+    if w > max_tw then max_tw = w end
+  end
+  for _, r in ipairs(results) do
+    local pad = string.rep(' ', max_tw - vim.fn.strdisplaywidth(r.text))
+    r.display = r.text .. pad .. '  ' .. vim.fn.fnamemodify(r.filepath, ':t')
+  end
 
   if #results == 0 then
     vim.notify('No memos in open buffers', vim.log.levels.INFO)
