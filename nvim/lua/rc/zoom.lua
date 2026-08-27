@@ -17,7 +17,7 @@ local function fullscreen_float(bufnr)
     border    = 'rounded',
     zindex    = 50,
   })
-  vim.wo[win].signcolumn = 'no'
+  vim.wo[win].signcolumn = 'auto'
   vim.wo[win].foldcolumn = '0'
   vim.wo[win].spell      = false
   return win
@@ -51,6 +51,8 @@ local function zoom_toggle()
   zoom_float_id    = fullscreen_float(bufnr)
   -- winbar にファイル名と変更状態を表示（airline は floating window に非対応）
   vim.wo[zoom_float_id].winbar = ' %f %m'
+  -- GitGutter のサインをフロートウィンドウに反映する
+  pcall(vim.cmd, 'GitGutter')
   vim.api.nvim_create_autocmd('WinClosed', {
     pattern  = tostring(zoom_float_id),
     once     = true,
