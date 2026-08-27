@@ -194,6 +194,7 @@ make_grep_search = function(opts)
           results     = entries,
           entry_maker = function(e) return e end,
         }), { reset_prompt = false })
+        vim.api.nvim_echo({ { 'Sorted ' .. #entries .. ' entries', 'None' } }, false, {})
       end)
       -- <C-s>: git root ↔ file dir 切替（file_dir か git_root が設定されているときのみ有効）
       if opts.file_dir or opts.git_root then
