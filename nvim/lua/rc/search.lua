@@ -15,7 +15,7 @@ local map_modes          = util.map_modes
 local make_attach_mappings = util.make_attach_mappings
 
 local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers ' .. util.shortcut_common
-local grep_search_shortcut = '<C-s>=Dir切替 '            .. util.shortcut_common
+local grep_search_shortcut = '<C-s>=Dir切替 <C-o>=Sort ' .. util.shortcut_common
 
 local make_file_search   -- forward declaration
 local make_grep_search   -- forward declaration
@@ -177,6 +177,24 @@ make_grep_search = function(opts)
         end)
       end
       map_modes(map, '<CR>', select_entry)
+      -- <C-o>: 現在の結果をファイル名→行番号で昇順ソートして静的リストに切替
+      map_modes(map, '<C-o>', function(b)
+        local picker  = action_state.get_current_picker(b)
+        local entries = {}
+        for entry in picker.manager:iter() do
+          table.insert(entries, entry)
+        end
+        table.sort(entries, function(x, y)
+          if (x.filename or '') ~= (y.filename or '') then
+            return (x.filename or '') < (y.filename or '')
+          end
+          return (x.lnum or 0) < (y.lnum or 0)
+        end)
+        picker:refresh(finders.new_table({
+          results     = entries,
+          entry_maker = function(e) return e end,
+        }), { reset_prompt = false })
+      end)
       -- <C-s>: git root ↔ file dir 切替（file_dir か git_root が設定されているときのみ有効）
       if opts.file_dir or opts.git_root then
         local function toggle_dir(b)
