@@ -312,146 +312,6 @@ let g:airline#extensions#tabline#show_tab_type     = 0   " disables the weird or
 let g:airline#extensions#tabline#show_buffers      = 1   " dont show buffers in the tabline
 "vim-airline end  #####################################################################
 
-"unite start ##################################################################
-let g:unite_data_directory = expand('~/.vim/etc/unite')
-"ヒストリー/ヤンク機能を有効化
-let g:unite_source_history_yank_enable =1
-" 大文字小文字を区別しない
-let g:unite_enable_ignore_case = 1
-let g:unite_enable_smart_case = 1
-
-if (glob('~/.vim/plugged/unite.vim'))
-    call unite#custom#profile('default', 'context', {
-     \ 'split' : 1,
-     \ 'start_insert': 0,
-     \ 'vertical_preview': 1,
-     \ 'toggle' : 1,
-     \ })
-endif
-
-"prefix keyの設定
-nnoremap [unite]    <Nop>
-nmap     <Leader>u [unite]
-
-"今開いているファイルに適応 start  ##################
-"ファイル一覧を表示する
-nnoremap <silent> [unite]f    :<C-u>UniteWithBufferDir -buffer-name=files file <CR>
-"最近使ったファイルの一覧を表示
-nnoremap <silent> [unite]<CR> :<C-u>UniteWithBufferDir file_mru<CR>
-"今開いているファイルに適応 end    ##################
-
-"現在位置のファイルの一覧を表示
-nnoremap <silent> [unite]c :<C-u>Unite file_rec:!<CR>
-"最近使ったファイルの一覧を表示 MostRecentUse
-nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
-
-"全体に適応 start  ###########
-nnoremap <silent> [unite]d :<C-u>Unite directory_mru<CR>
-nnoremap <silent> [unite]b :<C-u>Unite -auto-resize buffer<CR>
-nnoremap <silent> [unite]s :<C-u>Unite -auto-resize session<CR>
-if !has('nvim')
-  nnoremap <silent> us :<C-u>Unite -auto-resize session<CR>
-endif
-nnoremap <silent> [unite]t :<C-u>Unite -auto-resize tab<CR>
-nnoremap <silent> ta :<C-u>Unite -auto-resize tab<CR>
-nnoremap <silent> ut :<C-u>Unite -auto-resize tab<CR>
-"スペースキーとrキーでレジストリを表示
-nnoremap <silent> [unite]r :<C-u>Unite register<CR>
-nnoremap <silent> uo :<C-u>Unite -auto-resize outline<CR>
-nnoremap <silent> uov :<C-u>Unite -vertical -winwidth=50 outline<CR>
-nnoremap <silent> uv :<C-u>Unite -auto-resize output:version<CR>
-
-nnoremap <silent> [unite]kk :<C-u>Unite -auto-resize vim_bookmarks<CR>
-"Unite bookmarkを開く
-nnoremap <silent> [unite]k  :<C-u>Unite -auto-resize bookmark<CR>
-"Uniteのbookmarkに追加 ~/.unite/bookmark/default に格納
-nnoremap <silent> [unite]ab :<C-u>UniteBookmarkAdd<CR>
-" grep検索
-nnoremap <silent> [unite]g  :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
-" カーソル位置の単語をgrep検索
-nnoremap <silent> [unite]cg :<C-u>Unite grep:. -buffer-name=search-buffer<CR><C-R><C-W>
-" grep検索結果の再呼出
-nnoremap <silent> [unite]r  :<C-u>UniteResume search-buffer<CR>
-" unite grep に ag(The Silver Searcher) を使う
-if executable('rg')
-  let g:unite_source_grep_command = 'rg'
-  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
-  let g:unite_source_grep_recursive_opt = ''
-endif
-"全体に適応 end    ##########
-
-if !has('nvim')
-  "セッションを保存 start   ##
-  let g:unite_source_session_default_session_name = 'default'
-
-  command! -nargs=? Uss call s:Unite_session_save(<f-args>)
-  function! s:Unite_session_save(...)
-      NERDTreeTabsClose
-      TagbarClose
-      if a:0 >= 1
-          let hogearg = a:1
-          echo "UniteSessionSave ".hogearg
-          execute 'UniteSessionSave ' . a:1
-      else
-          echo "UniteSessionSave ".g:unite_source_session_default_session_name
-          execute 'UniteSessionSave '.g:unite_source_session_default_session_name
-      end
-  endfunction
-  "セッションを保存 enc    ##
-
-  "セッションを上書き保存
-  function! s:Unite_session_override_save()
-     let filepath = v:this_session
-      if filepath  == ''
-          let filepath = g:unite_source_session_default_session_name
-      endif
-
-     let filename = fnamemodify(filepath, ":t:r")
-     let inputtext = input("save current session? "."session_name=".filename." y or n ")
-        redraw
-     if inputtext == 'y'
-        NERDTreeTabsClose
-        TagbarClose
-        echo "UniteSessionSave ".filename
-        execute 'UniteSessionSave ' .filename
-     else
-        echo "canceled save current session. session_name=".filename
-     endif
-  endfunction
-endif
-
-"unite.vimを開いている間のキーマッピング
-autocmd FileType unite call s:unite_my_settings()
-function! s:unite_my_settings()"{{{
-set number
-    " ESCでuniteを終了
-    nmap <buffer> <ESC> <Plug>(unite_exit)
-    nmap <buffer> <C-j> <Plug>(unite_exit)
-    nmap <buffer> q     <Plug>(unite_exit)
-
-    "入力モードのときjjでノーマルモードに移動
-    "map <buffer> jj <Plug>(unite_insert_leave)
-
-    "入力モードのときctrl+wでバックスラッシュも削除
-    imap <buffer> <c-w> <plug>(unite_delete_backward_path)
-
-    "横に分割して開く
-    nnoremap <silent> <buffer> <expr> <C-s> unite#do_action('split')
-    inoremap <silent> <buffer> <expr> <C-s> unite#do_action('split')
-    nnoremap <silent> <buffer> <expr> <C-h> unite#do_action('split')
-    inoremap <silent> <buffer> <expr> <C-h> unite#do_action('split')
-
-    "縦に分割して開く
-    nnoremap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
-    inoremap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
-    "タブで開く
-    nnoremap <silent> <buffer> <expr> <C-t> unite#do_action('tabopen')
-    inoremap <silent> <buffer> <expr> <C-t> unite#do_action('tabopen')
-    "その場所に開く
-    nnoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
-    inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
-endfunction"}}}
-"unite end #####################################################################
 
 "vim-multiple-cursors start ####################################################
 "prefix keyの設定
@@ -525,7 +385,7 @@ let g:indentLine_color_dark = 1 " (default: 2)
 
 " ntpeters/vim-better-whitespace start ########################################
 :highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
-let g:better_whitespace_filetypes_blacklist=['vimfiler', 'diff', 'gitcommit', 'unite', 'qf', 'help']
+let g:better_whitespace_filetypes_blacklist=['vimfiler', 'diff', 'gitcommit', 'qf', 'help']
 nnoremap sws :<C-u>StripWhitespace<CR>
 " ntpeters/vim-better-whitespace end ##########################################
 
@@ -783,13 +643,8 @@ function! NERDTreeToggleBookmark(node)
 endfunction
 " Plug 'sccooloose/nerdtree' #########################################################
 
-"Plug 'tyru/current-func-info.vim' ###################################################################
-nnoremap <C-g>j :echo cfi#format("%s", "")<CR>
-let &statusline .= ' [%{exists("*cfi#format")?cfi#format("%s",""):""}]'
-"Plug 'tyru/current-func-info.vim' ###################################################################
 
 " Plug 'leafcage/yankround.vim' ######################################################################
-nnoremap <leader>y :<C-u>Unite yankround<CR>
 nmap p <Plug>(yankround-p)
 xmap p <Plug>(yankround-p)
 nmap P <Plug>(yankround-P)
@@ -798,9 +653,6 @@ xmap gp <Plug>(yankround-gp)
 nmap gP <Plug>(yankround-gP)
 " Plug 'leafcage/yankround.vim' ######################################################################
 
-" Plug 'ujihisa/unite-colorscheme' ###################################################################
-nnoremap <silent> [unite]clrs    :<C-u>Unite -auto-preview colorscheme <CR>
-" Plug 'ujihisa/unite-colorscheme' ###################################################################
 
 " Plug 'rhysd/accelerated-jk'#########################################################################
 let g:accelerated_jk_enable_deceleration=1
@@ -808,15 +660,10 @@ nmap j <Plug>(accelerated_jk_gj)
 nmap k <Plug>(accelerated_jk_gk)
 " Plug 'rhysd/accelerated-jk'#########################################################################
 
-" Plug 'Shougo/deol.nvim'#############################################################################
-nnoremap dl :<C-u>Deol<CR>
+" nvim ターミナルモードでESCによりノーマルモードに戻る
 if has('nvim')
-  " nvim ターミナルモードでESCによりノーマルモードに戻る
   tnoremap <Esc> <C-\><C-n>
-else
-  noremap <ESC>   <C-\><C-n>
 endif
-" Plug 'Shougo/deol.nvim'#############################################################################
 
 " Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } #################################################
 let g:go_term_mode = "vsplit"
@@ -898,11 +745,6 @@ endif
 nnoremap qfr :Qfreplace<CR>
 " Plug 'thinca/vim-qfreplace' ########################################################################
 
-" Plug 'matze/vim-move' ###############################################################################
-let g:move_map_keys = 0
-vmap <C-j> <Plug>MoveBlockDown
-vmap <C-k> <Plug>MoveBlockUp
-" Plug 'matze/vim-move' ###############################################################################
 
 " Plug t9md/vim-quickhl ###############################################################################
 " 選択文字をハイライトする
@@ -1032,84 +874,3 @@ function! WhatFunctionAreWeIn()
   call winrestview(view)
   return tempstring.position
 endfunction
-" Plug 'lambdalisue/kensaku-search.vim' start #####################################
-" kensaku-search.vim はデフォルトマッピングを提供していないため、
-" ユーザーが以下のように <CR> に対して <Plug>(kensaku-search-replace) を割り当てる必要があります。
-cnoremap <expr> <CR> getcmdtype() =~ '[/?]' ? "\<Plug>(kensaku-search-replace)\<CR>" : "\<CR>"
-nnoremap S :FuzzyMotion<CR>
-let g:fuzzy_motion_matchers = ['kensaku', 'fzf']
-
-" Plug 'vim-skk/skkeleton' start ##################################################
-function! s:skkeleton_init() abort
-  call skkeleton#config({
-    \ 'eggLikeNewline': v:true,
-    \ 'globalDictionaries': [
-    \  ['~/.skk/SKK-JISYO.L', 'euc-jp'],
-    \  ['~/.skk/SKK-JISYO.fullname', 'euc-jp'],
-    \  ['~/.skk/SKK-JISYO.geo', 'euc-jp'],
-    \  ['~/.skk/SKK-JISYO.jinmei', 'euc-jp'],
-    \ ]
-    \ })
-  call skkeleton#register_kanatable('rom', {
-    \ "z\<Space>": ["\u3000", ''],
-    \ })
-endfunction
-augroup skkeleton-initialize-pre
-  autocmd!
- autocmd User skkeleton-initialize-pre call s:skkeleton_init()
-augroup END
-
-imap <C-k> <Plug>(skkeleton-toggle)
-cmap <C-k> <Plug>(skkeleton-toggle)
-tmap <C-k> <Plug>(skkeleton-toggle)
-
-" Plug 'Shougo/ddc.vim' start #####################################################
-"===================================
-" Ddc Settings
-"===================================
-if exists('*ddc#enable')
-call ddc#custom#patch_global({
-\   'ui': 'native',
-\   'sources': [
-\       'vim-lsp',
-\       'around',
-\       'buffer',
-\       'skkeleton',
-\   ],
-\   'sourceOptions': {
-\       'skkeleton': {
-\           'mark': 'skkeleton',
-\           'matchers': [],
-\           'sorters': [],
-\           'converters': [],
-\           'isVolatile': v:true,
-\           'minAutoCompleteLength': 1,
-\       },
-\       '_': {
-\           'matchers'  : ['matcher_fuzzy'],
-\           'sorters'   : ['sorter_fuzzy'],
-\           'converters': ['converter_fuzzy'],
-\           'ignoreCase': v:true,
-\       },
-\       'around': {
-\           'mark': '[Arround]',
-\       },
-\       'buffer': {
-\           'mark': '[Buffer]',
-\       },
-\       'vim-lsp': {
-\           'mark': '[LSP]',
-\           'forceCompletionPattern': '\.\w*|:\w*|->\w*',
-\       },
-\   },
-\   'sourceParams': {
-\       'around': { 'maxSize': 500 },
-\       'buffer': {
-\           'limitBytes': 5000000,
-\           'forceCollect': v:true,
-\           'fromAltBuf': v:true,
-\       },
-\    },
-\})
-call ddc#enable()
-endif

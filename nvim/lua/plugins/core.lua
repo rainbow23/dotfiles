@@ -6,12 +6,6 @@ return {
   { 'junegunn/fzf',     dir = '~/.fzf', build = './install --bin', lazy = false },
   { 'junegunn/fzf.vim', lazy = false, dependencies = { 'junegunn/fzf' } },
   { 'junegunn/vim-peekaboo',     lazy = false },
-  -- Unite
-  { 'Shougo/unite.vim',          lazy = false },
-  { 'rainbow23/unite-session',   lazy = false },
-  { 'Shougo/neomru.vim',         lazy = false },
-  { 'Shougo/unite-outline',      lazy = false },
-  { 'Shougo/vimproc.vim',        build = 'make', lazy = false },
   -- UI
   { 'vim-airline/vim-airline',        lazy = false },
   { 'vim-airline/vim-airline-themes', lazy = false },
@@ -26,10 +20,8 @@ return {
   { 'terryma/vim-multiple-cursors',  lazy = false },
   { 'rhysd/accelerated-jk',         lazy = false },
   { 'easymotion/vim-easymotion',     lazy = false },
-  { 'yuki-yano/fuzzy-motion.vim',    lazy = false },
   { 'rhysd/clever-f.vim',            lazy = false },
   { 'yuttie/comfortable-motion.vim', lazy = false },
-  { 'matze/vim-move',                lazy = false },
   -- Search
   { 'rainbow23/vim-anzu',        lazy = false },
   { 'mileszs/ack.vim',           lazy = false },
@@ -57,25 +49,10 @@ return {
   -- Snippet
   { 'rainbow23/vim-snippets', lazy = false },
   -- Go
-  { 'fatih/vim-go',        build = ':GoUpdateBinaries', lazy = false },
-  { 'mdempsky/gocode',     rtp = 'vim', lazy = false },
-  { 'mattn/vim-goimports', lazy = false },
+  { 'fatih/vim-go', build = ':GoUpdateBinaries', lazy = false },
   -- JSON / HTML
   { 'elzr/vim-json',      lazy = false },
   { 'alvan/vim-closetag', lazy = false },
   -- Util
-  { 'majutsushi/tagbar',          lazy = false },
-  { 'tyru/current-func-info.vim', lazy = false },
-  -- ZoomWin は float window 実装（rc/zoom.lua）に置き換えたため削除済み
-  { 'vimlab/split-term.vim',      lazy = false },
-  { 'osyo-manga/unite-quickfix',  lazy = false },
-  { 'ujihisa/unite-colorscheme',  lazy = false },
-  -- Denops plugins
-  { 'Shougo/deol.nvim',                    lazy = false },
-  { 'vim-denops/denops.vim',               lazy = false },
-  { 'vim-denops/denops-shared-server.vim', lazy = false },
-  { 'vim-denops/denops-helloworld.vim',    lazy = false },
-  { 'lambdalisue/kensaku.vim',             lazy = false },
-  { 'lambdalisue/kensaku-search.vim',      lazy = false },
-  { 'vim-skk/skkeleton',                   lazy = false },
+  { 'majutsushi/tagbar', lazy = false },
 }
