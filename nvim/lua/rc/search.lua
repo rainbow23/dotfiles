@@ -20,6 +20,22 @@ local grep_search_shortcut = '<C-s>=Dir切替 <C-o>=Sort ' .. util.shortcut_comm
 local make_file_search   -- forward declaration
 local make_grep_search   -- forward declaration
 
+-- <C-s> 階層ナビゲーション共通ロジック
+-- git root → file dir → 親ディレクトリ → ... → git root で循環
+local function next_cwd_for_dir_nav(cwd, git_root, file_dir)
+  local cwd_n  = vim.fn.fnamemodify(cwd, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+  local root_n = vim.fn.fnamemodify(git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+  if cwd_n == root_n and file_dir then
+    return file_dir
+  end
+  local parent   = vim.fn.fnamemodify(cwd, ':h')
+  local parent_n = vim.fn.fnamemodify(parent, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+  if #parent_n < #root_n or parent == cwd then
+    return git_root
+  end
+  return parent
+end
+
 -- ロード済みのバッファファイル一覧を返すユーティリティ
 local function get_buf_files()
   local files = {}
@@ -90,27 +106,12 @@ make_file_search = function(opts)
       -- <C-s>: git root → file dir → 上階層 → ... → git root で循環
       if opts.git_root then
         map_modes(map, '<C-s>', function(b)
-          local query  = action_state.get_current_picker(b):_get_prompt()
-          local cwd_n  = vim.fn.fnamemodify(opts.cwd, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
-          local root_n = vim.fn.fnamemodify(opts.git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
-          local next_cwd
-          if cwd_n == root_n and opts.file_dir then
-            -- git root にいる → file dir へ移動
-            next_cwd = opts.file_dir
-          else
-            -- file dir 以下にいる → 一つ上の階層へ
-            local parent   = vim.fn.fnamemodify(opts.cwd, ':h')
-            local parent_n = vim.fn.fnamemodify(parent, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
-            if #parent_n < #root_n or parent == opts.cwd then
-              next_cwd = opts.git_root  -- git root を超えたら git root に戻る
-            else
-              next_cwd = parent
-            end
-          end
+          local query = action_state.get_current_picker(b):_get_prompt()
+          local next  = next_cwd_for_dir_nav(opts.cwd, opts.git_root, opts.file_dir)
           actions.close(b)
           vim.schedule(function()
             make_file_search({
-              cwd          = next_cwd,
+              cwd          = next,
               default_text = query,
               files_cmd    = opts.files_cmd,
               base_title   = opts.base_title,
@@ -248,25 +249,23 @@ make_grep_search = function(opts)
         }), { reset_prompt = false })
         vim.api.nvim_echo({ { 'Sorted ' .. #entries .. ' entries', 'None' } }, false, {})
       end)
-      -- <C-s>: git root ↔ file dir 切替（file_dir か git_root が設定されているときのみ有効）
-      if opts.file_dir or opts.git_root then
-        local function toggle_dir(b)
+      -- <C-s>: git root → file dir → 上階層 → ... → git root で循環
+      if opts.git_root then
+        map_modes(map, '<C-s>', function(b)
           local query = action_state.get_current_picker(b):_get_prompt()
+          local next  = next_cwd_for_dir_nav(opts.cwd, opts.git_root, opts.file_dir)
           actions.close(b)
           vim.schedule(function()
-            local next_cwd   = (opts.cwd == opts.file_dir) and opts.git_root or opts.file_dir
-            local next_title = (next_cwd == opts.file_dir) and 'GrepSearch (file dir)' or 'GrepSearch (git root)'
             make_grep_search({
-              cwd             = next_cwd,
+              cwd             = next,
               default_text    = query,
               additional_args = opts.additional_args,
-              base_title      = next_title,
+              base_title      = opts.base_title,
               file_dir        = opts.file_dir,
               git_root        = opts.git_root,
             })
           end)
-        end
-        map_modes(map, '<C-s>', toggle_dir)
+        end)
       end
 
     end),
