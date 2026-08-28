@@ -745,7 +745,6 @@ local function memo_list_buffers()
   }):find()
 end
 
-vim.api.nvim_create_user_command('MyBuffersMemos', memo_list_buffers, {})
 
 -- 候補テキストファイルからメモを選択して現在行に追加する
 -- 候補ファイル: ~/.vim/memo_candidates.txt（1行1候補）
