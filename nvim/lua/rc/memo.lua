@@ -299,7 +299,7 @@ local function memo_delete_from_store(fp, ln)
   end
 end
 
--- メモピッカー共通キーマップ（<CR> <C-d> <C-l> <C-t> <M-v> <C-h>）
+-- メモピッカー共通キーマップ（<CR> <C-d> <C-l> <C-t> <C-v> <C-h>）
 -- extra: 追加マッピング関数 function(prompt_bufnr, map) ... end（省略可）
 local function make_memo_attach_mappings(extra)
   return function(prompt_bufnr, map)

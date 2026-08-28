@@ -4,6 +4,7 @@ keybinds clear-defaults=true {
     }
     normal {
         unbind "Ctrl o" // Neovim のジャンプリスト（戻る）に渡すため
+        unbind "Ctrl s" // Neovim の Telescope <C-s> Dir切替に渡すため
     }
     pane {
         bind "left" { MoveFocus "left"; }
@@ -175,9 +176,10 @@ keybinds clear-defaults=true {
     shared_except "locked" "scroll" "search" "tmux" {
         bind "Ctrl b" { SwitchToMode "tmux"; }
     }
-    shared_except "locked" "scroll" "search" {
-        bind "Ctrl s" { SwitchToMode "scroll"; }
-    }
+    // Ctrl s は Neovim に渡すため無効化（scroll モードは Ctrl b → [ で代替）
+    // shared_except "locked" "scroll" "search" {
+    //     bind "Ctrl s" { SwitchToMode "scroll"; }
+    // }
     shared_except "locked" "tab" {
         bind "Ctrl t" { SwitchToMode "tab"; }
     }
@@ -211,7 +213,7 @@ keybinds clear-defaults=true {
         bind "j" { ScrollDown; }
         bind "k" { ScrollUp; }
         bind "l" { PageScrollDown; }
-        bind "Ctrl s" { SwitchToMode "normal"; }
+        // bind "Ctrl s" { SwitchToMode "normal"; } // Neovim に渡すため無効化
         bind "u" { HalfPageScrollUp; }
     }
     entersearch {
