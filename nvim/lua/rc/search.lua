@@ -222,6 +222,55 @@ make_grep_search = function(opts)
 end
 
 
+-- [fzf]b: Telescope buffers（fzf.vim の :Buffers を上書き）
+vim.api.nvim_create_user_command('Buffers', function(opts)
+  builtin.buffers({
+    default_text    = opts.args,
+    prompt_title    = 'Buffers  ' .. util.shortcut_common,
+    attach_mappings = make_attach_mappings(false),
+  })
+end, { nargs = '*' })
+
+-- [fzf]w: Telescope ウィンドウ一覧（fzf.vim の :Windows を上書き）
+vim.api.nvim_create_user_command('Windows', function()
+  local results = {}
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf  = vim.api.nvim_win_get_buf(win)
+    local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ':~:.')
+    if name == '' then name = '[No Name]' end
+    local pos = vim.api.nvim_win_get_position(win)
+    table.insert(results, {
+      win     = win,
+      name    = name,
+      display = string.format('%-50s  row:%-4d col:%d', name, pos[1], pos[2]),
+    })
+  end
+  pickers.new({}, {
+    prompt_title = 'Windows  <CR>=ジャンプ',
+    finder = finders.new_table({
+      results     = results,
+      entry_maker = function(e)
+        return { value = e, display = e.display, ordinal = e.name }
+      end,
+    }),
+    sorter = conf.generic_sorter({}),
+    attach_mappings = function(prompt_bufnr)
+      actions.select_default:replace(function()
+        local sel = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+        vim.schedule(function()
+          if sel and vim.api.nvim_win_is_valid(sel.value.win) then
+            vim.api.nvim_set_current_win(sel.value.win)
+          end
+        end)
+      end)
+      return true
+    end,
+    layout_strategy = 'center',
+    layout_config   = { width = 0.7, height = 0.5 },
+  }):find()
+end, {})
+
 vim.api.nvim_create_user_command('FileSearch', function(opts)
   local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
   make_file_search({
