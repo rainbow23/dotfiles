@@ -59,8 +59,27 @@ local open_buffers_with_back = function(file_opts)
 end
 
 make_file_search = function(opts)
+  -- Dir 表示を組み立てる（git_root がある場合のみ表示）
+  local dir_label = ''
+  local shortcut  = file_search_shortcut
+  if opts.git_root then
+    local cwd_n  = vim.fn.fnamemodify(opts.cwd, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+    local root_n = vim.fn.fnamemodify(opts.git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+    if cwd_n:find(root_n, 1, true) == 1 then
+      local rel       = cwd_n:sub(#root_n + 1)
+      local root_name = vim.fn.fnamemodify(root_n, ':t')
+      dir_label = root_name .. (rel == '' and '' or rel)
+    else
+      dir_label = vim.fn.fnamemodify(opts.cwd, ':~')
+    end
+    dir_label = '  Dir:' .. dir_label .. '  '
+    shortcut  = '<C-s>=上階層 ' .. file_search_shortcut
+  else
+    dir_label = ' '
+  end
+
   pickers.new(opts, {
-    prompt_title = (opts.base_title or 'FileSearch') .. ' [File] ' .. file_search_shortcut,
+    prompt_title = (opts.base_title or 'FileSearch') .. ' [File]' .. dir_label .. shortcut,
     finder = finders.new_oneshot_job(opts.files_cmd, {
       entry_maker = make_entry.gen_from_file(opts),
       cwd         = opts.cwd,
@@ -68,6 +87,29 @@ make_file_search = function(opts)
     previewer = conf.file_previewer(opts),
     sorter    = conf.file_sorter(opts),
     attach_mappings = make_attach_mappings(false, function(bufnr, map)
+      -- <C-s>: 一つ上の階層に移動して再検索（git root で停止）
+      if opts.git_root then
+        map_modes(map, '<C-s>', function(b)
+          local query  = action_state.get_current_picker(b):_get_prompt()
+          local cwd_n  = vim.fn.fnamemodify(opts.cwd, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+          local root_n = vim.fn.fnamemodify(opts.git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+          if cwd_n == root_n then
+            vim.api.nvim_echo({ { 'git root に到達しています', 'WarningMsg' } }, false, {})
+            return
+          end
+          local parent = vim.fn.fnamemodify(opts.cwd, ':h')
+          actions.close(b)
+          vim.schedule(function()
+            make_file_search({
+              cwd          = parent,
+              default_text = query,
+              files_cmd    = opts.files_cmd,
+              base_title   = opts.base_title,
+              git_root     = opts.git_root,
+            })
+          end)
+        end)
+      end
       map_modes(map, '<C-r>', function(b)
         actions.close(b)
         vim.schedule(function() open_oldfiles_with_back(opts) end)
@@ -371,10 +413,13 @@ vim.api.nvim_create_user_command('FZFMru', function(opts)
 end, { nargs = '*', bang = true })
 
 vim.api.nvim_create_user_command('FileSearchFromCurrDir', function(opts)
+  local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
+  local has_git  = git_root ~= '' and not git_root:find('fatal')
   make_file_search({
-    cwd       = vim.fn.getcwd(),
+    cwd          = vim.fn.expand('%:p:h'),
     default_text = opts.args,
-    files_cmd = { 'rg', '--files', '--hidden', '--color=never', '-g', '!.claude/' },
-    base_title = 'FileSearch (cwd)',
+    files_cmd    = { 'rg', '--files', '--hidden', '--color=never', '-g', '!.git/', '-g', '!.claude/' },
+    base_title   = 'FileSearch',
+    git_root     = has_git and git_root or nil,
   })
 end, { nargs = '*', bang = true })
