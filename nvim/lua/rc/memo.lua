@@ -816,6 +816,7 @@ vim.keymap.set('n', '<leader>mae', function()
   end
   vim.cmd('botright vsplit ' .. vim.fn.fnameescape(memo_candidates_file))
 end, { desc = 'Memo candidates file を右側に開く' })
+vim.keymap.set('n', '<leader>mb', memo_list_buffers,             { desc = 'Memo list buffer memos' })
 vim.keymap.set('n', '<leader>my', memo_copy_at_cursor,           { desc = 'Memo copy text at cursor' })
 vim.keymap.set('n', '<leader>md', memo_delete,                   { desc = 'Memo delete' })
 vim.keymap.set('n', '<leader>mc', memo_change_color_at_cursor,   { desc = 'Memo change color at cursor' })
