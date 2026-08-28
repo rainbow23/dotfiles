@@ -42,7 +42,6 @@ nnoremap [fzf]h :<C-u>History<CR>
 nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]l :<C-u>BLines<CR>
 nnoremap [fzf]s :<C-u>GrepSearch<CR>
-nnoremap [fzf]S :<C-u>FileSearchFromCurrDir<CR>
 nnoremap [fzf]y :<C-U>FZFYank<CR>
 inoremap [fzf]y <C-O>:<C-U>FZFYank<CR>
 

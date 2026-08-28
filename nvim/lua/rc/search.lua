@@ -73,7 +73,7 @@ make_file_search = function(opts)
       dir_label = vim.fn.fnamemodify(opts.cwd, ':~')
     end
     dir_label = '  Dir:' .. dir_label .. '  '
-    shortcut  = '<C-s>=上階層 ' .. file_search_shortcut
+    shortcut  = '<C-s>=Dir切替 ' .. file_search_shortcut
   else
     dir_label = ' '
   end
@@ -87,25 +87,35 @@ make_file_search = function(opts)
     previewer = conf.file_previewer(opts),
     sorter    = conf.file_sorter(opts),
     attach_mappings = make_attach_mappings(false, function(bufnr, map)
-      -- <C-s>: 一つ上の階層に移動して再検索（git root で停止）
+      -- <C-s>: git root → file dir → 上階層 → ... → git root で循環
       if opts.git_root then
         map_modes(map, '<C-s>', function(b)
           local query  = action_state.get_current_picker(b):_get_prompt()
           local cwd_n  = vim.fn.fnamemodify(opts.cwd, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
           local root_n = vim.fn.fnamemodify(opts.git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
-          if cwd_n == root_n then
-            vim.api.nvim_echo({ { 'git root に到達しています', 'WarningMsg' } }, false, {})
-            return
+          local next_cwd
+          if cwd_n == root_n and opts.file_dir then
+            -- git root にいる → file dir へ移動
+            next_cwd = opts.file_dir
+          else
+            -- file dir 以下にいる → 一つ上の階層へ
+            local parent   = vim.fn.fnamemodify(opts.cwd, ':h')
+            local parent_n = vim.fn.fnamemodify(parent, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+            if #parent_n < #root_n or parent == opts.cwd then
+              next_cwd = opts.git_root  -- git root を超えたら git root に戻る
+            else
+              next_cwd = parent
+            end
           end
-          local parent = vim.fn.fnamemodify(opts.cwd, ':h')
           actions.close(b)
           vim.schedule(function()
             make_file_search({
-              cwd          = parent,
+              cwd          = next_cwd,
               default_text = query,
               files_cmd    = opts.files_cmd,
               base_title   = opts.base_title,
               git_root     = opts.git_root,
+              file_dir     = opts.file_dir,
             })
           end)
         end)
@@ -315,11 +325,15 @@ end, {})
 
 vim.api.nvim_create_user_command('FileSearch', function(opts)
   local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
+  local has_git  = git_root ~= '' and not git_root:find('fatal')
+  local file_dir = vim.fn.expand('%:p:h')
   make_file_search({
-    cwd       = git_root,
+    cwd          = has_git and git_root or vim.fn.getcwd(),
     default_text = opts.args,
-    files_cmd = { 'rg', '--files', '--hidden', '--color=never', '-g', '!.git/', '-g', '!.claude/' },
-    base_title = 'FileSearch (git root)',
+    files_cmd    = { 'rg', '--files', '--hidden', '--color=never', '-g', '!.git/', '-g', '!.claude/' },
+    base_title   = 'FileSearch',
+    git_root     = has_git and git_root or nil,
+    file_dir     = file_dir,
   })
 end, { nargs = '*', bang = true })
 
@@ -412,14 +426,3 @@ vim.api.nvim_create_user_command('FZFMru', function(opts)
   })
 end, { nargs = '*', bang = true })
 
-vim.api.nvim_create_user_command('FileSearchFromCurrDir', function(opts)
-  local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
-  local has_git  = git_root ~= '' and not git_root:find('fatal')
-  make_file_search({
-    cwd          = vim.fn.expand('%:p:h'),
-    default_text = opts.args,
-    files_cmd    = { 'rg', '--files', '--hidden', '--color=never', '-g', '!.git/', '-g', '!.claude/' },
-    base_title   = 'FileSearch',
-    git_root     = has_git and git_root or nil,
-  })
-end, { nargs = '*', bang = true })
