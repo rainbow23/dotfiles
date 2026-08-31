@@ -57,7 +57,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
       local util         = require('rc.util')
       local action_state = require('telescope.actions.state')
       require('telescope.builtin').lsp_references({
-        prompt_title    = 'LSP References  <C-x>=Quickfix ' .. util.shortcut_common,
+        prompt_title    = 'LSP References  <C-x>=Quickfix',
+        results_title   = util.shortcut_common,
         attach_mappings = util.make_attach_mappings(true, function(prompt_bufnr, lmap)
           local actions_mod = require('telescope.actions')
           actions_mod.select_default:replace(function(b)

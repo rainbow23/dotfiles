@@ -14,8 +14,9 @@ local util               = require('rc.util')
 local map_modes          = util.map_modes
 local make_attach_mappings = util.make_attach_mappings
 
-local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers ' .. util.shortcut_common
-local grep_search_shortcut = '<C-s>=Dir切替 <C-o>=Sort <Tab>=選択 <C-c>=キャッシュ保存 ' .. util.shortcut_common
+local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-s>=Dir切替'
+local grep_search_shortcut = '<C-s>=Dir切替 <C-o>=Sort <Tab>=選択 <C-c>=キャッシュ保存'
+local results_shortcut     = util.shortcut_common
 
 -- GrepSearch キャッシュ: multi-select した結果を JSON で保存・復元
 local grep_cache_dir = vim.fn.expand('~/.vim/grep_cache')
@@ -105,7 +106,8 @@ end
 
 local open_oldfiles_with_back = function(file_opts)
   builtin.oldfiles({
-    prompt_title    = 'Old Files  <C-r>=FileSearchに戻る ' .. util.shortcut_common,
+    prompt_title    = 'Old Files  <C-r>=FileSearchに戻る',
+    results_title   = results_shortcut,
     attach_mappings = make_attach_mappings(false, function(_, map)
       map_modes(map, '<C-r>', function(b)
         actions.close(b)
@@ -117,7 +119,8 @@ end
 
 local open_buffers_with_back = function(file_opts)
   builtin.buffers({
-    prompt_title    = 'Buffers  <C-b>=FileSearchに戻る ' .. util.shortcut_common,
+    prompt_title    = 'Buffers  <C-b>=FileSearchに戻る',
+    results_title   = results_shortcut,
     attach_mappings = make_attach_mappings(false, function(_, map)
       map_modes(map, '<C-b>', function(b)
         actions.close(b)
@@ -142,13 +145,13 @@ make_file_search = function(opts)
       dir_label = vim.fn.fnamemodify(opts.cwd, ':~')
     end
     dir_label = '  Dir:' .. dir_label .. '  '
-    shortcut  = '<C-s>=Dir切替 ' .. file_search_shortcut
   else
     dir_label = ' '
   end
 
   pickers.new(opts, {
-    prompt_title = (opts.base_title or 'FileSearch') .. ' [File]' .. dir_label .. shortcut,
+    prompt_title  = (opts.base_title or 'FileSearch') .. ' [File]' .. dir_label .. file_search_shortcut,
+    results_title = results_shortcut,
     finder = finders.new_oneshot_job(opts.files_cmd, {
       entry_maker = make_entry.gen_from_file(opts),
       cwd         = opts.cwd,
@@ -229,7 +232,8 @@ make_grep_search = function(opts)
     display_cwd = vim.fn.fnamemodify(cwd, ':~')  -- git 管理外は ~ 基準にフォールバック
   end
   pickers.new(opts, {
-    prompt_title = (opts.base_title or 'Search') .. ' [Grep]  Dir:' .. display_cwd .. '  ' .. grep_search_shortcut,
+    prompt_title  = (opts.base_title or 'Search') .. ' [Grep]  Dir:' .. display_cwd .. '  ' .. grep_search_shortcut,
+    results_title = results_shortcut,
     finder = finders.new_job(function(prompt)
       if not prompt or prompt == '' then return nil end
       local cmd = vim.deepcopy(grep_args)
@@ -367,7 +371,8 @@ end
 vim.api.nvim_create_user_command('Buffers', function(opts)
   builtin.buffers({
     default_text    = opts.args,
-    prompt_title    = 'Buffers  ' .. util.shortcut_common,
+    prompt_title    = 'Buffers',
+    results_title   = results_shortcut,
     attach_mappings = make_attach_mappings(false),
   })
 end, { nargs = '*' })
@@ -476,7 +481,8 @@ vim.api.nvim_create_user_command('BLines', function(opts)
   })
 
   pickers.new({}, {
-    prompt_title = 'BLines  ' .. util.shortcut_common,
+    prompt_title  = 'BLines',
+    results_title = results_shortcut,
     default_text = opts.args,
     finder = finders.new_table({
       results = entries,
@@ -500,7 +506,8 @@ end, { nargs = '*', bang = true })
 vim.api.nvim_create_user_command('GitStatus', function(opts)
   builtin.git_status({
     default_text    = opts.args,
-    prompt_title    = 'GitStatus  ' .. util.shortcut_common,
+    prompt_title    = 'GitStatus',
+    results_title   = results_shortcut,
     attach_mappings = make_attach_mappings(true),
   })
 end, { nargs = '*', bang = true })
@@ -510,7 +517,8 @@ end, { nargs = '*', bang = true })
 vim.api.nvim_create_user_command('FZFMru', function(opts)
   builtin.oldfiles({
     default_text    = opts.args,
-    prompt_title    = 'MRU  ' .. util.shortcut_common,
+    prompt_title    = 'MRU',
+    results_title   = results_shortcut,
     attach_mappings = make_attach_mappings(false),
   })
 end, { nargs = '*', bang = true })
@@ -522,7 +530,8 @@ vim.api.nvim_create_user_command('GrepCache', function()
     return
   end
   pickers.new({}, {
-    prompt_title = 'GrepCache (' .. #all .. ' entries)  <C-d>=キャッシュ削除 <C-a>=行削除 ' .. util.shortcut_common,
+    prompt_title  = 'GrepCache (' .. #all .. ' entries)  <C-d>=キャッシュ削除 <C-a>=行削除',
+    results_title = results_shortcut,
     finder = finders.new_table({
       results = all,
       entry_maker = function(e)

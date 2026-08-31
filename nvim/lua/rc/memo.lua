@@ -510,7 +510,8 @@ local function memo_list()
   end
 
   pickers.new({}, {
-    prompt_title = '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム ' .. memo_shortcut,
+    prompt_title  = '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム',
+    results_title = memo_shortcut,
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
@@ -629,7 +630,8 @@ local function memo_list_current()
   end
   if #results == 0 then vim.notify('No memos in this file', vim.log.levels.INFO); return end
   pickers.new({}, {
-    prompt_title    = '📝 Memos (current file)  <CR>=ジャンプ <C-d>=削除 ' .. memo_shortcut,
+    prompt_title    = '📝 Memos (current file)  <CR>=ジャンプ <C-d>=削除',
+    results_title   = memo_shortcut,
     finder          = finders.new_table({
       results     = results,
       entry_maker = function(e)
@@ -717,7 +719,8 @@ local function memo_list_buffers()
   end
 
   pickers.new({}, {
-    prompt_title = '📝 Buffer Memos  <CR>=ジャンプ <C-d>=削除 ' .. memo_shortcut,
+    prompt_title  = '📝 Buffer Memos  <CR>=ジャンプ <C-d>=削除',
+    results_title = memo_shortcut,
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
