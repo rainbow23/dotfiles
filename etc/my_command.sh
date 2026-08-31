@@ -15,3 +15,13 @@ git-commit-with-tmp-message() {
   print -z "git commit -m \"$commit_message\""
   truncate -s 0 /tmp/git_commit_message
 }
+
+adb-log-output() {
+  TIMESTAMP=$(date "+%Y%m%d%H%M")
+  adb logcat -c && adb logcat DOTNET:D *:S | tee "logcat_$(TIMESTAMP).log"
+}
+
+adb-log-output-all() {
+  TIMESTAMP=$(date "+%Y%m%d%H%M")
+  adb logcat -c && adb logcat | tee "logcat_$(TIMESTAMP).log"
+}

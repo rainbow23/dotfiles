@@ -26,4 +26,4 @@ require('render-markdown').setup({
 })
 
 -- <Leader>m でレンダリングのオン/オフをトグル
-vim.keymap.set('n', '<Leader>m', '<Cmd>RenderMarkdown toggle<CR>', { silent = true, desc = 'Markdown レンダリング切替' })
+vim.keymap.set('n', '<Leader>rm', '<Cmd>RenderMarkdown toggle<CR>', { silent = true, desc = 'Markdown レンダリング切替' })
