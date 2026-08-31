@@ -15,7 +15,8 @@ function M.map_modes(map, key, fn)
   map('n', key, fn)
 end
 
-M.vsplit_key = '<C-v>'
+-- vsplit キーは環境によって異なる（GitBash/Windows: <M-v>、mac/unix: <C-v>）
+M.vsplit_key = vim.fn.has('win32') == 1 and '<M-v>' or '<C-v>'
 
 -- telescope picker 共通ショートカット文字列（prompt_title に埋め込む）
 M.shortcut_common = '<C-f>=Preview <C-l>=レイアウト切替 <C-t>=新規タブ ' .. M.vsplit_key .. '=vsplit <C-h>=hsplit'

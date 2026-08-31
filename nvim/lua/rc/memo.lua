@@ -14,6 +14,40 @@ local map_modes = util.map_modes
 local vsplit_key    = util.vsplit_key
 local memo_shortcut = util.shortcut_common
 
+-- JSON を整形して出力するユーティリティ（2スペースインデント）
+local function json_pretty(val, indent)
+  indent = indent or 0
+  local t = type(val)
+  if t == 'table' then
+    -- 配列判定（連続した整数キーのみ）
+    local is_array = vim.tbl_islist(val)
+    if is_array then
+      if #val == 0 then return '[]' end
+      local parts = {}
+      for _, v in ipairs(val) do
+        table.insert(parts, string.rep('  ', indent + 1) .. json_pretty(v, indent + 1))
+      end
+      return '[\n' .. table.concat(parts, ',\n') .. '\n' .. string.rep('  ', indent) .. ']'
+    else
+      local keys = vim.tbl_keys(val)
+      if #keys == 0 then return '{}' end
+      table.sort(keys)
+      local parts = {}
+      for _, k in ipairs(keys) do
+        local v = val[k]
+        table.insert(parts, string.rep('  ', indent + 1) .. '"' .. tostring(k) .. '": ' .. json_pretty(v, indent + 1))
+      end
+      return '{\n' .. table.concat(parts, ',\n') .. '\n' .. string.rep('  ', indent) .. '}'
+    end
+  elseif t == 'string' then
+    return vim.fn.json_encode(val)
+  elseif t == 'number' or t == 'boolean' then
+    return tostring(val)
+  else
+    return 'null'
+  end
+end
+
 local memo_ns          = vim.api.nvim_create_namespace('user_memos')
 local memo_file        = vim.fn.expand('~/.vim/memos.json')
 local buf_memos        = {}  -- { [bufnr] = { [extmark_id] = { text, color } } }
@@ -51,7 +85,7 @@ end
 local function memo_write_json(data)
   local f = io.open(memo_file, 'w')
   if not f then return end
-  f:write(vim.fn.json_encode(data)); f:close()
+  f:write(json_pretty(data) .. '\n'); f:close()
 end
 
 -- extmark を配置してバッファ内メモテーブルに登録する
@@ -538,7 +572,7 @@ end
 local function memo_color_save(hex)
   local fh = io.open(memo_color_file, 'w')
   if fh then
-    fh:write(vim.fn.json_encode({ color = hex }))
+    fh:write(json_pretty({ color = hex }) .. '\n')
     fh:close()
   end
 end
