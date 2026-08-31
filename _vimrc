@@ -675,6 +675,7 @@ endfunction
 
 " Plug 'rhysd/accelerated-jk'#########################################################################
 let g:accelerated_jk_enable_deceleration=1
+let g:accelerated_jk_acceleration_table = [4, 8, 12, 16, 20, 24, 28, 32]
 nmap j <Plug>(accelerated_jk_gj)
 nmap k <Plug>(accelerated_jk_gk)
 " Plug 'rhysd/accelerated-jk'#########################################################################
