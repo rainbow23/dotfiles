@@ -664,12 +664,12 @@ endfunction
 
 
 " Plug 'leafcage/yankround.vim' ######################################################################
-nmap p <Plug>(yankround-p)
-xmap p <Plug>(yankround-p)
-nmap P <Plug>(yankround-P)
-nmap gp <Plug>(yankround-gp)
-xmap gp <Plug>(yankround-gp)
-nmap gP <Plug>(yankround-gP)
+"nmap p <Plug>(yankround-p)
+"nxmap p <Plug>(yankround-p)
+"nnmap P <Plug>(yankround-P)
+"nnmap gp <Plug>(yankround-gp)
+"nxmap gp <Plug>(yankround-gp)
+"nnmap gP <Plug>(yankround-gP)
 " Plug 'leafcage/yankround.vim' ######################################################################
 
 
