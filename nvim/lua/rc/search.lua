@@ -283,8 +283,31 @@ make_grep_search = function(opts)
         end)
       end
       map_modes(map, '<CR>', select_entry)
-      -- <Tab>: multi-select トグル（選択後に次の行へ移動）
-      map_modes(map, '<Tab>', actions.toggle_selection + actions.move_selection_worse)
+      -- <Tab>: 初回押下で検索結果を固定（静的リストに切替）し、以降は multi-select トグル
+      local pinned = false
+      map_modes(map, '<Tab>', function(b)
+        local picker = action_state.get_current_picker(b)
+        if not pinned then
+          -- ライブ検索の全結果を収集して静的リストに切替
+          local entries = {}
+          for entry in picker.manager:iter() do
+            table.insert(entries, entry)
+          end
+          picker:refresh(finders.new_table({
+            results     = entries,
+            entry_maker = function(e) return e end,
+          }), { reset_prompt = false })
+          -- Results タイトルに [Pinned] を表示
+          if picker.layout and picker.layout.results and picker.layout.results.border then
+            picker.layout.results.border:change_title('Results  [Pinned ' .. #entries .. ' entries]')
+          end
+          pinned = true
+          vim.api.nvim_echo({ { 'Pinned ' .. #entries .. ' entries — use <Tab> to select, <C-c> to cache', 'None' } }, false, {})
+        end
+        -- 固定後も含め、常にカーソル行を選択トグル
+        actions.toggle_selection(b)
+        actions.move_selection_worse(b)
+      end)
       -- <C-c>: multi-select したエントリをキャッシュ保存
       map_modes(map, '<C-c>', function(b)
         local picker = action_state.get_current_picker(b)
@@ -499,7 +522,7 @@ vim.api.nvim_create_user_command('GrepCache', function()
     return
   end
   pickers.new({}, {
-    prompt_title = 'GrepCache (' .. #all .. ' entries)  ' .. util.shortcut_common,
+    prompt_title = 'GrepCache (' .. #all .. ' entries)  <C-d>=キャッシュ削除 <C-a>=行削除 ' .. util.shortcut_common,
     finder = finders.new_table({
       results = all,
       entry_maker = function(e)
@@ -517,7 +540,75 @@ vim.api.nvim_create_user_command('GrepCache', function()
     }),
     previewer = conf.grep_previewer({}),
     sorter    = conf.generic_sorter({}),
-    attach_mappings = make_attach_mappings(true),
+    attach_mappings = make_attach_mappings(true, function(_, map)
+      -- <C-d>: カーソル行のキャッシュファイルを削除してリフレッシュ
+      map_modes(map, '<C-d>', function(b)
+        local sel = action_state.get_selected_entry()
+        if not sel or not sel.value or not sel.value.cache_path then return end
+        local name = sel.value.cache_name
+        local path = sel.value.cache_path
+        vim.fn.delete(path)
+        -- 残りのエントリでリフレッシュ
+        local picker = action_state.get_current_picker(b)
+        local remaining = {}
+        for entry in picker.manager:iter() do
+          if entry.value and entry.value.cache_path ~= path then
+            table.insert(remaining, entry)
+          end
+        end
+        picker:refresh(finders.new_table({
+          results     = remaining,
+          entry_maker = function(e) return e end,
+        }), { reset_prompt = false })
+        vim.notify('Deleted cache: ' .. name)
+      end)
+      -- <C-a>: カーソル行のエントリだけを削除（キャッシュファイルからも除去）
+      map_modes(map, '<C-a>', function(b)
+        local sel = action_state.get_selected_entry()
+        if not sel or not sel.value then return end
+        local cache_path = sel.value.cache_path
+        local sel_fn   = sel.value.filename or ''
+        local sel_lnum = sel.value.lnum or 0
+        local sel_text = sel.value.text or ''
+        -- キャッシュファイルから該当エントリを除去して上書き保存
+        if cache_path then
+          local fh = io.open(cache_path, 'r')
+          if fh then
+            local raw = fh:read('*a')
+            fh:close()
+            local ok, cache = pcall(vim.fn.json_decode, raw)
+            if ok and cache and cache.entries then
+              local new_entries = {}
+              for _, e in ipairs(cache.entries) do
+                if not (e.filename == sel_fn and e.lnum == sel_lnum and e.text == sel_text) then
+                  table.insert(new_entries, e)
+                end
+              end
+              if #new_entries == 0 then
+                vim.fn.delete(cache_path)
+              else
+                cache.entries = new_entries
+                local wh = io.open(cache_path, 'w')
+                if wh then wh:write(vim.fn.json_encode(cache)); wh:close() end
+              end
+            end
+          end
+        end
+        -- ピッカーからカーソル行を除去
+        local picker = action_state.get_current_picker(b)
+        local remaining = {}
+        for entry in picker.manager:iter() do
+          if entry ~= sel then
+            table.insert(remaining, entry)
+          end
+        end
+        picker:refresh(finders.new_table({
+          results     = remaining,
+          entry_maker = function(e) return e end,
+        }), { reset_prompt = false })
+        vim.notify('Deleted entry: ' .. vim.fn.fnamemodify(sel_fn, ':t') .. ':' .. sel_lnum)
+      end)
+    end),
   }):find()
 end, {})
 
