@@ -5,6 +5,7 @@ keybinds clear-defaults=true {
     normal {
         unbind "Ctrl o" // Neovim のジャンプリスト（戻る）に渡すため
         unbind "Ctrl s" // Neovim の Telescope <C-s> Dir切替に渡すため
+        unbind "Ctrl c" // Neovim の Telescope <C-c> キャッシュ保存に渡すため
     }
     pane {
         bind "left" { MoveFocus "left"; }

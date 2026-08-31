@@ -15,7 +15,60 @@ local map_modes          = util.map_modes
 local make_attach_mappings = util.make_attach_mappings
 
 local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers ' .. util.shortcut_common
-local grep_search_shortcut = '<C-s>=Dir切替 <C-o>=Sort ' .. util.shortcut_common
+local grep_search_shortcut = '<C-s>=Dir切替 <C-o>=Sort <Tab>=選択 <C-c>=キャッシュ保存 ' .. util.shortcut_common
+
+-- GrepSearch キャッシュ: multi-select した結果を JSON で保存・復元
+local grep_cache_dir = vim.fn.expand('~/.vim/grep_cache')
+vim.fn.mkdir(grep_cache_dir, 'p')
+
+local function grep_cache_save(entries, query)
+  local name = vim.fn.input('Cache name: ', query or '')
+  vim.cmd('redraw')
+  if name == '' then
+    vim.notify('Cache cancelled', vim.log.levels.INFO)
+    return
+  end
+  local data = {}
+  for _, e in ipairs(entries) do
+    table.insert(data, {
+      filename = e.filename or '',
+      lnum     = e.lnum or 1,
+      col      = e.col or 1,
+      text     = e.text or '',
+    })
+  end
+  local path = grep_cache_dir .. '/' .. name:gsub('[/\\%s]', '_') .. '.json'
+  local json = vim.fn.json_encode({ query = query, entries = data })
+  local fh = io.open(path, 'w')
+  if fh then
+    fh:write(json)
+    fh:close()
+    vim.notify('Cached ' .. #data .. ' entries → ' .. vim.fn.fnamemodify(path, ':t'), vim.log.levels.INFO)
+  end
+end
+
+-- 全キャッシュファイルのエントリを読み込んで1つのリストにまとめる
+local function grep_cache_load_all()
+  local files = vim.fn.glob(grep_cache_dir .. '/*.json', false, true)
+  local all = {}
+  for _, f in ipairs(files) do
+    local fh = io.open(f, 'r')
+    if fh then
+      local raw = fh:read('*a')
+      fh:close()
+      local ok, cache = pcall(vim.fn.json_decode, raw)
+      if ok and cache and cache.entries then
+        local cache_name = vim.fn.fnamemodify(f, ':t:r')
+        for _, e in ipairs(cache.entries) do
+          e.cache_name = cache_name
+          e.cache_path = f
+          table.insert(all, e)
+        end
+      end
+    end
+  end
+  return all
+end
 
 local make_file_search   -- forward declaration
 local make_grep_search   -- forward declaration
@@ -230,6 +283,20 @@ make_grep_search = function(opts)
         end)
       end
       map_modes(map, '<CR>', select_entry)
+      -- <Tab>: multi-select トグル（選択後に次の行へ移動）
+      map_modes(map, '<Tab>', actions.toggle_selection + actions.move_selection_worse)
+      -- <C-c>: multi-select したエントリをキャッシュ保存
+      map_modes(map, '<C-c>', function(b)
+        local picker = action_state.get_current_picker(b)
+        local selected = picker:get_multi_selection()
+        if #selected == 0 then
+          vim.notify('No entries selected (use <Tab> to select)', vim.log.levels.INFO)
+          return
+        end
+        local query = picker:_get_prompt()
+        actions.close(b)
+        vim.schedule(function() grep_cache_save(selected, query) end)
+      end)
       -- <C-o>: 現在の結果をファイル名→行番号で昇順ソートして静的リストに切替
       map_modes(map, '<C-o>', function(b)
         local picker  = action_state.get_current_picker(b)
@@ -424,4 +491,33 @@ vim.api.nvim_create_user_command('FZFMru', function(opts)
     attach_mappings = make_attach_mappings(false),
   })
 end, { nargs = '*', bang = true })
+
+vim.api.nvim_create_user_command('GrepCache', function()
+  local all = grep_cache_load_all()
+  if #all == 0 then
+    vim.notify('No grep caches found', vim.log.levels.INFO)
+    return
+  end
+  pickers.new({}, {
+    prompt_title = 'GrepCache (' .. #all .. ' entries)  ' .. util.shortcut_common,
+    finder = finders.new_table({
+      results = all,
+      entry_maker = function(e)
+        local display = string.format('[%s] %s:%d:%s',
+          e.cache_name, vim.fn.fnamemodify(e.filename, ':t'), e.lnum, e.text)
+        return {
+          value    = e,
+          display  = display,
+          ordinal  = display,
+          filename = e.filename,
+          lnum     = e.lnum,
+          col      = e.col or 1,
+        }
+      end,
+    }),
+    previewer = conf.grep_previewer({}),
+    sorter    = conf.generic_sorter({}),
+    attach_mappings = make_attach_mappings(true),
+  }):find()
+end, {})
 

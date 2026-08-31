@@ -117,8 +117,8 @@ local function telescope_session_picker()
       map_modes(map, '<C-o>', overwrite_session)
       return true
     end,
-    layout_strategy = 'vertical',
-    layout_config   = { height = 0.5, width = 0.4, prompt_position = 'top' },
+    layout_strategy = 'horizontal',
+    layout_config   = { height = 0.9, width = 0.9, preview_width = 0.4, prompt_position = 'bottom' },
   }):find()
 end
 
