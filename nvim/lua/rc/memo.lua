@@ -1,6 +1,6 @@
 -- メモ管理（extmarks ベース）
 -- ファイルを変更せず仮想行としてメモを表示し、~/.vim/memos.json に永続化する
--- キーマップ: <leader>ma=追加/編集  <leader>md=削除  <leader>ml=一覧(telescope)
+-- キーマップ: <leader>ma=追加/編集 <leader>ms=リストから追加 <leader>me=候補編集 <leader>md=削除 <leader>ml=一覧
 local finders        = require('telescope.finders')
 local pickers        = require('telescope.pickers')
 local actions        = require('telescope.actions')
@@ -843,8 +843,8 @@ local function memo_add_from_list()
 end
 
 vim.keymap.set('n', '<leader>ma', memo_add_or_edit,              { desc = 'Memo add/edit' })
-vim.keymap.set('n', '<leader>mal', memo_add_from_list,           { desc = 'Memo add from candidates list' })
-vim.keymap.set('n', '<leader>mae', function()
+vim.keymap.set('n', '<leader>ms', memo_add_from_list,            { desc = 'Memo add from candidates list' })
+vim.keymap.set('n', '<leader>me', function()
   -- 候補ファイルが存在しない場合は空ファイルを作成する
   if vim.fn.filereadable(memo_candidates_file) == 0 then
     local fh = io.open(memo_candidates_file, 'w')
