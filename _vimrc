@@ -120,7 +120,7 @@ function! s:CopyFilePathWithLine()
     call system('echo -n ' . shellescape(l:result) . ' | pbcopy')
   elseif has('win32') || has('win64')
     let l:result = GitBashCopyPath(l:path) . ':' . l:line . ': ' . l:text
-    call system('echo ' . shellescape(l:result) . ' | clip')
+    call system('printf "%s" ' . shellescape(l:result) . ' | clip')
   endif
   echo 'コピーしました: ' . l:result
 endfunction
@@ -139,7 +139,7 @@ function! s:CopyFilePathWithLines() range
   elseif has('win32') || has('win64')
     let l:header = GitBashCopyPath(l:path) . ':' . l:start . '~' . l:end_ . ':'
     let l:result = l:header . "\n" . l:text
-    call system('echo ' . shellescape(l:result) . ' | clip')
+    call system('printf "%s" ' . shellescape(l:result) . ' | clip')
   endif
   echo 'コピーしました: ' . l:header
 endfunction
