@@ -785,12 +785,12 @@ end
 
 -- 候補テキストファイルからメモを選択して現在行に追加する
 -- 候補ファイル: ~/.vim/memo_candidates.txt（1行1候補）
-local memo_candidates_file = vim.fn.expand('~/.vim/memo_candidates.txt')
+local memo_candidates_path = vim.fn.expand('~/.vim/memo_candidates.txt')
 
-local function memo_add_from_list()
-  local f = io.open(memo_candidates_file, 'r')
+local function memo_select_from_list()
+  local f = io.open(memo_candidates_path, 'r')
   if not f then
-    vim.notify('候補ファイルが見つかりません: ' .. memo_candidates_file, vim.log.levels.ERROR)
+    vim.notify('候補ファイルが見つかりません: ' .. memo_candidates_path, vim.log.levels.ERROR)
     return
   end
   local candidates = {}
@@ -799,7 +799,7 @@ local function memo_add_from_list()
   end
   f:close()
   if #candidates == 0 then
-    vim.notify('候補ファイルが空です: ' .. memo_candidates_file, vim.log.levels.INFO)
+    vim.notify('候補ファイルが空です: ' .. memo_candidates_path, vim.log.levels.INFO)
     return
   end
 
@@ -843,15 +843,15 @@ local function memo_add_from_list()
 end
 
 vim.keymap.set('n', '<leader>ma', memo_add_or_edit,              { desc = 'Memo add/edit' })
-vim.keymap.set('n', '<leader>ms', memo_add_from_list,            { desc = 'Memo add from candidates list' })
+vim.keymap.set('n', '<leader>ms', memo_select_from_list,            { desc = 'Memo select from list' })
 vim.keymap.set('n', '<leader>me', function()
   -- 候補ファイルが存在しない場合は空ファイルを作成する
-  if vim.fn.filereadable(memo_candidates_file) == 0 then
-    local fh = io.open(memo_candidates_file, 'w')
+  if vim.fn.filereadable(memo_candidates_path) == 0 then
+    local fh = io.open(memo_candidates_path, 'w')
     if fh then fh:close() end
   end
-  vim.cmd('botright vsplit ' .. vim.fn.fnameescape(memo_candidates_file))
-end, { desc = 'Memo candidates file を右側に開く' })
+  vim.cmd('botright vsplit ' .. vim.fn.fnameescape(memo_candidates_path))
+end, { desc = 'Memo edit candidates file' })
 vim.keymap.set('n', '<leader>mb', memo_list_buffers,             { desc = 'Memo list buffer memos' })
 vim.keymap.set('n', '<leader>my', memo_copy_at_cursor,           { desc = 'Memo copy text at cursor' })
 vim.keymap.set('n', '<leader>md', memo_delete,                   { desc = 'Memo delete' })
