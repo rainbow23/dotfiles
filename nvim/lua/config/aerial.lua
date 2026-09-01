@@ -30,3 +30,22 @@ require('aerial').setup({
 -- <Leader>o でアウトラインをトグル、<Leader>O で開いてフォーカス
 vim.keymap.set('n', '<Leader>o', '<Cmd>AerialToggle<CR>',       { silent = true, desc = 'アウトライン切替' })
 vim.keymap.set('n', '<Leader>O', '<Cmd>AerialToggle! right<CR>', { silent = true, desc = 'アウトラインを開いて移動' })
+
+-- Aerial ウィンドウ内で gl: 対応するソース行までスクロール（カーソルは Aerial に留まる）
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'aerial',
+  callback = function(ev)
+    vim.keymap.set('n', 'l', function()
+      local aerial = require('aerial')
+      local cursor = vim.api.nvim_win_get_cursor(0)
+      local aerial_win = vim.api.nvim_get_current_win()
+      -- カーソル行のシンボル位置を取得
+      local index = cursor[1]  -- 1-based
+      aerial.select({ index = index })
+      -- ソース側で zz して中央に表示
+      vim.cmd('normal! zz')
+      -- Aerial ウィンドウにカーソルを戻す
+      vim.api.nvim_set_current_win(aerial_win)
+    end, { buffer = ev.buf, silent = true, desc = 'ソース行をスクロール表示' })
+  end,
+})
