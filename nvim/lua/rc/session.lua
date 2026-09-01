@@ -15,12 +15,16 @@ local function session_save(name)
   name = name or 'default'
   local path = session_dir .. '/' .. name .. '.vim'
   vim.cmd('mksession! ' .. vim.fn.fnameescape(path))
+  -- メモフィルターの選択状態もセッション名に紐付けて保存する
+  require('rc.memo').session_store(name)
   vim.notify('Session saved: ' .. name, vim.log.levels.INFO)
 end
 
 local function session_load(name)
   local path = session_dir .. '/' .. name .. '.vim'
   vim.cmd('source ' .. vim.fn.fnameescape(path))
+  -- メモフィルターの選択状態を復旧する
+  require('rc.memo').session_restore(name)
   vim.notify('Session loaded: ' .. name, vim.log.levels.INFO)
 end
 
@@ -84,6 +88,7 @@ local function telescope_session_picker()
         local sel = action_state.get_selected_entry()
         if sel then
           vim.fn.delete(session_dir .. '/' .. sel[1] .. '.vim')
+          require('rc.memo').session_delete(sel[1])
           picker:delete_selection(function() vim.notify('Session deleted: ' .. sel[1]) end)
         end
       end
@@ -99,6 +104,7 @@ local function telescope_session_picker()
           local old_path = session_dir .. '/' .. old_name .. '.vim'
           local new_path = session_dir .. '/' .. new_name .. '.vim'
           if vim.fn.rename(old_path, new_path) == 0 then
+            require('rc.memo').session_rename(old_name, new_name)
             vim.notify('Session renamed: ' .. old_name .. ' → ' .. new_name, vim.log.levels.INFO)
           else
             vim.notify('Rename failed', vim.log.levels.ERROR)
