@@ -13,10 +13,12 @@ keybinds {
         // Neovim/fzf/Telescope に渡すためデフォルトバインドを無効化
         unbind "Ctrl n"
         unbind "Ctrl p"
+        unbind "Ctrl f"
         unbind "Ctrl t"
         unbind "Ctrl h"
+        unbind "Ctrl l"
         unbind "Ctrl b"
-        //誤操作防止
+        unbind "Ctrl g" //誤操作防止
         unbind "Ctrl o" // Neovim のジャンプリスト（戻る）に渡すため
         unbind "Ctrl s" // NeovimのGrepSearch <C-s>=Dir切り替えに渡すため
     }
