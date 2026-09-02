@@ -69,10 +69,21 @@ function M.make_attach_mappings(preview_default_on, extra_mappings)
     if not preview_default_on then
       vim.schedule(function() layout_actions.toggle_preview(prompt_bufnr) end)
     end
+    -- picker を開くたびに multi-select 状態を初期化する
+    -- （telescope は opts._multi 経由で前の picker の選択を引き継ぐことがあるため）
+    local picker = require('telescope.actions.state').get_current_picker(prompt_bufnr)
+    if picker then
+      picker._multi = require('telescope.pickers.multi'):new()
+    end
     -- <Tab>: multi-select トグル（トグル後は次の候補へ移動）
+    -- <S-Tab>: 逆方向にトグル（誤って選択した行の解除用）
     M.map_modes(map, '<Tab>', function(b)
       actions.toggle_selection(b)
       actions.move_selection_worse(b)
+    end)
+    M.map_modes(map, '<S-Tab>', function(b)
+      actions.toggle_selection(b)
+      actions.move_selection_better(b)
     end)
     -- 開く系は複数選択に対応（未選択時は telescope 標準アクションにフォールバック）
     M.map_modes(map, '<C-t>',      function(b) M.open_multi_or(b, 'tabedit', actions.select_tab) end)
