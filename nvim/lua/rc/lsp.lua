@@ -57,20 +57,48 @@ vim.api.nvim_create_autocmd('LspAttach', {
       local util         = require('rc.util')
       local action_state = require('telescope.actions.state')
       require('telescope.builtin').lsp_references({
-        prompt_title    = 'LSP References  <C-x>=Quickfix',
+        prompt_title    = 'LSP References  <C-x>=Quickfix <Tab>=複数選択',
         results_title   = util.shortcut_common,
         attach_mappings = util.make_attach_mappings(true, function(prompt_bufnr, lmap)
           local actions_mod = require('telescope.actions')
+          -- entry を cmd（edit/tabedit/vsplit/split）で開いて該当行へジャンプ
+          local function open_entry(entry, cmd)
+            if not entry or not entry.filename then return end
+            vim.cmd(cmd .. ' ' .. vim.fn.fnameescape(entry.filename))
+            vim.api.nvim_win_set_cursor(0, { entry.lnum or 1, (entry.col or 1) - 1 })
+            vim.cmd('normal! zz')
+          end
+          -- <Tab> で複数選択していればその一覧、なければカーソル行のみを返す
+          local function target_entries(b)
+            local picker = action_state.get_current_picker(b)
+            local multi  = picker:get_multi_selection()
+            if #multi > 0 then return multi end
+            local sel = action_state.get_selected_entry()
+            return sel and { sel } or {}
+          end
+          -- 選択中のエントリをすべて cmd で開く（複数選択対応）
+          local function open_selected(b, cmd)
+            local entries = target_entries(b)
+            actions_mod.close(b)
+            vim.schedule(function()
+              for _, entry in ipairs(entries) do
+                open_entry(entry, cmd)
+              end
+            end)
+          end
           actions_mod.select_default:replace(function(b)
             local sel = action_state.get_selected_entry()
             actions_mod.close(b)
-            vim.schedule(function()
-              if not sel then return end
-              vim.cmd('edit ' .. vim.fn.fnameescape(sel.filename))
-              vim.api.nvim_win_set_cursor(0, { sel.lnum, (sel.col or 1) - 1 })
-              vim.cmd('normal! zz')
-            end)
+            vim.schedule(function() open_entry(sel, 'edit') end)
           end)
+          -- <Tab>: multi-select トグル（トグル後は次の候補へ移動）
+          util.map_modes(lmap, '<Tab>', function(b)
+            actions_mod.toggle_selection(b)
+            actions_mod.move_selection_worse(b)
+          end)
+          util.map_modes(lmap, '<C-t>',         function(b) open_selected(b, 'tabedit') end)
+          util.map_modes(lmap, util.vsplit_key, function(b) open_selected(b, 'vsplit') end)
+          util.map_modes(lmap, '<C-h>',         function(b) open_selected(b, 'split') end)
           util.map_modes(lmap, '<C-x>', function(b)
             local picker = action_state.get_current_picker(b)
             local qflist = {}
