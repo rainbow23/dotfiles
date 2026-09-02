@@ -18,10 +18,10 @@ git-commit-with-tmp-message() {
 
 adb-log-output() {
   TIMESTAMP=$(date "+%Y%m%d%H%M")
-  adb logcat -c && adb logcat DOTNET:D *:S | tee "logcat_$(TIMESTAMP).log"
+  adb logcat -c && adb logcat DOTNET:D *:S | tee "logcat_${TIMESTAMP}.log"
 }
 
 adb-log-output-all() {
   TIMESTAMP=$(date "+%Y%m%d%H%M")
-  adb logcat -c && adb logcat | tee "logcat_$(TIMESTAMP).log"
+  adb logcat -c && adb logcat | tee "logcat_${TIMESTAMP}.log"
 }
