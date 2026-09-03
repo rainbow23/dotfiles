@@ -15,38 +15,11 @@ keybinds {
         unbind "Ctrl q" //誤操作防止
         unbind "Ctrl o" // Neovim のジャンプリスト（戻る）に渡すため
         unbind "Ctrl s" // NeovimのGrepSearch <C-s>=Dir切り替えに渡すため
-    }
-
-    // smart-splits.nvim + vim-zellij-navigator: Ctrl+hjkl で Neovim split ↔ Zellij ペインをシームレス移動
-    shared_except "locked" {
-        bind "Ctrl h" {
-            MessagePlugin "file:~/dotfiles/zellij/plugins/vim-zellij-navigator.wasm" {
-                name "move_focus_or_tab";
-                payload "left";
-                move_mod "ctrl";
-            };
-        }
-        bind "Ctrl j" {
-            MessagePlugin "file:~/dotfiles/zellij/plugins/vim-zellij-navigator.wasm" {
-                name "move_focus";
-                payload "down";
-                move_mod "ctrl";
-            };
-        }
-        bind "Ctrl k" {
-            MessagePlugin "file:~/dotfiles/zellij/plugins/vim-zellij-navigator.wasm" {
-                name "move_focus";
-                payload "up";
-                move_mod "ctrl";
-            };
-        }
-        bind "Ctrl l" {
-            MessagePlugin "file:~/dotfiles/zellij/plugins/vim-zellij-navigator.wasm" {
-                name "move_focus_or_tab";
-                payload "right";
-                move_mod "ctrl";
-            };
-        }
+        // smart-splits.nvim に渡す: Neovim split 端で自動的に Zellij ペインへ移動する
+        unbind "Ctrl h"
+        unbind "Ctrl j"
+        unbind "Ctrl k"
+        unbind "Ctrl l"
     }
 
     tmux {
