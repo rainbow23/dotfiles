@@ -27,13 +27,18 @@ dotfiles/
         │   ├── telescope.lua   # telescope 本体
         │   ├── bookmarks.lua   # bookmarks.nvim（init のモンキーパッチのみ）
         │   ├── toggleterm.lua  # toggleterm
+        │   ├── aerial.lua      # aerial.nvim（アウトライン表示）
+        │   ├── render-markdown.lua # render-markdown.nvim
         │   └── lsp.lua         # LSP/補完系のプラグイン定義
         ├── config/         # 各プラグインの設定値（lazy 非依存。手動配置でも require で読める）
         │   ├── nerdtree.lua    # g:NERDTreeMapActivateNode（ロード前に require）
         │   ├── bufexplorer.lua # g:bufExplorerDisableDefaultKeyMapping（ロード前に require）
         │   ├── telescope.lua   # telescope setup / 共通レイアウト・マッピング
         │   ├── toggleterm.lua  # toggleterm setup + tig float
-        │   └── bookmarks.lua   # bookmarks setup + キーマップ + highlight
+        │   ├── bookmarks.lua   # bookmarks setup + キーマップ + highlight
+        │   ├── aerial.lua      # aerial setup + キーマップ（<Leader>o トグル等）
+        │   ├── render-markdown.lua # render-markdown setup
+        │   └── win32.lua       # Windows 固有の設定
         └── rc/             # 自作の機能モジュール
             ├── util.lua        # telescope 共通ユーティリティ（レイアウトプリセット等）
             ├── search.lua      # FileSearch/GrepSearch/BLines/FZFMru（telescope）
@@ -95,12 +100,12 @@ _vimrc
 |---|---|---|---|
 | `[fzf]f` | FileSearch | rc/search.lua (telescope) | なし |
 | `[fzf]s` | GrepSearch | rc/search.lua (telescope) | vimrc.d/fzf.vim (fzf) |
-| `[fzf]S` | FileSearchFromCurrDir | rc/search.lua (telescope) | なし |
 | `[fzf]l` | BLines | rc/search.lua (telescope) | fzf.vim プラグイン |
 | `[fzf]m` | FZFMru | rc/search.lua (telescope oldfiles) | vimrc.d/fzf.vim (fzf) |
 | `[fzf]us` | MySessionLoad | rc/session.lua (telescope) | vimrc.d/fzf.vim (fzf) |
 | `[fzf]g` | GitStatus | rc/search.lua (telescope) | なし |
-| `[fzf]b` | MyBuffersMemos | rc/memo.lua (telescope) | なし |
+| `[fzf]b` | Buffers | fzf.vim プラグイン | fzf.vim プラグイン |
+| `[fzf]c` | GrepCache | rc/search.lua (telescope) | なし |
 | `[fzf]h` / `[fzf]w` | History / Windows | fzf.vim プラグイン | fzf.vim プラグイン |
 | `[fzf]y` | FZFYank | vimrc.d/fzf.vim ※easyclip 未導入のため実質無効 | 同左 |
 
