@@ -3,6 +3,16 @@
 require('smart-splits').setup({
   -- Zellij で端のペインから次/前のタブへ移動する
   zellij_move_focus_or_tab = true,
+  -- tmux で端のペインから前後のウィンドウへ移動する（組み込みオプションがないためカスタム関数で対応）
+  at_edge = function(ctx)
+    if vim.env.TMUX then
+      if ctx.direction == 'left' or ctx.direction == 'up' then
+        vim.fn.system('tmux select-window -p')
+      else
+        vim.fn.system('tmux select-window -n')
+      end
+    end
+  end,
 })
 
 vim.keymap.set('n', '<C-h>', require('smart-splits').move_cursor_left,  { desc = 'Move left (split/pane)' })
