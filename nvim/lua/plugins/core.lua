@@ -30,7 +30,7 @@ return {
   -- File / Buffer
   -- NERDTree 系は plugins/nerdtree.lua（設定は config/nerdtree.lua）を参照
   { 'jlanzarotta/bufexplorer',        lazy = false },  -- 設定は config/bufexplorer.lua
-  { 'christoomey/vim-tmux-navigator', lazy = false },
+  { 'mrjones2014/smart-splits.nvim', version = '>=1.0.0', lazy = false },
   -- Git
   { 'tpope/vim-fugitive',          lazy = false },
   { 'tpope/vim-rhubarb',           lazy = false },

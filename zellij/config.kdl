@@ -5,23 +5,48 @@ keybinds {
     normal {
         // Ctrl+u でプレフィックスモード（tmux モード）へ
         bind "Ctrl u" { SwitchToMode "Tmux"; }
-        // キー解放: Alt+h/l (Ctrl は Neovim/Telescope に渡すため使用しない)
-        bind "Alt h" { MoveFocus "Left"; }
-        bind "Alt l" { MoveFocus "Right"; }
-        bind "Alt j" { MoveFocus "Down"; }
-        bind "Alt k" { MoveFocus "Up"; }
         // Neovim/fzf/Telescope に渡すためデフォルトバインドを無効化
         unbind "Ctrl n"
         unbind "Ctrl p"
         unbind "Ctrl f"
         unbind "Ctrl t"
-        unbind "Ctrl h"
-        unbind "Ctrl l"
         unbind "Ctrl b"
         unbind "Ctrl g" //誤操作防止
         unbind "Ctrl q" //誤操作防止
         unbind "Ctrl o" // Neovim のジャンプリスト（戻る）に渡すため
         unbind "Ctrl s" // NeovimのGrepSearch <C-s>=Dir切り替えに渡すため
+    }
+
+    // smart-splits.nvim + vim-zellij-navigator: Ctrl+hjkl で Neovim split ↔ Zellij ペインをシームレス移動
+    shared_except "locked" {
+        bind "Ctrl h" {
+            MessagePlugin "file:~/dotfiles/zellij/plugins/vim-zellij-navigator.wasm" {
+                name "move_focus_or_tab";
+                payload "left";
+                move_mod "ctrl";
+            };
+        }
+        bind "Ctrl j" {
+            MessagePlugin "file:~/dotfiles/zellij/plugins/vim-zellij-navigator.wasm" {
+                name "move_focus";
+                payload "down";
+                move_mod "ctrl";
+            };
+        }
+        bind "Ctrl k" {
+            MessagePlugin "file:~/dotfiles/zellij/plugins/vim-zellij-navigator.wasm" {
+                name "move_focus";
+                payload "up";
+                move_mod "ctrl";
+            };
+        }
+        bind "Ctrl l" {
+            MessagePlugin "file:~/dotfiles/zellij/plugins/vim-zellij-navigator.wasm" {
+                name "move_focus_or_tab";
+                payload "right";
+                move_mod "ctrl";
+            };
+        }
     }
 
     tmux {

@@ -34,6 +34,7 @@ require('config.telescope')   -- telescope setup（rc/ の各機能より前に�
 require('config.toggleterm')  -- toggleterm setup + tig float
 require('config.bookmarks')   -- bookmarks setup + キーマップ + highlight
 require('config.aerial')      -- aerial setup + キーマップ（画面右のアウトライン）
+require('config.smart-splits') -- smart-splits setup + Ctrl+hjkl ペイン移動
 require('config.render-markdown')  -- Markdown バッファ内レンダリング
 
 -- ⑥ 機能モジュール（lua/rc/）

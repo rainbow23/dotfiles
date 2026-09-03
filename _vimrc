@@ -844,10 +844,9 @@ highlight HighlightedyankRegion cterm=reverse gui=reverse
 let g:highlightedyank_highlight_duration = 500
 " Plug 'machakann/vim-highlightedyank' ##############################################
 
-" Plug 'christoomey/vim-tmux-navigator' #############################################
-" Disable tmux navigator when zooming the Vim pane
-let g:tmux_navigator_disable_when_zoomed = 1
-" Plug 'christoomey/vim-tmux-navigator' #############################################
+" Plug 'mrjones2014/smart-splits.nvim' ##############################################
+" 設定は nvim/lua/config/smart-splits.lua を参照
+" Plug 'mrjones2014/smart-splits.nvim' ##############################################
 
 " The Silver Searcher
 if executable('ag')
