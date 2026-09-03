@@ -19,6 +19,7 @@ keybinds {
         unbind "Ctrl l"
         unbind "Ctrl b"
         unbind "Ctrl g" //誤操作防止
+        unbind "Ctrl q" //誤操作防止
         unbind "Ctrl o" // Neovim のジャンプリスト（戻る）に渡すため
         unbind "Ctrl s" // NeovimのGrepSearch <C-s>=Dir切り替えに渡すため
     }
@@ -59,6 +60,7 @@ keybinds {
         bind "Right" { MoveFocus "Right"; SwitchToMode "Normal"; }
         bind "Left" { MoveFocus "Left"; SwitchToMode "Normal"; }
         bind "Down" { MoveFocus "Down"; SwitchToMode "Normal"; }
+        bind "o" { FocusNextPane; SwitchToMode "Normal"; }
         bind "Up" { MoveFocus "Up"; SwitchToMode "Normal"; }
         // 終了
         bind "Esc" { SwitchToMode "Normal"; }
