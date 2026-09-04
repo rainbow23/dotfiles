@@ -124,6 +124,13 @@ alias cl='clear'
   # abbrev-alias -g rm='gomi'
 
   abbrev-alias -g vim='nvim'
+
+  ## -------------------------------------
+  # adb
+  # -------------------------------------
+  alias lop="adb-log-output"
+  alias lopa="adb-log-output-all"
+  alias ss="adb-screenshot"
 }
 
 alias b="chrome_bookmarks_with_fzf.rb"
