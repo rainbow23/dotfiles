@@ -15,11 +15,16 @@ keybinds {
         unbind "Ctrl q" //誤操作防止
         unbind "Ctrl o" // Neovim のジャンプリスト（戻る）に渡すため
         unbind "Ctrl s" // NeovimのGrepSearch <C-s>=Dir切り替えに渡すため
-        // smart-splits.nvim に渡す: Neovim split 端で自動的に Zellij ペインへ移動する
+        // Neovim 内スプリット移動（smart-splits.nvim）に渡すため unbind
         unbind "Ctrl h"
         unbind "Ctrl j"
         unbind "Ctrl k"
         unbind "Ctrl l"
+        // Zellij ペイン移動: Alt+hjkl（Neovim 未起動ペインでも使える）
+        bind "Alt h" { MoveFocus "Left"; }
+        bind "Alt j" { MoveFocus "Down"; }
+        bind "Alt k" { MoveFocus "Up"; }
+        bind "Alt l" { MoveFocus "Right"; }
     }
 
     tmux {

@@ -13,6 +13,7 @@ dotfiles/
 ├── symlink.sh              # シンボリックリンク作成スクリプト
 ├── source.sh / mru.sh      # シェル用スクリプト
 ├── docs/                   # ドキュメント
+├── zellij/                 # Zellij 設定（config.kdl → ~/.config/zellij/ にリンク）
 ├── vimrc.d/                # _vimrc から source する分割 VimScript 設定
 │   ├── search-keymaps.vim  # 検索系キーマップと fzf 共通設定（vim/nvim 共通）
 │   ├── fzf.vim             # fzf ベースの実装（telescope 置き換え済みコマンドは plain vim のみ）
@@ -38,6 +39,7 @@ dotfiles/
         │   ├── bookmarks.lua   # bookmarks setup + キーマップ + highlight
         │   ├── aerial.lua      # aerial setup + キーマップ（<Leader>o トグル等）
         │   ├── render-markdown.lua # render-markdown setup
+        │   ├── smart-splits.lua    # smart-splits setup + Ctrl+hjkl ペイン移動
         │   └── win32.lua       # Windows 固有の設定
         └── rc/             # 自作の機能モジュール
             ├── util.lua        # telescope 共通ユーティリティ（レイアウトプリセット等）
@@ -110,3 +112,37 @@ _vimrc
 | `[fzf]y` | FZFYank | vimrc.d/fzf.vim ※easyclip 未導入のため実質無効 | 同左 |
 
 `[fzf]` プレフィックスは `<Leader>f`（Space + f）。
+
+## Zellij / tmux ペイン・ウィンドウ移動
+
+### キーマップ一覧
+
+| キー | Zellij (GitBash) | tmux (Mac) |
+|---|---|---|
+| `<C-hjkl>` | Neovim 内スプリット移動（smart-splits.nvim） | Neovim 内スプリット移動 + 端で tmux ウィンドウ移動 |
+| `Alt+hjkl` | Zellij ペイン移動（Neovim 有無問わず） | — |
+| `Ctrl+u` → `p`/`n` | Zellij タブ移動 | — |
+| `Ctrl+u` → 矢印 | Zellij ペイン移動 | — |
+
+### 構成ファイル
+
+| ファイル | 役割 |
+|---|---|
+| `zellij/config.kdl` | Zellij キーバインド（`~/.config/zellij/config.kdl` にシンボリックリンク） |
+| `nvim/lua/config/smart-splits.lua` | smart-splits.nvim setup + `<C-hjkl>` キーマップ |
+| `nvim/lua/plugins/core.lua` | smart-splits.nvim プラグイン定義 |
+| `vimrc.d/gitbash.vim` | GitBash 用 `<C-h>`/`<C-l>` フォールバック（smart-splits 未導入環境向け） |
+
+### smart-splits.nvim の動作
+
+- tmux / zellij を **自動検出**（`multiplexer_integration` 未指定）
+- Neovim 内にスプリットがあれば内部移動、端に達したらターミナルペイン移動を試みる
+- tmux: `at_edge` カスタム関数で端ペインから前後ウィンドウへ移動
+- zellij: `zellij_move_focus_or_tab = true` で端ペインからタブ移動
+
+### Zellij での制約
+
+Zellij は GitBash/Windows 環境で `RUNNING_COMMAND: N/A` を返すため、
+vim-zellij-navigator による Neovim 自動検出が機能しない。
+そのため `<C-hjkl>` を unbind して Neovim にパススルーし、
+Zellij ペイン移動は `Alt+hjkl` で行う方式を採用している。
