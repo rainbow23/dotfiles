@@ -65,6 +65,14 @@ keybinds {
         bind "Down" { MoveFocus "Down"; SwitchToMode "Normal"; }
         bind "o" { FocusNextPane; SwitchToMode "Normal"; }
         bind "Up" { MoveFocus "Up"; SwitchToMode "Normal"; }
+        // タブ選択 (fzf): prefix + k (tmux の prefix+k 相当)
+        bind "k" {
+            Run "bash" "-c" "tab_names=$(zellij action query-tab-names); [ -z \"$tab_names\" ] && exit 0; selected=$(echo \"$tab_names\" | nl -ba -w1 -s': ' | fzf --prompt='select-tab> ' +m --height=100% --reverse); [ -z \"$selected\" ] && exit 0; idx=$(echo \"$selected\" | cut -d: -f1); zellij action go-to-tab \"$idx\"" {
+                floating true
+                close_on_exit true
+            }
+            SwitchToMode "Normal"
+        }
         // 終了
         bind "Esc" { SwitchToMode "Normal"; }
     }
