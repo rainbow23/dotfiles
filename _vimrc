@@ -317,7 +317,11 @@ endfunction
 autocmd BufEnter * let g:_airline_git_root_cache = trim(system('git rev-parse --show-toplevel 2>/dev/null'))
 let g:airline_section_c = '%{AirlineGitRelativePath()}'
 
-let g:airline#extensions#tabline#enabled           = 1   " enable airline tabline
+if has('nvim')
+  let g:airline#extensions#tabline#enabled         = 0   " nvim: カスタムタブライン (MyTabLine) を使用
+else
+  let g:airline#extensions#tabline#enabled         = 1   " vim: airline tabline を使用
+endif
 let g:airline#extensions#tabline#show_close_button = 0   " remove 'X' at the end of the tabline
 let g:airline#extensions#tabline#tabs_label        = ''  " can put text here like BUFFERS to denote buffers (I clear it so nothing is shown)
 let g:airline#extensions#tabline#buffers_label     = ''  " can put text here like TABS to denote tabs (I clear it so nothing is shown)
