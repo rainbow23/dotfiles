@@ -313,7 +313,20 @@ local function memo_add_template()
   }):find()
 end
 
+-- メモテキストからフィルター prefix を除去する（フィルター適用中のみ）
+local function memo_strip_filter_prefix(text)
+  if not memo_filter_enabled or #memo_active_filters == 0 then return text end
+  for _, name in ipairs(memo_active_filters) do
+    if memo_filter_prefix_match(text, name) then
+      local stripped = text:sub(#name + 1):gsub('^%s+', '')
+      return stripped ~= '' and stripped or text
+    end
+  end
+  return text
+end
+
 -- 現在行のメモテキストをクリップボードにコピーする
+-- フィルター適用中はフィルター文字列を除去してコピーする
 local function memo_copy_at_cursor()
   local bufnr = vim.api.nvim_get_current_buf()
   local line0 = vim.api.nvim_win_get_cursor(0)[1] - 1
@@ -321,9 +334,10 @@ local function memo_copy_at_cursor()
   if #marks == 0 then vim.notify('No memo on this line', vim.log.levels.INFO); return end
   local m = (buf_memos[bufnr] or {})[marks[1][1]]
   if not m then return end
-  vim.fn.setreg('+', m.text)
-  vim.fn.setreg('"', m.text)
-  vim.notify('Copied: ' .. m.text)
+  local copy_text = memo_strip_filter_prefix(m.text)
+  vim.fn.setreg('+', copy_text)
+  vim.fn.setreg('"', copy_text)
+  vim.notify('Copied: ' .. copy_text)
 end
 
 -- 現在行のメモを削除する
@@ -564,7 +578,8 @@ local function memo_change_color_at_cursor()
 end
 
 -- Telescope でメモ一覧を表示する
-local function memo_list()
+-- filter_only: true ならフィルター適用中のメモのみ表示
+local function memo_list(filter_only)
   local git_root = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
   local has_git  = git_root ~= '' and not git_root:find('fatal')
   local gr_norm  = has_git
@@ -601,6 +616,14 @@ local function memo_list()
     end
     ::continue::
   end
+  -- フィルター適用中はマッチするメモのみに絞り込む
+  if filter_only then
+    local filtered = {}
+    for _, r in ipairs(results) do
+      if memo_matches_filter(r.text) then table.insert(filtered, r) end
+    end
+    results = filtered
+  end
   table.sort(results, function(a, b)
     if a.filepath ~= b.filepath then return a.filepath < b.filepath end
     return a.line < b.line
@@ -616,8 +639,11 @@ local function memo_list()
     r.display = r.text .. pad .. '  ' .. vim.fn.fnamemodify(r.filepath, ':t')
   end
 
+  local title = filter_only
+    and ('📝 Filtered Memos [' .. table.concat(memo_active_filters, ', ') .. ']  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム')
+    or  '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム'
   pickers.new({}, {
-    prompt_title  = '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム',
+    prompt_title  = title,
     results_title = memo_shortcut,
     finder = finders.new_table({
       results = results,
@@ -654,7 +680,7 @@ local function memo_list()
               memo_set_extmark(bufnr, ln - 1, new_text, old_color)
             end
           end
-          memo_list()
+          memo_list(filter_only)
         end)
       end
       map_modes(map, '<C-r>', rename_memo)
@@ -960,6 +986,19 @@ local function memo_select_from_list()
   }):find()
 end
 
+-- airline ステータスにフィルター状態を表示する
+local function memo_update_airline()
+  if memo_filter_enabled and #memo_active_filters > 0 then
+    vim.g.airline_section_z = '%{g:memo_filter_status}'
+    vim.g.memo_filter_status = 'Filter: ' .. table.concat(memo_active_filters, ', ')
+  else
+    vim.g.airline_section_z = ''
+    vim.g.memo_filter_status = ''
+  end
+  pcall(vim.cmd, 'AirlineRefresh')
+end
+vim.api.nvim_create_autocmd('VimEnter', { callback = memo_update_airline })
+
 -- フィルターを登録して適用する共通処理（未定義なら定義一覧に追加する）
 local function memo_filter_activate(name)
   local found
@@ -971,6 +1010,7 @@ local function memo_filter_activate(name)
   memo_filter_enabled = true
   memo_filters_save()
   memo_refresh_all_bufs()
+  memo_update_airline()
   vim.notify('Memo filter: ' .. name)
 end
 
@@ -1001,6 +1041,7 @@ local function memo_filter_toggle()
   memo_filter_enabled = not memo_filter_enabled
   memo_filters_save()
   memo_refresh_all_bufs()
+  memo_update_airline()
   vim.notify(memo_filter_enabled
     and ('Memo filter ON: ' .. table.concat(memo_active_filters, ', '))
     or  'Memo filter OFF')
@@ -1076,6 +1117,7 @@ local function memo_filter_pick()
         memo_filter_enabled = #memo_active_filters > 0
         memo_filters_save()
         memo_refresh_all_bufs()
+        memo_update_airline()
         refresh_picker()
       end
       map_modes(map, '<Tab>', toggle_filter)
@@ -1099,6 +1141,7 @@ local function memo_filter_pick()
         end
         memo_filters_save()
         memo_refresh_all_bufs()
+        memo_update_airline()
         picker:delete_selection(function() vim.notify('Filter deleted') end)
       end
       map_modes(map, '<C-d>', delete_filter)
@@ -1125,11 +1168,14 @@ vim.keymap.set('n', '<leader>md', memo_delete,                   { desc = 'Memo 
 vim.keymap.set('n', '<leader>mc', memo_change_color_at_cursor,   { desc = 'Memo change color at cursor' })
 vim.keymap.set('n', '<leader>mf', memo_add_template,             { desc = 'Memo add template (呼び出し調査の起点)' })
 vim.keymap.set('n', '<leader>ml', memo_list,                     { desc = 'Memo list (telescope)' })
+vim.keymap.set('n', '<leader>mL', function() memo_list(true) end, { desc = 'Memo list filtered only' })
 vim.keymap.set('n', '<leader>ll', memo_list_current,             { desc = 'Memo list current file' })
 vim.keymap.set('n', '<leader>mr', memo_force_reload,             { desc = 'Memo force reload' })
 vim.keymap.set('n', '<leader>mg', memo_filter_set,               { desc = 'Memo filter set (カーソル配下 or 新規入力)' })
 vim.keymap.set('n', '<leader>mt', memo_filter_toggle,            { desc = 'Memo filter toggle' })
 vim.keymap.set('n', '<leader>mo', memo_filter_pick,              { desc = 'Memo filter list (telescope)' })
+
+
 
 -- セッション連携 API（rc/session.lua から呼び出す）
 local M = {}
@@ -1152,6 +1198,7 @@ function M.session_restore(name)
   memo_filter_enabled = st.enabled == true
   memo_filters_save()
   memo_refresh_all_bufs()
+  memo_update_airline()
 end
 
 -- セッションのリネーム・削除に追従して紐付け状態を維持・破棄する
