@@ -392,7 +392,7 @@ vim.api.nvim_create_user_command('Windows', function()
     })
   end
   pickers.new({}, {
-    prompt_title = 'Windows  <CR>=ジャンプ',
+    prompt_title = 'Windows  <CR>=ジャンプ <C-d>=削除(複数選択可)',
     finder = finders.new_table({
       results     = results,
       entry_maker = function(e)
@@ -400,7 +400,7 @@ vim.api.nvim_create_user_command('Windows', function()
       end,
     }),
     sorter = conf.generic_sorter({}),
-    attach_mappings = function(prompt_bufnr)
+    attach_mappings = function(prompt_bufnr, map)
       actions.select_default:replace(function()
         local sel = action_state.get_selected_entry()
         actions.close(prompt_bufnr)
@@ -410,6 +410,25 @@ vim.api.nvim_create_user_command('Windows', function()
           end
         end)
       end)
+      local function delete_wins()
+        local picker = action_state.get_current_picker(prompt_bufnr)
+        local selections = picker:get_multi_selection()
+        if #selections == 0 then
+          local sel = action_state.get_selected_entry()
+          if sel then selections = { sel } end
+        end
+        if #selections == 0 then return end
+        actions.close(prompt_bufnr)
+        vim.schedule(function()
+          for _, entry in ipairs(selections) do
+            local win = entry.value.win
+            if vim.api.nvim_win_is_valid(win) then
+              vim.api.nvim_win_close(win, false)
+            end
+          end
+        end)
+      end
+      map_modes(map, '<C-d>', delete_wins)
       return true
     end,
     layout_strategy = 'center',
