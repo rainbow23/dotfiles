@@ -1,7 +1,7 @@
 -- メモ管理（extmarks ベース）
 -- ファイルを変更せず仮想行としてメモを表示し、~/.vim/memos.json に永続化する
 -- キーマップ: <leader>ma=追加/編集 <leader>ms=リストから追加 <leader>me=候補編集 <leader>md=削除 <leader>ml=一覧
---            <leader>mg=フィルター決定 <leader>mt=フィルタートグル <leader>mo=フィルター一覧
+--            <leader>mB=アクティブメモ一覧 <leader>mg=フィルター決定 <leader>mt=フィルタートグル <leader>mo=フィルター一覧
 local finders        = require('telescope.finders')
 local pickers        = require('telescope.pickers')
 local actions        = require('telescope.actions')
@@ -922,6 +922,115 @@ local function memo_list_buffers()
 end
 
 
+-- 現在アクティブな（バッファに表示中の）メモのみを一覧表示する
+-- buf_memos 上のメモのうちフィルターに適合するもの（= 画面上で仮想行として見えているもの）を対象
+local function memo_list_active()
+  local results = {}
+  for bufnr, ids in pairs(buf_memos) do
+    if vim.api.nvim_buf_is_valid(bufnr) then
+      local filepath = memo_normalize_path(vim.api.nvim_buf_get_name(bufnr))
+      if filepath ~= '' then
+        for id, m in pairs(ids) do
+          if memo_matches_filter(m.text) then
+            local pos = vim.api.nvim_buf_get_extmark_by_id(bufnr, memo_ns, id, {})
+            if pos and pos[1] then
+              table.insert(results, {
+                filepath = filepath,
+                line     = pos[1] + 1,
+                text     = m.text,
+                color    = m.color,
+              })
+            end
+          end
+        end
+      end
+    end
+  end
+
+  if #results == 0 then
+    vim.notify('No active memos', vim.log.levels.INFO)
+    return
+  end
+
+  table.sort(results, function(a, b)
+    if a.filepath ~= b.filepath then return a.filepath < b.filepath end
+    return a.line < b.line
+  end)
+
+  local max_tw = 0
+  for _, r in ipairs(results) do
+    local w = vim.fn.strdisplaywidth(r.text)
+    if w > max_tw then max_tw = w end
+  end
+  for _, r in ipairs(results) do
+    local pad = string.rep(' ', max_tw - vim.fn.strdisplaywidth(r.text))
+    r.display = r.text .. pad .. '  ' .. vim.fn.fnamemodify(r.filepath, ':t')
+  end
+
+  local title = '📝 Active Memos'
+  if memo_filter_enabled and #memo_active_filters > 0 then
+    title = title .. ' [' .. table.concat(memo_active_filters, ', ') .. ']'
+  end
+  title = title .. '  <CR>=ジャンプ <C-d>=削除'
+
+  pickers.new({}, {
+    prompt_title  = title,
+    results_title = memo_shortcut,
+    finder = finders.new_table({
+      results = results,
+      entry_maker = function(e)
+        return { value = e, display = e.display, ordinal = e.display, filename = e.filepath, lnum = e.line }
+      end,
+    }),
+    sorter    = make_memo_sorter(results),
+    previewer = memo_previewer,
+    attach_mappings = function(prompt_bufnr, map)
+      local function jump_to_win()
+        local sel = action_state.get_selected_entry()
+        if not sel then return end
+        local filepath = sel.value.filepath
+        local lnum     = sel.value.line
+        actions.close(prompt_bufnr)
+        vim.defer_fn(function()
+          local bn = vim.fn.bufnr(filepath)
+          local target_win = nil
+          if bn ~= -1 then
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+              if vim.api.nvim_win_get_buf(win) == bn then
+                target_win = win
+                break
+              end
+            end
+          end
+          if target_win then
+            vim.api.nvim_set_current_win(target_win)
+          else
+            vim.cmd('edit ' .. vim.fn.fnameescape(filepath))
+          end
+          vim.api.nvim_win_set_cursor(0, { lnum, 0 })
+          vim.cmd('normal! zz')
+        end, 50)
+      end
+      actions.select_default:replace(jump_to_win)
+      local function delete_memo()
+        local sel = action_state.get_selected_entry()
+        if not sel then return end
+        local picker = action_state.get_current_picker(prompt_bufnr)
+        memo_delete_from_store(sel.value.filepath, sel.value.line)
+        picker:delete_selection(function() vim.notify('Memo deleted') end)
+      end
+      map_modes(map, '<C-d>',    delete_memo)
+      map_modes(map, '<C-t>',    function(b) memo_open_entry(b, 'tabedit') end)
+      map_modes(map, vsplit_key, function(b) memo_open_entry(b, 'vsplit') end)
+      map_modes(map, '<C-h>',    function(b) memo_open_entry(b, 'split') end)
+      map_modes(map, '<C-f>',    layout_actions.toggle_preview)
+      return true
+    end,
+    layout_strategy = 'center',
+    layout_config   = { width = 0.8, height = 0.7, preview_cutoff = 1 },
+  }):find()
+end
+
 -- 候補テキストファイルからメモを選択して現在行に追加する
 -- 候補ファイル: ~/.vim/memo_candidates.txt（1行1候補）
 local memo_candidates_path = vim.fn.expand('~/.vim/memo_candidates.txt')
@@ -1162,14 +1271,15 @@ vim.keymap.set('n', '<leader>me', function()
   end
   vim.cmd('botright vsplit ' .. vim.fn.fnameescape(memo_candidates_path))
 end, { desc = 'Memo edit candidates file' })
+vim.keymap.set('n', '<leader>ml', memo_list,                     { desc = 'Memo list (telescope)' })
+vim.keymap.set('n', '<leader>ll', memo_list_current,             { desc = 'Memo list current file' })
 vim.keymap.set('n', '<leader>mb', memo_list_buffers,             { desc = 'Memo list buffer memos' })
+vim.keymap.set('n', '<leader>mB', memo_list_active,              { desc = 'Memo list active (visible) memos' })
 vim.keymap.set('n', '<leader>my', memo_copy_at_cursor,           { desc = 'Memo copy text at cursor' })
 vim.keymap.set('n', '<leader>md', memo_delete,                   { desc = 'Memo delete' })
 vim.keymap.set('n', '<leader>mc', memo_change_color_at_cursor,   { desc = 'Memo change color at cursor' })
 vim.keymap.set('n', '<leader>mf', memo_add_template,             { desc = 'Memo add template (呼び出し調査の起点)' })
-vim.keymap.set('n', '<leader>ml', memo_list,                     { desc = 'Memo list (telescope)' })
 vim.keymap.set('n', '<leader>mL', function() memo_list(true) end, { desc = 'Memo list filtered only' })
-vim.keymap.set('n', '<leader>ll', memo_list_current,             { desc = 'Memo list current file' })
 vim.keymap.set('n', '<leader>mr', memo_force_reload,             { desc = 'Memo force reload' })
 vim.keymap.set('n', '<leader>mg', memo_filter_set,               { desc = 'Memo filter set (カーソル配下 or 新規入力)' })
 vim.keymap.set('n', '<leader>mt', memo_filter_toggle,            { desc = 'Memo filter toggle' })
