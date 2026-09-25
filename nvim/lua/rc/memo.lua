@@ -1,7 +1,7 @@
 -- メモ管理（extmarks ベース）
 -- ファイルを変更せず仮想行としてメモを表示し、~/.vim/memos.json に永続化する
 -- キーマップ: <leader>ma=追加/編集 <leader>ms=リストから追加 <leader>me=候補編集 <leader>md=削除 <leader>ml=一覧
---            <leader>mB=アクティブメモ一覧 <leader>mg=フィルター決定 <leader>mt=フィルタートグル <leader>mo=フィルター一覧
+--            <leader>mv=アクティブメモ一覧 <leader>mg=フィルター決定 <leader>mt=フィルタートグル <leader>mo=フィルター一覧
 local finders        = require('telescope.finders')
 local pickers        = require('telescope.pickers')
 local actions        = require('telescope.actions')
@@ -1274,7 +1274,7 @@ end, { desc = 'Memo edit candidates file' })
 vim.keymap.set('n', '<leader>ml', memo_list,                     { desc = 'Memo list (telescope)' })
 vim.keymap.set('n', '<leader>ll', memo_list_current,             { desc = 'Memo list current file' })
 vim.keymap.set('n', '<leader>mb', memo_list_buffers,             { desc = 'Memo list buffer memos' })
-vim.keymap.set('n', '<leader>mB', memo_list_active,              { desc = 'Memo list active (visible) memos' })
+vim.keymap.set('n', '<leader>mv', memo_list_active,              { desc = 'Memo list active (visible) memos' })
 vim.keymap.set('n', '<leader>my', memo_copy_at_cursor,           { desc = 'Memo copy text at cursor' })
 vim.keymap.set('n', '<leader>md', memo_delete,                   { desc = 'Memo delete' })
 vim.keymap.set('n', '<leader>mc', memo_change_color_at_cursor,   { desc = 'Memo change color at cursor' })
