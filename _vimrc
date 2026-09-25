@@ -626,7 +626,9 @@ vmap [nerdcommenter]s <plug>NERDCommenterSexy<CR>
 " Plug 'scrooloose/nerdtree' start ####################################################
 nnoremap ,t :call <SID>NERDTreeFindOrToggle()<CR>
 function! s:NERDTreeFindOrToggle()
-  if expand('%') != ''
+  if &filetype ==# 'nerdtree'
+    NERDTreeToggle
+  elseif expand('%') != ''
     NERDTreeFind
   else
     NERDTreeToggle
