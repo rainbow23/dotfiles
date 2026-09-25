@@ -294,7 +294,7 @@ function! AirlineGitRelativeCwd() abort
   endif
   return substitute(getcwd(), '\\', '/', 'g')
 endfunction
-let g:airline_section_b = '%{AirlineGitRelativeCwd()}'
+let g:airline_section_b = '%{AirlineGitRelativeCwd()} [%{FugitiveHead()}]'
 let g:airline_section_x = ''
 let g:airline_section_y = ''
 let g:airline_section_z = ''
