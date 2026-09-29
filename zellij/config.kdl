@@ -73,6 +73,14 @@ keybinds {
             }
             SwitchToMode "Normal"
         }
+        // 名前付きスタックペイン作成: prefix + S
+        bind "S" {
+            Run "bash" "-c" "read -r -p 'stacked-pane name> ' name; zellij action toggle-floating-panes; if [ -n \"$name\" ]; then zellij action new-pane --stacked --name \"$name\"; else zellij action new-pane --stacked; fi" {
+                floating true
+                close_on_exit true
+            }
+            SwitchToMode "Normal"
+        }
         // 終了
         bind "Esc" { SwitchToMode "Normal"; }
     }
