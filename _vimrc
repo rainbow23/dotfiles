@@ -628,6 +628,8 @@ nnoremap ,t :call <SID>NERDTreeFindOrToggle()<CR>
 function! s:NERDTreeFindOrToggle()
   if &filetype ==# 'nerdtree'
     NERDTreeToggle
+  elseif exists('g:NERDTree') && g:NERDTree.IsOpen()
+    NERDTreeClose
   elseif expand('%') != ''
     NERDTreeFind
   else
