@@ -22,12 +22,11 @@ keybinds {
         // unbind "Ctrl k"
         // unbind "Ctrl l"
         // vim-zellij-navigator PR#34（hiasr/vim-zellij-navigator#34, HEAD 98ba6d5）
-        //   ローカルビルドした wasm を参照する動作確認用バインド
-        //   mac   : ~/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm
-        //   GitBash: file:C:/Users/<user>/AppData/Roaming/zellij/plugins/... に書き換える
+        //   wasm は zellij/plugins/ に同梱し、GitBash では symlink.sh が
+        //   ~/.config/zellij/plugins/ へコピーする（mac は手動配置）
         //   vims に nvim.exe を含めることで Windows の RUNNING_COMMAND を検出させる
         bind "Ctrl h" {
-            MessagePlugin "file:/Users/rainbow/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
+            MessagePlugin "file:~/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
                 name "move_focus_or_tab";
                 payload "left";
                 move_mod "ctrl";
@@ -35,7 +34,7 @@ keybinds {
             };
         }
         bind "Ctrl j" {
-            MessagePlugin "file:/Users/rainbow/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
+            MessagePlugin "file:~/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
                 name "move_focus";
                 payload "down";
                 move_mod "ctrl";
@@ -43,7 +42,7 @@ keybinds {
             };
         }
         bind "Ctrl k" {
-            MessagePlugin "file:/Users/rainbow/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
+            MessagePlugin "file:~/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
                 name "move_focus";
                 payload "up";
                 move_mod "ctrl";
@@ -51,7 +50,7 @@ keybinds {
             };
         }
         bind "Ctrl l" {
-            MessagePlugin "file:/Users/rainbow/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
+            MessagePlugin "file:~/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
                 name "move_focus_or_tab";
                 payload "right";
                 move_mod "ctrl";

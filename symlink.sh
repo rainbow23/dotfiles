@@ -20,5 +20,17 @@ ln -sfn $HOME/dotfiles/_tigrc $HOME/.tigrc
 mkdir -p $HOME/.config/zellij
 ln -sfn $HOME/dotfiles/zellij/config.kdl $HOME/.config/zellij/config.kdl
 
+# zellij プラグイン（vim-zellij-navigator PR#34 のローカルビルド）
+# GitBash/Windows でのみ配置する
+#   - Windows ではシンボリックリンクを zellij が辿れないため cp で実体を置く
+#   - mac/Linux は Ctrl+hjkl を smart-splits.nvim 側で処理できるため不要
+case "$(uname -s)" in
+    MINGW* | MSYS*)
+        mkdir -p $HOME/.config/zellij/plugins
+        cp -f $HOME/dotfiles/zellij/plugins/vim-zellij-navigator-pr34.wasm \
+              $HOME/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm
+        ;;
+esac
+
 #karabiner設定を追加
 ln -sfn ~/dotfiles/etc/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
