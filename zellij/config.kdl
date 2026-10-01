@@ -36,6 +36,8 @@ keybinds {
         // タブ（ウィンドウ）操作: prefix + p/n
         bind "p" { GoToPreviousTab; SwitchToMode "Normal"; }
         bind "n" { GoToNextTab; SwitchToMode "Normal"; }
+        bind "h" { GoToPreviousTab; SwitchToMode "Normal"; }
+        bind "l" { GoToNextTab; SwitchToMode "Normal"; }
         // タブ作成: prefix + c
         bind "c" { NewTab; SwitchToMode "Normal"; }
         // タブ入れ替え: prefix + Shift+Left/Right (tmux の C-S-Left/Right 相当)
