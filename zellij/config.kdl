@@ -54,7 +54,7 @@ keybinds {
         // フルスクリーン: prefix + z
         bind "z" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
         // セッション管理: prefix + s
-        bind "s" { LaunchOrFocusPlugin "session-manager" { floating true }; SwitchToMode "Normal"; }
+        bind "s" { LaunchOrFocusPlugin "zellij:session-manager" { floating true; move_to_focused_tab true; }; SwitchToMode "Normal"; }
         // デタッチ: prefix + d
         bind "d" { Detach; }
         // リネーム
