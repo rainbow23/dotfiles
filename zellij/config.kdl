@@ -16,10 +16,48 @@ keybinds {
         unbind "Ctrl o" // Neovim のジャンプリスト（戻る）に渡すため
         unbind "Ctrl s" // NeovimのGrepSearch <C-s>=Dir切り替えに渡すため
         // Neovim 内スプリット移動（smart-splits.nvim）に渡すため unbind
-        unbind "Ctrl h"
-        unbind "Ctrl j"
-        unbind "Ctrl k"
-        unbind "Ctrl l"
+        // --- vim-zellij-navigator PR#34 動作確認中は plugin に委譲するため無効化 ---
+        // unbind "Ctrl h"
+        // unbind "Ctrl j"
+        // unbind "Ctrl k"
+        // unbind "Ctrl l"
+        // vim-zellij-navigator PR#34（hiasr/vim-zellij-navigator#34, HEAD 98ba6d5）
+        //   ローカルビルドした wasm を参照する動作確認用バインド
+        //   mac   : ~/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm
+        //   GitBash: file:C:/Users/<user>/AppData/Roaming/zellij/plugins/... に書き換える
+        //   vims に nvim.exe を含めることで Windows の RUNNING_COMMAND を検出させる
+        bind "Ctrl h" {
+            MessagePlugin "file:/Users/rainbow/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
+                name "move_focus_or_tab";
+                payload "left";
+                move_mod "ctrl";
+                vims "nvim;vim;nvim.exe;vim.exe";
+            };
+        }
+        bind "Ctrl j" {
+            MessagePlugin "file:/Users/rainbow/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
+                name "move_focus";
+                payload "down";
+                move_mod "ctrl";
+                vims "nvim;vim;nvim.exe;vim.exe";
+            };
+        }
+        bind "Ctrl k" {
+            MessagePlugin "file:/Users/rainbow/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
+                name "move_focus";
+                payload "up";
+                move_mod "ctrl";
+                vims "nvim;vim;nvim.exe;vim.exe";
+            };
+        }
+        bind "Ctrl l" {
+            MessagePlugin "file:/Users/rainbow/.config/zellij/plugins/vim-zellij-navigator-pr34.wasm" {
+                name "move_focus_or_tab";
+                payload "right";
+                move_mod "ctrl";
+                vims "nvim;vim;nvim.exe;vim.exe";
+            };
+        }
         // Zellij ペイン移動: Alt+hjkl（Neovim 未起動ペインでも使える）
         bind "Alt h" { MoveFocus "Left"; }
         bind "Alt j" { MoveFocus "Down"; }
@@ -54,7 +92,7 @@ keybinds {
         // フルスクリーン: prefix + z
         bind "z" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
         // セッション管理: prefix + s
-        bind "s" { LaunchOrFocusPlugin "session-manager" { floating true }; SwitchToMode "Normal"; }
+        bind "s" { LaunchOrFocusPlugin "session-manager" { floating true; }; SwitchToMode "Normal"; }
         // デタッチ: prefix + d
         bind "d" { Detach; }
         // リネーム
