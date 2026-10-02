@@ -20,5 +20,12 @@ ln -sfn $HOME/dotfiles/_tigrc $HOME/.tigrc
 mkdir -p $HOME/.config/zellij
 ln -sfn $HOME/dotfiles/zellij/config.kdl $HOME/.config/zellij/config.kdl
 
-#karabiner設定を追加
-ln -sfn ~/dotfiles/etc/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
+# karabiner 設定
+# karabiner.json はアトミックに書き換えられファイル単位のリンクが外れるため、ディレクトリごとリンクする
+if [ -d $HOME/.config/karabiner ] && [ ! -L $HOME/.config/karabiner ]; then
+    mv $HOME/.config/karabiner $HOME/.config/karabiner.bak
+fi
+ln -sfn $HOME/dotfiles/etc/karabiner $HOME/.config/karabiner
+
+# iTerm2 メニューショートカット
+sh $HOME/dotfiles/etc/iterm2/keybindings.sh

@@ -4,13 +4,202 @@
             "complex_modifications": {
                 "rules": [
                     {
+                        "description": "Ctrl+C/V/X/Z を ⌘ に置き換え（ターミナルは除外）",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.googlecode\\.iterm2$",
+                                            "^com\\.apple\\.Terminal$"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "c",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "c",
+                                        "modifiers": [
+                                            "command"
+                                        ]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.googlecode\\.iterm2$",
+                                            "^com\\.apple\\.Terminal$"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "v",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "v",
+                                        "modifiers": [
+                                            "command"
+                                        ]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.googlecode\\.iterm2$",
+                                            "^com\\.apple\\.Terminal$"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "x",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "x",
+                                        "modifiers": [
+                                            "command"
+                                        ]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.googlecode\\.iterm2$",
+                                            "^com\\.apple\\.Terminal$"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "z",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "z",
+                                        "modifiers": [
+                                            "command"
+                                        ]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "HHKBロゴキーで英数/かなトグル",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [
+                                            {
+                                                "language": "^ja$"
+                                            }
+                                        ],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "grave_accent_and_tilde"
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "japanese_eisuu"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "grave_accent_and_tilde"
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "japanese_kana"
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "日本語入力中の Escape → 英数キーで未確定文字キャンセル → Escape 送信",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [
+                                            {
+                                                "language": "ja"
+                                            }
+                                        ],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "escape"
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "japanese_eisuu"
+                                    },
+                                    {
+                                        "key_code": "escape"
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "escキーを押したときに、英数キーも送信する（vim用）",
                         "manipulators": [
                             {
-                                "from": { "key_code": "escape" },
+                                "from": {
+                                    "key_code": "escape"
+                                },
                                 "to": [
-                                    { "key_code": "escape" },
-                                    { "key_code": "japanese_eisuu" }
+                                    {
+                                        "key_code": "escape"
+                                    },
+                                    {
+                                        "key_code": "japanese_eisuu"
+                                    }
                                 ],
                                 "type": "basic"
                             }
@@ -18,94 +207,210 @@
                     },
                     {
                         "description": "コマンドキー（左右どちらでも）を単体で押したときに、英数・かなをトグルで切り替える。 (rev 2)",
+                        "enabled": false,
                         "manipulators": [
                             {
                                 "conditions": [
                                     {
-                                        "input_sources": [{ "language": "ja" }],
+                                        "input_sources": [
+                                            {
+                                                "language": "ja"
+                                            }
+                                        ],
                                         "type": "input_source_if"
                                     }
                                 ],
                                 "from": {
                                     "key_code": "left_command",
-                                    "modifiers": { "optional": ["any"] }
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
                                 },
-                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "parameters": {
+                                    "basic.to_if_held_down_threshold_milliseconds": 100
+                                },
                                 "to": [
                                     {
                                         "key_code": "left_command",
                                         "lazy": true
                                     }
                                 ],
-                                "to_if_alone": [{ "key_code": "japanese_eisuu" }],
-                                "to_if_held_down": [{ "key_code": "left_command" }],
+                                "to_if_alone": [
+                                    {
+                                        "key_code": "japanese_eisuu"
+                                    }
+                                ],
+                                "to_if_held_down": [
+                                    {
+                                        "key_code": "left_command"
+                                    }
+                                ],
                                 "type": "basic"
                             },
                             {
                                 "conditions": [
                                     {
-                                        "input_sources": [{ "language": "en" }],
+                                        "input_sources": [
+                                            {
+                                                "language": "en"
+                                            }
+                                        ],
                                         "type": "input_source_if"
                                     }
                                 ],
                                 "from": {
                                     "key_code": "left_command",
-                                    "modifiers": { "optional": ["any"] }
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
                                 },
-                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "parameters": {
+                                    "basic.to_if_held_down_threshold_milliseconds": 100
+                                },
                                 "to": [
                                     {
                                         "key_code": "left_command",
                                         "lazy": true
                                     }
                                 ],
-                                "to_if_alone": [{ "key_code": "japanese_kana" }],
-                                "to_if_held_down": [{ "key_code": "left_command" }],
+                                "to_if_alone": [
+                                    {
+                                        "key_code": "japanese_kana"
+                                    }
+                                ],
+                                "to_if_held_down": [
+                                    {
+                                        "key_code": "left_command"
+                                    }
+                                ],
                                 "type": "basic"
                             },
                             {
                                 "conditions": [
                                     {
-                                        "input_sources": [{ "language": "ja" }],
+                                        "input_sources": [
+                                            {
+                                                "language": "ja"
+                                            }
+                                        ],
                                         "type": "input_source_if"
                                     }
                                 ],
                                 "from": {
                                     "key_code": "right_command",
-                                    "modifiers": { "optional": ["any"] }
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
                                 },
-                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "parameters": {
+                                    "basic.to_if_held_down_threshold_milliseconds": 100
+                                },
                                 "to": [
                                     {
                                         "key_code": "right_command",
                                         "lazy": true
                                     }
                                 ],
-                                "to_if_alone": [{ "key_code": "japanese_eisuu" }],
-                                "to_if_held_down": [{ "key_code": "right_command" }],
+                                "to_if_alone": [
+                                    {
+                                        "key_code": "japanese_eisuu"
+                                    }
+                                ],
+                                "to_if_held_down": [
+                                    {
+                                        "key_code": "right_command"
+                                    }
+                                ],
                                 "type": "basic"
                             },
                             {
                                 "conditions": [
                                     {
-                                        "input_sources": [{ "language": "en" }],
+                                        "input_sources": [
+                                            {
+                                                "language": "en"
+                                            }
+                                        ],
                                         "type": "input_source_if"
                                     }
                                 ],
                                 "from": {
                                     "key_code": "right_command",
-                                    "modifiers": { "optional": ["any"] }
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
                                 },
-                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "parameters": {
+                                    "basic.to_if_held_down_threshold_milliseconds": 100
+                                },
                                 "to": [
                                     {
                                         "key_code": "right_command",
                                         "lazy": true
                                     }
                                 ],
-                                "to_if_alone": [{ "key_code": "japanese_kana" }],
-                                "to_if_held_down": [{ "key_code": "right_command" }],
+                                "to_if_alone": [
+                                    {
+                                        "key_code": "japanese_kana"
+                                    }
+                                ],
+                                "to_if_held_down": [
+                                    {
+                                        "key_code": "right_command"
+                                    }
+                                ],
                                 "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "iTerm2: 本体キーボードの ⌘= / ⌘+ を ⌘; (Make Text Bigger) に変換",
+                        "manipulators": [
+                            {
+                                "type": "basic",
+                                "conditions": [
+                                    {
+                                        "type": "frontmost_application_if",
+                                        "bundle_identifiers": [
+                                            "^com\\.googlecode\\.iterm2$"
+                                        ]
+                                    },
+                                    {
+                                        "type": "device_if",
+                                        "identifiers": [
+                                            {
+                                                "is_built_in_keyboard": true
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "equal_sign",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "command"
+                                        ],
+                                        "optional": [
+                                            "shift"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "semicolon",
+                                        "modifiers": [
+                                            "command"
+                                        ]
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -121,8 +426,14 @@
                     "manipulate_caps_lock_led": false,
                     "simple_modifications": [
                         {
-                            "from": { "key_code": "left_option" },
-                            "to": [{ "key_code": "left_command" }]
+                            "from": {
+                                "key_code": "left_option"
+                            },
+                            "to": [
+                                {
+                                    "key_code": "left_command"
+                                }
+                            ]
                         }
                     ]
                 },
@@ -136,45 +447,106 @@
                     "ignore": false,
                     "simple_modifications": [
                         {
-                            "from": { "key_code": "f11" },
-                            "to": [{ "consumer_key_code": "volume_decrement" }]
+                            "from": {
+                                "key_code": "f11"
+                            },
+                            "to": [
+                                {
+                                    "consumer_key_code": "volume_decrement"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 20778,
+                        "vendor_id": 1155
+                    },
+                    "simple_modifications": [
+                        {
+                            "from": {
+                                "key_code": "left_command"
+                            },
+                            "to": [
+                                {
+                                    "key_code": "left_option"
+                                }
+                            ]
+                        },
+                        {
+                            "from": {
+                                "key_code": "left_option"
+                            },
+                            "to": [
+                                {
+                                    "key_code": "left_command"
+                                }
+                            ]
                         }
                     ]
                 }
             ],
             "fn_function_keys": [
                 {
-                    "from": { "key_code": "f3" },
-                    "to": [{ "key_code": "mission_control" }]
+                    "from": {
+                        "key_code": "f3"
+                    },
+                    "to": [
+                        {
+                            "key_code": "mission_control"
+                        }
+                    ]
                 },
                 {
-                    "from": { "key_code": "f4" },
-                    "to": [{ "key_code": "launchpad" }]
+                    "from": {
+                        "key_code": "f4"
+                    },
+                    "to": [
+                        {
+                            "key_code": "launchpad"
+                        }
+                    ]
                 },
                 {
-                    "from": { "key_code": "f5" },
-                    "to": [{ "key_code": "illumination_decrement" }]
+                    "from": {
+                        "key_code": "f5"
+                    },
+                    "to": [
+                        {
+                            "key_code": "illumination_decrement"
+                        }
+                    ]
                 },
                 {
-                    "from": { "key_code": "f6" },
-                    "to": [{ "key_code": "illumination_increment" }]
+                    "from": {
+                        "key_code": "f6"
+                    },
+                    "to": [
+                        {
+                            "key_code": "illumination_increment"
+                        }
+                    ]
                 }
             ],
             "name": "Default profile",
             "selected": true,
             "simple_modifications": [
                 {
-                    "from": { "key_code": "caps_lock" },
-                    "to": [{ "key_code": "left_control" }]
-                },
-                {
-                    "from": { "key_code": "left_option" },
-                    "to": [{ "key_code": "left_command" }]
+                    "from": {
+                        "key_code": "caps_lock"
+                    },
+                    "to": [
+                        {
+                            "key_code": "left_control"
+                        }
+                    ]
                 }
             ],
             "virtual_hid_keyboard": {
                 "country_code": 0,
-                "keyboard_type_v2": "ansi"
+                "keyboard_type_v2": "jis"
             }
         }
     ]
