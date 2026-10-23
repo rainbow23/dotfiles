@@ -1,6 +1,7 @@
 -- メモ管理（extmarks ベース）
 -- ファイルを変更せず仮想行としてメモを表示し、~/.vim/memos.json に永続化する
 -- キーマップ: <leader>ma=追加/編集 <leader>ms=リストから追加 <leader>me=候補編集 <leader>md=削除 <leader>ml=一覧
+--            <leader>mm=最近使ったメモ一覧（MRU）
 --            <leader>mv=アクティブメモ一覧 <leader>mg=フィルター決定 <leader>mt=フィルタートグル <leader>mo=フィルター一覧
 local finders        = require('telescope.finders')
 local pickers        = require('telescope.pickers')
@@ -144,6 +145,48 @@ local function memo_write_json(data)
   f:write(json_pretty(data) .. '\n'); f:close()
 end
 
+-- 最近使ったメモ（MRU）: 追加・編集・一覧からのジャンプ時に記録する（~/.vim/memo_mru.json）
+-- メモの行番号は編集で変わるため、filepath + text で識別し、表示時に memos.json から現在行を引き直す
+local memo_mru_file = vim.fn.expand('~/.vim/memo_mru.json')
+local MEMO_MRU_MAX  = 100
+
+local function memo_mru_read()
+  local f = io.open(memo_mru_file, 'r')
+  if not f then return {} end
+  local s = f:read('*a'); f:close()
+  local ok, t = pcall(vim.fn.json_decode, s)
+  return (ok and type(t) == 'table') and t or {}
+end
+
+local function memo_mru_write(list)
+  local f = io.open(memo_mru_file, 'w')
+  if not f then return end
+  f:write(json_pretty(list) .. '\n'); f:close()
+end
+
+-- old_text: 編集・リネームで文言が変わった場合の旧文言（旧エントリを置き換える）
+local function memo_mru_touch(filepath, line, text, old_text)
+  if not filepath or filepath == '' or not text or text == '' then return end
+  filepath = memo_normalize_path(filepath)
+  local list = {}
+  for _, e in ipairs(memo_mru_read()) do
+    if not (e.filepath == filepath and (e.text == text or e.text == old_text)) then
+      table.insert(list, e)
+    end
+  end
+  table.insert(list, 1, { filepath = filepath, line = line, text = text, used_at = os.time() })
+  while #list > MEMO_MRU_MAX do table.remove(list) end
+  memo_mru_write(list)
+end
+
+local function memo_mru_remove(filepath, text)
+  local list = {}
+  for _, e in ipairs(memo_mru_read()) do
+    if not (e.filepath == filepath and e.text == text) then table.insert(list, e) end
+  end
+  memo_mru_write(list)
+end
+
 -- メモの表示色を解決する（フィルターグループ色 → メモ個別色 → デフォルト）
 local function memo_display_color(text, color)
   local flt = memo_filter_of(text)
@@ -261,6 +304,7 @@ local function memo_add_or_edit()
   local color = existing_color or memo_last_color
   memo_set_extmark(bufnr, line0, input, color)
   memo_flush_buf(bufnr)
+  memo_mru_touch(vim.api.nvim_buf_get_name(bufnr), line0 + 1, input, existing_text)
 end
 
 -- 定型メモのテンプレート
@@ -286,6 +330,7 @@ local function memo_add_template()
     end
     memo_set_extmark(bufnr, line0, tpl.text, tpl.color)
     memo_flush_buf(bufnr)
+    memo_mru_touch(vim.api.nvim_buf_get_name(bufnr), line0 + 1, tpl.text)
     vim.notify('Memo: ' .. tpl.text, vim.log.levels.INFO)
   end
 
@@ -414,6 +459,7 @@ local function memo_open_entry(b, cmd)
   local sel = action_state.get_selected_entry()
   if not sel then return end
   actions.close(b)
+  memo_mru_touch(sel.value.filepath, sel.value.line, sel.value.text)
   vim.schedule(function()
     vim.cmd(cmd .. ' ' .. vim.fn.fnameescape(sel.value.filepath))
     vim.api.nvim_win_set_cursor(0, { sel.value.line, 0 })
@@ -663,6 +709,7 @@ local function memo_list(filter_only)
           local new_text = vim.fn.input('Memo: ', sel.value.text)
           vim.cmd('redraw')
           if new_text == '' or new_text == sel.value.text then return end
+          memo_mru_touch(fp, ln, new_text, sel.value.text)
           local store = memo_read_json()
           if store[fp] then
             for _, e in ipairs(store[fp]) do
@@ -876,6 +923,7 @@ local function memo_list_buffers()
         local filepath = sel.value.filepath
         local lnum     = sel.value.line
         actions.close(prompt_bufnr)
+        memo_mru_touch(filepath, lnum, sel.value.text)
         -- vim.schedule だと Telescope のウィンドウ復元が間に合わないため
         -- defer_fn で少し待ってから処理する
         vim.defer_fn(function()
@@ -991,6 +1039,7 @@ local function memo_list_active()
         local filepath = sel.value.filepath
         local lnum     = sel.value.line
         actions.close(prompt_bufnr)
+        memo_mru_touch(filepath, lnum, sel.value.text)
         vim.defer_fn(function()
           local bn = vim.fn.bufnr(filepath)
           local target_win = nil
@@ -1028,6 +1077,97 @@ local function memo_list_active()
     end,
     layout_strategy = 'center',
     layout_config   = { width = 0.8, height = 0.7, preview_cutoff = 1 },
+  }):find()
+end
+
+-- 最近使ったメモ（MRU）を新しい順に一覧表示する（git root 配下のみ。git 管理外なら全件）
+-- 削除済みのメモは表示せず、MRU からも取り除く
+local function memo_list_mru()
+  local git_root = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
+  local has_git  = git_root ~= '' and not git_root:find('fatal')
+  local gr_norm  = has_git
+    and vim.fn.fnamemodify(git_root, ':p'):gsub('[/\\]$', ''):gsub('\\', '/') or nil
+
+  local store   = memo_read_json()
+  local mru     = memo_mru_read()
+  local alive   = {}
+  local results = {}
+  for _, e in ipairs(mru) do
+    -- 同じ文言のメモを探し、記録時の行に最も近いものを現在位置とする
+    -- ロード済みバッファは extmark の現在行を使う（memos.json の行はバッファ破棄時まで更新されないため）
+    local candidates = {}
+    local bn = vim.fn.bufnr(e.filepath)
+    if bn ~= -1 and buf_memos[bn] then
+      for id, m in pairs(buf_memos[bn]) do
+        local pos = vim.api.nvim_buf_get_extmark_by_id(bn, memo_ns, id, {})
+        if pos and pos[1] then table.insert(candidates, { line = pos[1] + 1, text = m.text }) end
+      end
+    else
+      candidates = store[e.filepath] or {}
+    end
+    local line
+    for _, m in ipairs(candidates) do
+      if m.text == e.text and (not line or math.abs(m.line - e.line) < math.abs(line - e.line)) then
+        line = m.line
+      end
+    end
+    if line then
+      table.insert(alive, e)
+      local fp_norm = vim.fn.fnamemodify(e.filepath, ':p'):gsub('[/\\]$', ''):gsub('\\', '/')
+      if not gr_norm or fp_norm:find(gr_norm, 1, true) == 1 then
+        table.insert(results, { filepath = e.filepath, line = line, text = e.text, used_at = e.used_at })
+      end
+    end
+  end
+  if #alive ~= #mru then memo_mru_write(alive) end
+
+  if #results == 0 then
+    vim.notify('No recent memos', vim.log.levels.INFO)
+    return
+  end
+
+  -- メモ列の最大表示幅を計算してファイル名列を縦揃えする（全角対応）
+  local max_tw = 0
+  for _, r in ipairs(results) do
+    local w = vim.fn.strdisplaywidth(r.text)
+    if w > max_tw then max_tw = w end
+  end
+  for i, r in ipairs(results) do
+    local pad = string.rep(' ', max_tw - vim.fn.strdisplaywidth(r.text))
+    r.rank    = i
+    r.display = os.date('%m/%d %H:%M', r.used_at or 0) .. '  ' .. r.text .. pad .. '  ' .. vim.fn.fnamemodify(r.filepath, ':t')
+  end
+
+  -- 新しい順を保ったまま prompt で絞り込む（スコアが低いほどプロンプト寄り = 新しいものが選択位置に来る）
+  local fzy = require('telescope.algos.fzy')
+  local mru_sorter = require('telescope.sorters').Sorter:new({
+    discard = false,
+    scoring_function = function(_, prompt, line, entry)
+      if prompt ~= '' and not fzy.has_match(prompt:lower(), (line or ''):lower()) then return -1 end
+      return entry.value.rank
+    end,
+  })
+
+  pickers.new({}, {
+    prompt_title  = '📝 Recent Memos  <CR>=ジャンプ <C-d>=MRUから除外',
+    results_title = memo_shortcut,
+    finder = finders.new_table({
+      results = results,
+      entry_maker = function(e)
+        return { value = e, display = e.display, ordinal = e.text .. ' ' .. e.filepath, filename = e.filepath, lnum = e.line }
+      end,
+    }),
+    sorter    = mru_sorter,
+    previewer = memo_previewer,
+    attach_mappings = make_memo_attach_mappings(function(prompt_bufnr, map)
+      -- <C-d>: メモ自体は消さず MRU からのみ除外する（共通の「メモ削除」を上書き）
+      map_modes(map, '<C-d>', function()
+        local sel = action_state.get_selected_entry()
+        if not sel then return end
+        memo_mru_remove(sel.value.filepath, sel.value.text)
+        action_state.get_current_picker(prompt_bufnr):delete_selection(function() vim.notify('Removed from recent memos') end)
+      end)
+    end),
   }):find()
 end
 
@@ -1086,6 +1226,7 @@ local function memo_select_from_list()
           local color = memo_last_color
           memo_set_extmark(bufnr, line0, input, color)
           memo_flush_buf(bufnr)
+          memo_mru_touch(vim.api.nvim_buf_get_name(bufnr), line0 + 1, input)
         end)
       end)
       return true
@@ -1280,6 +1421,7 @@ vim.keymap.set('n', '<leader>md', memo_delete,                   { desc = 'Memo 
 vim.keymap.set('n', '<leader>mc', memo_change_color_at_cursor,   { desc = 'Memo change color at cursor' })
 vim.keymap.set('n', '<leader>mf', memo_add_template,             { desc = 'Memo add template (呼び出し調査の起点)' })
 vim.keymap.set('n', '<leader>mL', function() memo_list(true) end, { desc = 'Memo list filtered only' })
+vim.keymap.set('n', '<leader>mm', memo_list_mru,                 { desc = 'Memo list recently used (MRU)' })
 vim.keymap.set('n', '<leader>mr', memo_force_reload,             { desc = 'Memo force reload' })
 vim.keymap.set('n', '<leader>mg', memo_filter_set,               { desc = 'Memo filter set (カーソル配下 or 新規入力)' })
 vim.keymap.set('n', '<leader>mt', memo_filter_toggle,            { desc = 'Memo filter toggle' })
