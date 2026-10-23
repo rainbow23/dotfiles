@@ -29,7 +29,7 @@
 | `<C-t>` | 新規タブで開く |
 | `<C-v>` | vsplit で開く |
 | `<C-h>` | hsplit で開く |
-| `<C-k>` / `<C-j>` | 検索履歴を遡る / 戻る（プロジェクトごと） |
+| `<C-k>` / `<C-j>` | 履歴ポップアップで上（古い）/ 下（新しい）へ移動（プロジェクトごと） |
 | `<C-e>` | 検索履歴一覧を開く |
 
 ### Old Files / Buffers からの戻り方
@@ -59,7 +59,7 @@ fzf.vim の `FZFMru`・`Buffers` ではなく `telescope.builtin.oldfiles`・`te
 | `<C-t>` | 新規タブで開く |
 | `<C-v>` | vsplit で開く |
 | `<C-h>` | hsplit で開く |
-| `<C-k>` / `<C-j>` | 検索履歴を遡る / 戻る（プロジェクトごと） |
+| `<C-k>` / `<C-j>` | 履歴ポップアップで上（古い）/ 下（新しい）へ移動（プロジェクトごと） |
 | `<C-e>` | 検索履歴一覧を開く |
 
 ---
@@ -159,8 +159,8 @@ end
 FileSearch / GrepSearch / BufGrepSearch で入力したクエリを、picker を閉じるたびに記録する（`<Esc>` で閉じた場合も含む。1 文字のクエリは記録しない）。
 履歴は git root（git 管理外は cwd）ごとに `~/.vim/search_history/<パスの / を % に置換>.json` へ保存し、File と Grep は別々に最新 100 件を持つ。
 
-- picker 内 `<C-k>` / `<C-j>`: 履歴をプロンプトに挿入。最新を越えて戻ると入力途中の文字列を復元する
-- FileSearch / GrepSearch / BufGrepSearch では `<C-k>`/`<C-j>` 中、入力欄の真上に履歴ポップアップ（1 行目は入力途中の文字列、最大 10 行、選択中をハイライト）を表示する。手入力・picker を閉じる・Pinned/Sort で消える
+- picker 内 `<C-k>` / `<C-j>`: 選択中の履歴をプロンプトに挿入。初回の `<C-k>` は最新を選び、以降 `<C-k>` で古い方、`<C-j>` で新しい方へ移動（最新で止まる）
+- FileSearch / GrepSearch / BufGrepSearch では `<C-k>`/`<C-j>` 中、入力欄の真上に履歴ポップアップ（古い順に上から並び最新が最下行、起動直後は最下行を選択、最大 10 行）を表示する。手入力・picker を閉じる・Pinned/Sort で消える。表示中の `<CR>` は確定（ポップアップだけ閉じて選んだ文言を入力欄に残し、そのまま編集できる）
 - GrepSearch で `<Tab>`（Pinned）/ `<C-o>`（Sort）後は live grep に戻らないため、履歴呼び出しは無効
 - 履歴一覧（picker 内 `<C-e>` / `[fzf]r` = `:SearchHistory`）: `<CR>`=再検索 `<C-d>`=削除 `<C-e>`=File/Grep 切替
 - 実装: `nvim/lua/rc/search_history.lua`。記録は prompt バッファの `BufLeave` でフックしている（telescope 標準の `<CR>` などは `actions.close` を通らないため）

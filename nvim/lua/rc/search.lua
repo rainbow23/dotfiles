@@ -160,7 +160,7 @@ make_file_search = function(opts)
     previewer = conf.file_previewer(opts),
     sorter    = conf.file_sorter(opts),
     attach_mappings = make_attach_mappings(false, function(bufnr, map)
-      history.attach(bufnr, map, {
+      local hist = history.attach(bufnr, map, {
         mode   = 'file',
         root   = history.resolve_root(opts.git_root, opts.cwd),
         reopen = function(query)
@@ -175,6 +175,11 @@ make_file_search = function(opts)
         end,
         popup  = true,
       })
+      -- <CR>: 履歴ポップアップ表示中は確定のみ、それ以外は通常どおり開く
+      map_modes(map, '<CR>', function(b)
+        if hist.confirm(b) then return end
+        actions.select_default(b)
+      end)
       -- <C-s>: git root → file dir → 上階層 → ... → git root で循環
       if opts.git_root then
         map_modes(map, '<C-s>', function(b)
@@ -321,7 +326,11 @@ make_grep_search = function(opts)
           end
         end)
       end
-      map_modes(map, '<CR>', select_entry)
+      -- 履歴ポップアップ表示中の <CR> は確定のみ（ファイルは開かない）
+      map_modes(map, '<CR>', function(b)
+        if hist.confirm(b) then return end
+        select_entry(b)
+      end)
       -- <Tab>: 初回押下で検索結果を固定（静的リストに切替）し、以降は multi-select トグル
       map_modes(map, '<Tab>', function(b)
         local picker = action_state.get_current_picker(b)

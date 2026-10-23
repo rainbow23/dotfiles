@@ -118,25 +118,24 @@ local function popup_close(state)
   state.win = nil
 end
 
--- 1 行目に入力途中の文字列（idx = 0）、2 行目以降に履歴を並べ、idx の行をハイライトする（ウィンドウがなければ作る）
-local function popup_show(state, prompt_win, list, idx, draft)
+-- 履歴を古い順に上から並べ（最新が入力欄に一番近い最下行）、idx 番目に新しい履歴の行をハイライトする
+-- （ウィンドウがなければ作る）
+local function popup_show(state, prompt_win, list, idx)
   if not vim.api.nvim_win_is_valid(prompt_win) then return end
   if not (state.buf and vim.api.nvim_buf_is_valid(state.buf)) then
     state.buf = vim.api.nvim_create_buf(false, true)
     vim.bo[state.buf].bufhidden = 'wipe'
-    local lines = { ' ✎ ' .. (draft or '') }
-    for _, e in ipairs(list) do table.insert(lines, ' ' .. e.query) end
+    local lines = {}
+    for i = #list, 1, -1 do table.insert(lines, ' ' .. list[i].query) end
     vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, lines)
     vim.bo[state.buf].modifiable = false
   end
-  local title = idx == 0
-    and string.format(' History (入力中/%d)  <C-k>=古い <C-j>=新しい ', #list)
-    or  string.format(' History (%d/%d)  <C-k>=古い <C-j>=新しい ', idx, #list)
+  local title = string.format(' History (%d/%d)  <C-k>=上(古い) <C-j>=下(新しい) <CR>=確定 ', idx, #list)
   if not (state.win and vim.api.nvim_win_is_valid(state.win)) then
     -- 入力欄の上端ボーダーのすぐ上に、ポップアップの下端ボーダーが来るように置く
     -- （row/col はボーダーを含む外枠の左上。ボーダー分の 2 行も差し引く）
     local pos    = vim.api.nvim_win_get_position(prompt_win)
-    local height = math.min(#list + 1, POPUP_MAX_HEIGHT)
+    local height = math.min(#list, POPUP_MAX_HEIGHT)
     state.win = vim.api.nvim_open_win(state.buf, false, {
       relative  = 'editor',
       row       = math.max(0, pos[1] - 1 - (height + 2)),
@@ -154,7 +153,7 @@ local function popup_show(state, prompt_win, list, idx, draft)
   else
     vim.api.nvim_win_set_config(state.win, { title = title })
   end
-  vim.api.nvim_win_set_cursor(state.win, { idx + 1, 0 })
+  vim.api.nvim_win_set_cursor(state.win, { #list - idx + 1, 0 })
 end
 
 -- 検索 picker の attach_mappings 内で呼ぶ
@@ -177,14 +176,14 @@ function M.attach(prompt_bufnr, map, args)
   })
 
   local list = M.load(args.mode, args.root)
-  local idx, draft = 0, nil
+  local idx = 0    -- 0 = 履歴未選択、1 = 最新、#list = 最古
   local last_set   -- 履歴で入力欄に入れた文字列（手入力との区別用）
 
   local function show(b)
     local picker = action_state.get_current_picker(b)
-    last_set = idx == 0 and (draft or '') or list[idx].query
+    last_set = list[idx].query
     picker:set_prompt(last_set)
-    if args.popup then popup_show(popup, picker.prompt_win, list, idx, draft) end
+    if args.popup then popup_show(popup, picker.prompt_win, list, idx) end
   end
 
   if args.popup then
@@ -214,12 +213,13 @@ function M.attach(prompt_bufnr, map, args)
       vim.notify('No search history', vim.log.levels.INFO)
       return
     end
-    if idx == 0 then draft = action_state.get_current_picker(b):_get_prompt() end
+    -- 初回は最新（ポップアップ最下行）を選択し、以降は 1 つ上（古い方）へ
     idx = math.min(idx + 1, #list)
     show(b)
   end)
+  -- 1 つ下（新しい方）へ。最新（最下行）で止まる
   map_modes(map, '<C-j>', function(b)
-    if guard_static() or idx == 0 then return end
+    if guard_static() or idx <= 1 then return end
     idx = idx - 1
     show(b)
   end)
@@ -230,8 +230,26 @@ function M.attach(prompt_bufnr, map, args)
     end)
   end)
 
-  -- 呼び出し側で静的リスト化（Pinned/Sort）したときにポップアップを閉じるためのハンドル
-  return { close_popup = function() popup_close(popup) end }
+  -- ポップアップ表示中の <CR>: ポップアップだけ閉じ、選択中の文言を入力欄に残して編集できる状態にする
+  -- 表示中でなければ false を返し、呼び出し側の通常の <CR>（ファイルを開く）に任せる
+  local function confirm(b)
+    if not (popup.win and vim.api.nvim_win_is_valid(popup.win)) then return false end
+    popup_close(popup)
+    -- 次の <C-k> は再び最新の履歴から始める
+    idx = 0
+    local picker = action_state.get_current_picker(b)
+    if vim.api.nvim_get_mode().mode ~= 'i' then
+      vim.cmd('startinsert!')
+    elseif picker and vim.api.nvim_win_is_valid(picker.prompt_win) then
+      local line = vim.api.nvim_buf_get_lines(b, 0, 1, false)[1] or ''
+      vim.api.nvim_win_set_cursor(picker.prompt_win, { 1, #line })
+    end
+    return true
+  end
+
+  -- close_popup: 呼び出し側で静的リスト化（Pinned/Sort）したときにポップアップを閉じる
+  -- confirm: <CR> の先頭で呼ぶ（true ならポップアップを確定して閉じたので通常処理をしない）
+  return { close_popup = function() popup_close(popup) end, confirm = confirm }
 end
 
 -- 履歴一覧 picker
