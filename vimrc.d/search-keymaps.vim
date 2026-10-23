@@ -43,6 +43,7 @@ nnoremap [fzf]w :<C-u>Windows<CR>
 nnoremap [fzf]l :<C-u>BLines<CR>
 nnoremap [fzf]s :<C-u>GrepSearch<CR>
 nnoremap [fzf]c :<C-u>GrepCache<CR>
+nnoremap [fzf]r :<C-u>SearchHistory<CR>
 nnoremap [fzf]y :<C-U>FZFYank<CR>
 inoremap [fzf]y <C-O>:<C-U>FZFYank<CR>
 

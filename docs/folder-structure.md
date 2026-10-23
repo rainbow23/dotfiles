@@ -44,6 +44,7 @@ dotfiles/
         └── rc/             # 自作の機能モジュール
             ├── util.lua        # telescope 共通ユーティリティ（レイアウトプリセット等）
             ├── search.lua      # FileSearch/GrepSearch/BLines/FZFMru（telescope）
+            ├── search_history.lua # FileSearch/GrepSearch の検索履歴（プロジェクトごと）
             ├── session.lua     # セッション管理（telescope）
             ├── memo.lua        # extmarks ベースのメモ機能
             ├── zoom.lua        # float window による疑似最大化（,,）
@@ -108,6 +109,7 @@ _vimrc
 | `[fzf]g` | GitStatus | rc/search.lua (telescope) | なし |
 | `[fzf]b` | Buffers | fzf.vim プラグイン | fzf.vim プラグイン |
 | `[fzf]c` | GrepCache | rc/search.lua (telescope) | なし |
+| `[fzf]r` | SearchHistory | rc/search_history.lua (telescope) | なし |
 | `[fzf]h` / `[fzf]w` | History / Windows | fzf.vim プラグイン | fzf.vim プラグイン |
 | `[fzf]y` | FZFYank | vimrc.d/fzf.vim ※easyclip 未導入のため実質無効 | 同左 |
 

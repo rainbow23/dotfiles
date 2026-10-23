@@ -11,11 +11,12 @@ local action_state = require('telescope.actions.state')
 local builtin      = require('telescope.builtin')
 
 local util               = require('rc.util')
+local history            = require('rc.search_history')
 local map_modes          = util.map_modes
 local make_attach_mappings = util.make_attach_mappings
 
-local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-s>=Dir切替'
-local grep_search_shortcut = '<C-s>=Dir切替 <C-o>=Sort <Tab>=選択 <C-c>=キャッシュ保存'
+local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-s>=Dir切替 <C-k>/<C-j>=履歴 <C-e>=履歴一覧'
+local grep_search_shortcut = '<C-s>=Dir切替 <C-o>=Sort <Tab>=選択 <C-c>=キャッシュ保存 <C-k>/<C-j>=履歴 <C-e>=履歴一覧'
 local results_shortcut     = util.shortcut_common
 
 -- GrepSearch キャッシュ: multi-select した結果を JSON で保存・復元
@@ -159,6 +160,21 @@ make_file_search = function(opts)
     previewer = conf.file_previewer(opts),
     sorter    = conf.file_sorter(opts),
     attach_mappings = make_attach_mappings(false, function(bufnr, map)
+      history.attach(bufnr, map, {
+        mode   = 'file',
+        root   = history.resolve_root(opts.git_root, opts.cwd),
+        reopen = function(query)
+          make_file_search({
+            cwd          = opts.cwd,
+            default_text = query,
+            files_cmd    = opts.files_cmd,
+            base_title   = opts.base_title,
+            git_root     = opts.git_root,
+            file_dir     = opts.file_dir,
+          })
+        end,
+        popup  = true,
+      })
       -- <C-s>: git root → file dir → 上階層 → ... → git root で循環
       if opts.git_root then
         map_modes(map, '<C-s>', function(b)
@@ -250,6 +266,25 @@ make_grep_search = function(opts)
     previewer = conf.grep_previewer(opts),
     sorter    = grep_line_sorter,
     attach_mappings = make_attach_mappings(true, function(prompt_bufnr, map)
+      -- 静的リスト化（<Tab> の Pinned / <C-o> の Sort）後は live grep に戻らないため履歴呼び出しを無効化する
+      local pinned, sorted = false, false
+      local hist = history.attach(prompt_bufnr, map, {
+        mode      = 'grep',
+        root      = history.resolve_root(opts.git_root, opts.cwd),
+        reopen    = function(query)
+          make_grep_search({
+            cwd             = opts.cwd,
+            default_text    = query,
+            additional_args = opts.additional_args,
+            base_title      = opts.base_title,
+            file_dir        = opts.file_dir,
+            git_root        = opts.git_root,
+            buf_files       = opts.buf_files,
+          })
+        end,
+        is_static = function() return pinned or sorted end,
+        popup     = true,
+      })
       -- <CR>: 既存ウィンドウに同ファイルが開いていればそこへ移動、なければ現在ウィンドウで開く
       local function select_entry(b)
         local sel = action_state.get_selected_entry()
@@ -288,7 +323,6 @@ make_grep_search = function(opts)
       end
       map_modes(map, '<CR>', select_entry)
       -- <Tab>: 初回押下で検索結果を固定（静的リストに切替）し、以降は multi-select トグル
-      local pinned = false
       map_modes(map, '<Tab>', function(b)
         local picker = action_state.get_current_picker(b)
         if not pinned then
@@ -306,6 +340,7 @@ make_grep_search = function(opts)
             picker.layout.results.border:change_title('Results  [Pinned ' .. #entries .. ' entries]')
           end
           pinned = true
+          hist.close_popup()
           vim.api.nvim_echo({ { 'Pinned ' .. #entries .. ' entries — use <Tab> to select, <C-c> to cache', 'None' } }, false, {})
         end
         -- 固定後も含め、常にカーソル行を選択トグル
@@ -341,6 +376,8 @@ make_grep_search = function(opts)
           results     = entries,
           entry_maker = function(e) return e end,
         }), { reset_prompt = false })
+        sorted = true
+        hist.close_popup()
         vim.api.nvim_echo({ { 'Sorted ' .. #entries .. ' entries', 'None' } }, false, {})
       end)
       -- <C-s>: git root → file dir → 上階層 → ... → git root で循環
@@ -436,32 +473,43 @@ vim.api.nvim_create_user_command('Windows', function()
   }):find()
 end, {})
 
-vim.api.nvim_create_user_command('FileSearch', function(opts)
+local function file_search(query)
   local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
   local has_git  = git_root ~= '' and not git_root:find('fatal')
   local file_dir = vim.fn.expand('%:p:h')
   make_file_search({
     cwd          = has_git and git_root or vim.fn.getcwd(),
-    default_text = opts.args,
+    default_text = query,
     files_cmd    = { 'rg', '--files', '--hidden', '--color=never', '-g', '!.git/', '-g', '!.claude/' },
     base_title   = 'FileSearch',
     git_root     = has_git and git_root or nil,
     file_dir     = file_dir,
   })
-end, { nargs = '*', bang = true })
+end
 
-vim.api.nvim_create_user_command('GrepSearch', function(opts)
+local function grep_search(query)
   local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
   local file_dir = vim.fn.expand('%:p:h')
   make_grep_search({
     cwd             = git_root,
-    default_text    = opts.args,
+    default_text    = query,
     additional_args = { '--hidden', '--smart-case', '-g', '!.git/', '-g', '!.claude/' },
     base_title      = 'GrepSearch (git root)',
     file_dir        = file_dir,
     git_root        = git_root,
   })
-end, { nargs = '*', bang = true })
+end
+
+-- 履歴一覧で File/Grep を切り替えた後に選んだクエリはここから検索する
+history.launchers = { file = file_search, grep = grep_search }
+
+vim.api.nvim_create_user_command('FileSearch', function(opts) file_search(opts.args) end, { nargs = '*', bang = true })
+vim.api.nvim_create_user_command('GrepSearch', function(opts) grep_search(opts.args) end, { nargs = '*', bang = true })
+
+-- [fzf]r: 現在のプロジェクトの検索履歴（Grep）を開く。<C-e> で File 履歴に切替
+vim.api.nvim_create_user_command('SearchHistory', function()
+  history.open_picker('grep', history.current_root())
+end, {})
 
 vim.api.nvim_create_user_command('BufGrepSearch', function(opts)
   local buf_files = get_buf_files()
