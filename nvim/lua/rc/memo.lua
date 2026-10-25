@@ -125,6 +125,13 @@ local function memo_hl_group(color)
   return name
 end
 
+-- メモ文言から改行を除く（末尾は削除、途中は空白に置換）
+-- 改行入りの文言は telescope の一覧・プレビューで nvim_buf_set_lines がエラーになるため、読み込み時に正規化する
+local function memo_clean_text(text)
+  if type(text) ~= 'string' then return text end
+  return (text:gsub('[\r\n]+$', ''):gsub('[\r\n]+', ' '))
+end
+
 local function memo_read_json()
   local f = io.open(memo_file, 'r')
   if not f then return {} end
@@ -134,6 +141,9 @@ local function memo_read_json()
   -- 既存 JSON のキーも / に正規化して返す（\ 混在の古いエントリとの互換性を保つ）
   local normalized = {}
   for k, v in pairs(t) do
+    if type(v) == 'table' then
+      for _, e in ipairs(v) do e.text = memo_clean_text(e.text) end
+    end
     normalized[memo_normalize_path(k)] = v
   end
   return normalized
@@ -155,7 +165,9 @@ local function memo_mru_read()
   if not f then return {} end
   local s = f:read('*a'); f:close()
   local ok, t = pcall(vim.fn.json_decode, s)
-  return (ok and type(t) == 'table') and t or {}
+  if not (ok and type(t) == 'table') then return {} end
+  for _, e in ipairs(t) do e.text = memo_clean_text(e.text) end
+  return t
 end
 
 local function memo_mru_write(list)
@@ -436,7 +448,7 @@ local memo_previewer = previewers.new_buffer_previewer({
     local lnum     = entry.value.line
     local text     = entry.value.text
     -- ヘッダにメモテキストとファイルパスを表示
-    local header = { '📝  ' .. text, filepath, string.rep('─', 60), '' }
+    local header = { '📝  ' .. (memo_clean_text(text) or ''), filepath, string.rep('─', 60), '' }
     -- ファイルの前後行を読み込んで表示（メモ行に ▶ マーカーを付ける）
     local body = {}
     local f = io.open(filepath, 'r')
@@ -1131,15 +1143,17 @@ local function memo_list_mru()
   end
 
   -- メモ列の最大表示幅を計算してファイル名列を縦揃えする（全角対応）
+  -- 文言に改行が含まれると telescope の結果バッファの行数がずれてエラーになるため、表示用は空白に置き換える
   local max_tw = 0
   for _, r in ipairs(results) do
-    local w = vim.fn.strdisplaywidth(r.text)
+    r.disp_text = (r.text:gsub('[\r\n]+', ' '))
+    local w = vim.fn.strdisplaywidth(r.disp_text)
     if w > max_tw then max_tw = w end
   end
   for i, r in ipairs(results) do
-    local pad = string.rep(' ', max_tw - vim.fn.strdisplaywidth(r.text))
+    local pad = string.rep(' ', max_tw - vim.fn.strdisplaywidth(r.disp_text))
     r.rank    = i
-    r.display = os.date('%m/%d %H:%M', r.used_at or 0) .. '  ' .. r.text .. pad .. '  ' .. vim.fn.fnamemodify(r.filepath, ':t')
+    r.display = os.date('%m/%d %H:%M', r.used_at or 0) .. '  ' .. r.disp_text .. pad .. '  ' .. vim.fn.fnamemodify(r.filepath, ':t')
   end
 
   -- 新しい順を保ったまま prompt で絞り込む（スコアが低いほどプロンプト寄り = 新しいものが選択位置に来る）
@@ -1158,7 +1172,7 @@ local function memo_list_mru()
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
-        return { value = e, display = e.display, ordinal = e.text .. ' ' .. e.filepath, filename = e.filepath, lnum = e.line }
+        return { value = e, display = e.display, ordinal = e.disp_text .. ' ' .. e.filepath, filename = e.filepath, lnum = e.line }
       end,
     }),
     sorter    = mru_sorter,
@@ -1218,7 +1232,7 @@ local function memo_select_from_list()
               and not memo_filter_prefix_match(selected_text, memo_active_filters[1]) then
             selected_text = memo_active_filters[1] .. ' ' .. selected_text
           end
-          local input = vim.fn.input('Memo: ', selected_text)
+          local input = vim.fn.input('Memo: ', selected_text):gsub('[\r\n]', '')
           vim.cmd('redraw')
           if input == '' then return end
           -- 既存メモは置き換える
@@ -1445,7 +1459,8 @@ memo_input_with_filters = function(prompt, default, opts)
 
   pcall(vim.api.nvim_del_autocmd, au)
   close()
-  return input
+  -- コマンドラインでは <C-v> などで改行が文字として入ることがある。メモ・フィルター名には不要なので除去する
+  return (input:gsub('[\r\n]', ''))
 end
 
 -- フィルターを決定する
