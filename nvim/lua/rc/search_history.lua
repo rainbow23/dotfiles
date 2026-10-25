@@ -130,7 +130,7 @@ local function popup_show(state, prompt_win, list, idx)
     vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, lines)
     vim.bo[state.buf].modifiable = false
   end
-  local title = string.format(' History (%d/%d)  <C-k>=上(古い) <C-j>=下(新しい) <CR>=確定 ', idx, #list)
+  local title = string.format(' History (%d/%d)  <C-k>/<C-p>=上(古い) <C-j>/<C-n>=下(新しい) <CR>=確定 ', idx, #list)
   if not (state.win and vim.api.nvim_win_is_valid(state.win)) then
     -- 入力欄の上端ボーダーのすぐ上に、ポップアップの下端ボーダーが来るように置く
     -- （row/col はボーダーを含む外枠の左上。ボーダー分の 2 行も差し引く）
@@ -149,7 +149,7 @@ local function popup_show(state, prompt_win, list, idx)
       zindex    = 200,
     })
     vim.wo[state.win].cursorline   = true
-    vim.wo[state.win].winhighlight = 'Normal:TelescopeNormal,FloatBorder:TelescopePromptBorder,FloatTitle:TelescopePromptTitle,CursorLine:TelescopeSelection'
+    vim.wo[state.win].winhighlight = 'Normal:PopupText,FloatBorder:TelescopePromptBorder,FloatTitle:PopupTitle,CursorLine:TelescopeSelection'
   else
     vim.api.nvim_win_set_config(state.win, { title = title })
   end
@@ -207,7 +207,7 @@ function M.attach(prompt_bufnr, map, args)
     return false
   end
 
-  map_modes(map, '<C-k>', function(b)
+  local function up(b)
     if guard_static() then return end
     if #list == 0 then
       vim.notify('No search history', vim.log.levels.INFO)
@@ -216,12 +216,22 @@ function M.attach(prompt_bufnr, map, args)
     -- 初回は最新（ポップアップ最下行）を選択し、以降は 1 つ上（古い方）へ
     idx = math.min(idx + 1, #list)
     show(b)
-  end)
+  end
   -- 1 つ下（新しい方）へ。最新（最下行）で止まる
-  map_modes(map, '<C-j>', function(b)
+  local function down(b)
     if guard_static() or idx <= 1 then return end
     idx = idx - 1
     show(b)
+  end
+  map_modes(map, '<C-k>', up)
+  map_modes(map, '<C-j>', down)
+  -- <C-p>/<C-n>: ポップアップ表示中だけ上/下。表示中でなければ telescope 標準の候補移動
+  local function popup_open() return popup.win and vim.api.nvim_win_is_valid(popup.win) end
+  map_modes(map, '<C-p>', function(b)
+    if popup_open() then up(b) else actions.move_selection_previous(b) end
+  end)
+  map_modes(map, '<C-n>', function(b)
+    if popup_open() then down(b) else actions.move_selection_next(b) end
   end)
   map_modes(map, '<C-e>', function(b)
     actions.close(b)

@@ -159,7 +159,7 @@ end
 FileSearch / GrepSearch / BufGrepSearch で入力したクエリを、picker を閉じるたびに記録する（`<Esc>` で閉じた場合も含む。1 文字のクエリは記録しない）。
 履歴は git root（git 管理外は cwd）ごとに `~/.vim/search_history/<パスの / を % に置換>.json` へ保存し、File と Grep は別々に最新 100 件を持つ。
 
-- picker 内 `<C-k>` / `<C-j>`: 選択中の履歴をプロンプトに挿入。初回の `<C-k>` は最新を選び、以降 `<C-k>` で古い方、`<C-j>` で新しい方へ移動（最新で止まる）
+- picker 内 `<C-k>` / `<C-j>`: 選択中の履歴をプロンプトに挿入。初回の `<C-k>` は最新を選び、以降 `<C-k>` で古い方、`<C-j>` で新しい方へ移動（最新で止まる）。ポップアップ表示中は `<C-p>`/`<C-n>` でも上/下に移動（表示中でなければ telescope 標準の候補移動）
 - FileSearch / GrepSearch / BufGrepSearch では `<C-k>`/`<C-j>` 中、入力欄の真上に履歴ポップアップ（古い順に上から並び最新が最下行、起動直後は最下行を選択、最大 10 行）を表示する。手入力・picker を閉じる・Pinned/Sort で消える。表示中の `<CR>` は確定（ポップアップだけ閉じて選んだ文言を入力欄に残し、そのまま編集できる）
 - GrepSearch で `<Tab>`（Pinned）/ `<C-o>`（Sort）後は live grep に戻らないため、履歴呼び出しは無効
 - 履歴一覧（picker 内 `<C-e>` / `[fzf]r` = `:SearchHistory`）: `<CR>`=再検索 `<C-d>`=削除 `<C-e>`=File/Grep 切替

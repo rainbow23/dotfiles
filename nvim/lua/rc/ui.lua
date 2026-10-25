@@ -11,6 +11,9 @@ local function restore_ui_hl()
   vim.api.nvim_set_hl(0, 'FloatBorder',  { fg = '#FFFFFF' })
   -- zoom backdrop: tmux popup 風の灰色背景
   vim.api.nvim_set_hl(0, 'ZoomBackdrop', { bg = '#3a3a3a', fg = '#3a3a3a' })
+  -- 検索履歴・メモフィルターのポップアップ: 文字とタイトルを白にする
+  vim.api.nvim_set_hl(0, 'PopupText',  { fg = '#FFFFFF' })
+  vim.api.nvim_set_hl(0, 'PopupTitle', { fg = '#FFFFFF', bold = true })
   -- カラーピッカー選択行: fg 指定なしで着色テキストを維持する
   vim.api.nvim_set_hl(0, 'ColorPickerSelection', { bg = '#555555', bold = true })
   -- render-markdown: 見出しを bold のみ（色なし）、コードを無色化
