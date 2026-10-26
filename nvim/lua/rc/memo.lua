@@ -2,6 +2,7 @@
 -- ファイルを変更せず仮想行としてメモを表示し、~/.vim/memos.json に永続化する
 -- キーマップ: <leader>ma=追加/編集 <leader>ms=リストから追加 <leader>me=候補編集 <leader>md=削除 <leader>ml=一覧
 --            <leader>mm=最近使ったメモ一覧（MRU）
+--            一覧表示中は <M-1>=Recent <M-2>=Current <M-3>=Buffers <M-4>=All <M-5>=Active で切り替え
 --            <leader>mv=アクティブメモ一覧 <leader>mg=フィルター決定 <leader>mt=フィルタートグル <leader>mo=フィルター一覧
 local finders        = require('telescope.finders')
 local pickers        = require('telescope.pickers')
@@ -504,6 +505,45 @@ local function memo_delete_from_store(fp, ln)
   end
 end
 
+-- メモ一覧の切り替え（どの一覧からでも <M-1>〜<M-5> で直接切り替える。入力中の絞り込み文字は引き継ぐ）
+-- open は各一覧関数の定義後に登録する（open(default_text) は一覧を開いたら true、メモが無ければ nil を返す）
+-- 並び順 = キー番号（<M-1> から順に割り当てる）。id で各一覧から参照する
+local memo_lists = {
+  { id = 'recent',  label = 'Recent' },   -- <leader>mm
+  { id = 'current', label = 'Current' },  -- <leader>ll
+  { id = 'buffers', label = 'Buffers' },  -- <leader>mb
+  { id = 'all',     label = 'All' },      -- <leader>ml
+  { id = 'active',  label = 'Active' },   -- <leader>mv
+}
+for i, l in ipairs(memo_lists) do l.key = '<M-' .. i .. '>' end
+
+-- prompt_title に付ける切り替え案内（現在の一覧は [ ] で囲む）
+local function memo_switch_label(current)
+  local parts = {}
+  for _, l in ipairs(memo_lists) do
+    table.insert(parts, l.key .. (l.id == current and ('[' .. l.label .. ']') or l.label))
+  end
+  return '  ' .. table.concat(parts, ' ')
+end
+
+-- 切り替えキーを登録する。切り替え先にメモが無い場合は元の一覧を開き直す
+local function memo_attach_switch(map, current)
+  local back
+  for _, l in ipairs(memo_lists) do
+    if l.id == current then back = l end
+  end
+  for _, l in ipairs(memo_lists) do
+    map_modes(map, l.key, function(b)
+      if l.id == current then return end
+      local query = action_state.get_current_picker(b):_get_prompt()
+      actions.close(b)
+      vim.schedule(function()
+        if not l.open(query) then back.open(query) end
+      end)
+    end)
+  end
+end
+
 -- メモピッカー共通キーマップ（<CR> <C-d> <C-l> <C-t> <C-v> <C-h>）
 -- extra: 追加マッピング関数 function(prompt_bufnr, map) ... end（省略可）
 local function make_memo_attach_mappings(extra)
@@ -641,7 +681,7 @@ end
 
 -- Telescope でメモ一覧を表示する
 -- filter_only: true ならフィルター適用中のメモのみ表示
-local function memo_list(filter_only)
+local function memo_list(filter_only, default_text)
   local git_root = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
   local has_git  = git_root ~= '' and not git_root:find('fatal')
   local gr_norm  = has_git
@@ -705,8 +745,9 @@ local function memo_list(filter_only)
     and ('📝 Filtered Memos [' .. table.concat(memo_active_filters, ', ') .. ']  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム')
     or  '📝 Memos  <CR>=ジャンプ <C-d>=削除 <C-r>=リネーム'
   pickers.new({}, {
-    prompt_title  = title,
+    prompt_title  = title .. memo_switch_label('all'),
     results_title = memo_shortcut,
+    default_text  = default_text,
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
@@ -716,6 +757,7 @@ local function memo_list(filter_only)
     sorter    = make_memo_sorter(results),
     previewer = memo_previewer,
     attach_mappings = make_memo_attach_mappings(function(prompt_bufnr, map)
+      memo_attach_switch(map, 'all')
       local function rename_memo()
         local sel = action_state.get_selected_entry()
         if not sel then return end
@@ -749,6 +791,7 @@ local function memo_list(filter_only)
       map_modes(map, '<C-r>', rename_memo)
     end),
   }):find()
+  return true
 end
 
 -- メモのハイライト定義（colorscheme 変更後も維持する）
@@ -820,7 +863,7 @@ vim.api.nvim_create_autocmd('BufUnload', {
 })
 
 -- 現在のバッファのメモのみを BLines レイアウトで表示する
-local function memo_list_current()
+local function memo_list_current(default_text)
   local bufnr    = vim.api.nvim_get_current_buf()
   local filepath = memo_normalize_path(vim.api.nvim_buf_get_name(bufnr))
   if filepath == '' then vim.notify('No file', vim.log.levels.INFO); return end
@@ -832,8 +875,9 @@ local function memo_list_current()
   end
   if #results == 0 then vim.notify('No memos in this file', vim.log.levels.INFO); return end
   pickers.new({}, {
-    prompt_title    = '📝 Memos (current file)  <CR>=ジャンプ <C-d>=削除',
+    prompt_title    = '📝 Memos (current file)  <CR>=ジャンプ <C-d>=削除' .. memo_switch_label('current'),
     results_title   = memo_shortcut,
+    default_text    = default_text,
     finder          = finders.new_table({
       results     = results,
       entry_maker = function(e)
@@ -842,8 +886,9 @@ local function memo_list_current()
     }),
     sorter          = make_memo_sorter(results),
     previewer       = memo_previewer,
-    attach_mappings = make_memo_attach_mappings(nil),
+    attach_mappings = make_memo_attach_mappings(function(_, map) memo_attach_switch(map, 'current') end),
   }):find()
+  return true
 end
 
 -- memo_loaded_bufs フラグをリセットして強制的に再読み込みする
@@ -858,7 +903,7 @@ end
 
 -- 開いているバッファのメモのみをTelescope一覧表示する
 -- 選択時は既存ウィンドウへジャンプ（なければ現在ウィンドウで開く）
-local function memo_list_buffers()
+local function memo_list_buffers(default_text)
   -- ロード済みバッファのファイルパスをセットとして収集
   local buf_set = {}
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
@@ -921,8 +966,9 @@ local function memo_list_buffers()
   end
 
   pickers.new({}, {
-    prompt_title  = '📝 Buffer Memos  <CR>=ジャンプ <C-d>=削除',
+    prompt_title  = '📝 Buffer Memos  <CR>=ジャンプ <C-d>=削除' .. memo_switch_label('buffers'),
     results_title = memo_shortcut,
+    default_text  = default_text,
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
@@ -932,6 +978,7 @@ local function memo_list_buffers()
     sorter    = make_memo_sorter(results),
     previewer = memo_previewer,
     attach_mappings = function(prompt_bufnr, map)
+      memo_attach_switch(map, 'buffers')
       -- <CR>: 既存ウィンドウへジャンプ（バッファファイルのため通常は存在する）
       local function jump_to_win()
         local sel = action_state.get_selected_entry()
@@ -983,12 +1030,13 @@ local function memo_list_buffers()
     layout_strategy = 'center',
     layout_config   = { width = 0.8, height = 0.7, preview_cutoff = 1 },
   }):find()
+  return true
 end
 
 
 -- 現在アクティブな（バッファに表示中の）メモのみを一覧表示する
 -- buf_memos 上のメモのうちフィルターに適合するもの（= 画面上で仮想行として見えているもの）を対象
-local function memo_list_active()
+local function memo_list_active(default_text)
   local results = {}
   for bufnr, ids in pairs(buf_memos) do
     if vim.api.nvim_buf_is_valid(bufnr) then
@@ -1035,11 +1083,12 @@ local function memo_list_active()
   if memo_filter_enabled and #memo_active_filters > 0 then
     title = title .. ' [' .. table.concat(memo_active_filters, ', ') .. ']'
   end
-  title = title .. '  <CR>=ジャンプ <C-d>=削除'
+  title = title .. '  <CR>=ジャンプ <C-d>=削除' .. memo_switch_label('active')
 
   pickers.new({}, {
     prompt_title  = title,
     results_title = memo_shortcut,
+    default_text  = default_text,
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
@@ -1049,6 +1098,7 @@ local function memo_list_active()
     sorter    = make_memo_sorter(results),
     previewer = memo_previewer,
     attach_mappings = function(prompt_bufnr, map)
+      memo_attach_switch(map, 'active')
       local function jump_to_win()
         local sel = action_state.get_selected_entry()
         if not sel then return end
@@ -1094,11 +1144,12 @@ local function memo_list_active()
     layout_strategy = 'center',
     layout_config   = { width = 0.8, height = 0.7, preview_cutoff = 1 },
   }):find()
+  return true
 end
 
 -- 最近使ったメモ（MRU）を新しい順に一覧表示する（git root 配下のみ。git 管理外なら全件）
 -- 削除済みのメモは表示せず、MRU からも取り除く
-local function memo_list_mru()
+local function memo_list_mru(default_text)
   local git_root = vim.fn.system('git rev-parse --show-toplevel 2>/dev/null'):gsub('\n', '')
   local has_git  = git_root ~= '' and not git_root:find('fatal')
   local gr_norm  = has_git
@@ -1167,8 +1218,9 @@ local function memo_list_mru()
   })
 
   pickers.new({}, {
-    prompt_title  = '📝 Recent Memos  <CR>=ジャンプ <C-d>=MRUから除外',
+    prompt_title  = '📝 Recent Memos  <CR>=ジャンプ <C-d>=MRUから除外' .. memo_switch_label('recent'),
     results_title = memo_shortcut,
+    default_text  = default_text,
     finder = finders.new_table({
       results = results,
       entry_maker = function(e)
@@ -1178,6 +1230,7 @@ local function memo_list_mru()
     sorter    = mru_sorter,
     previewer = memo_previewer,
     attach_mappings = make_memo_attach_mappings(function(prompt_bufnr, map)
+      memo_attach_switch(map, 'recent')
       -- <C-d>: メモ自体は消さず MRU からのみ除外する（共通の「メモ削除」を上書き）
       map_modes(map, '<C-d>', function()
         local sel = action_state.get_selected_entry()
@@ -1187,7 +1240,17 @@ local function memo_list_mru()
       end)
     end),
   }):find()
+  return true
 end
+
+local memo_list_openers = {
+  recent  = memo_list_mru,
+  current = memo_list_current,
+  buffers = memo_list_buffers,
+  all     = function(q) return memo_list(false, q) end,
+  active  = memo_list_active,
+}
+for _, l in ipairs(memo_lists) do l.open = memo_list_openers[l.id] end
 
 -- 候補テキストファイルからメモを選択して現在行に追加する
 -- 候補ファイル: ~/.vim/memo_candidates.txt（1行1候補）
@@ -1686,7 +1749,7 @@ vim.keymap.set('n', '<leader>me', function()
   end
   vim.cmd('botright vsplit ' .. vim.fn.fnameescape(memo_candidates_path))
 end, { desc = 'Memo edit candidates file' })
-vim.keymap.set('n', '<leader>ml', memo_list,                     { desc = 'Memo list (telescope)' })
+vim.keymap.set('n', '<leader>ml', function() memo_list() end,     { desc = 'Memo list (telescope)' })
 vim.keymap.set('n', '<leader>ll', memo_list_current,             { desc = 'Memo list current file' })
 vim.keymap.set('n', '<leader>mb', memo_list_buffers,             { desc = 'Memo list buffer memos' })
 vim.keymap.set('n', '<leader>mv', memo_list_active,              { desc = 'Memo list active (visible) memos' })
