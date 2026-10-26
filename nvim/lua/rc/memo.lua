@@ -310,18 +310,20 @@ local function memo_add_or_edit()
   if not default_text and memo_filter_enabled and memo_active_filters[1] then
     default_text = memo_active_filters[1] .. ' '
   end
-  local input = memo_input_with_filters('Memo: ', default_text or '', { with_text = true })
-  vim.cmd('redraw')
-  if input == '' then return end
-  if existing_id then
-    vim.api.nvim_buf_del_extmark(bufnr, memo_ns, existing_id)
-    if buf_memos[bufnr] then buf_memos[bufnr][existing_id] = nil end
-  end
-  -- 新規メモは直前のカラーピッカー選択色を引き継ぐ
-  local color = existing_color or memo_last_color
-  memo_set_extmark(bufnr, line0, input, color)
-  memo_flush_buf(bufnr)
-  memo_mru_touch(vim.api.nvim_buf_get_name(bufnr), line0 + 1, input, existing_text)
+  -- フィルター作成メニュー（名前入力ポップアップ）を経由すると入力確定が後になるためコールバックで受け取る
+  memo_input_with_filters('Memo: ', default_text or '', { with_text = true, allow_create = true }, function(input)
+    vim.cmd('redraw')
+    if input == '' or not vim.api.nvim_buf_is_valid(bufnr) then return end
+    if existing_id then
+      vim.api.nvim_buf_del_extmark(bufnr, memo_ns, existing_id)
+      if buf_memos[bufnr] then buf_memos[bufnr][existing_id] = nil end
+    end
+    -- 新規メモは直前のカラーピッカー選択色を引き継ぐ
+    local color = existing_color or memo_last_color
+    memo_set_extmark(bufnr, line0, input, color)
+    memo_flush_buf(bufnr)
+    memo_mru_touch(vim.api.nvim_buf_get_name(bufnr), line0 + 1, input, existing_text)
+  end)
 end
 
 -- 定型メモのテンプレート
@@ -1436,17 +1438,75 @@ local function memo_strip_any_filter_prefix(text)
   return (text:sub(best + 1):gsub('^%s+', ''))
 end
 
--- フィルター選択ポップアップ付きの input()
+-- 新規フィルター名を入力するポップアップ（フィルター選択ポップアップのさらに上に出す）
+-- below_row: フィルター選択ポップアップの外枠の上端行。on_done(name) は <CR> で名前、<Esc> で nil
+local function memo_filter_name_popup(below_row, width, on_done)
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.bo[buf].bufhidden = 'wipe'
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = 'editor',
+    row      = math.max(0, below_row - 3),
+    col      = 0,
+    width    = width,
+    height   = 1,
+    style    = 'minimal',
+    border   = 'rounded',
+    title    = ' 新規フィルター名  <CR>=作成 <Esc>=戻る ',
+    zindex   = 210,
+  })
+  vim.wo[win].winhighlight = 'Normal:PopupText,FloatBorder:FloatBorder,FloatTitle:PopupTitle'
+  vim.cmd('startinsert')
+
+  local done = false
+  local function finish(ok)
+    if done then return end
+    done = true
+    local name = vim.trim((vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or ''):gsub('[\r\n]', ''))
+    vim.cmd('stopinsert')
+    if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
+    vim.schedule(function() on_done(ok and name ~= '' and name or nil) end)
+  end
+  local o = { buffer = buf, nowait = true }
+  vim.keymap.set({ 'i', 'n' }, '<CR>', function() finish(true) end, o)
+  vim.keymap.set({ 'i', 'n' }, '<C-c>', function() finish(false) end, o)
+  vim.keymap.set('i', '<Esc>', function() finish(false) end, o)
+  vim.keymap.set('n', '<Esc>', function() finish(false) end, o)
+  vim.keymap.set('n', 'q', function() finish(false) end, o)
+  -- 別ウィンドウへ移ったら作成せずに戻る
+  vim.api.nvim_create_autocmd('WinLeave', { buffer = buf, once = true, callback = function() finish(false) end })
+end
+
+-- フィルターを登録する（適用はしない）。既存名なら最近使った扱いにするだけ
+local function memo_filter_register(name)
+  local found
+  for _, flt in ipairs(memo_filters) do
+    if flt.name == name then found = flt; break end
+  end
+  if not found then
+    found = { name = name }
+    table.insert(memo_filters, found)
+    vim.notify('Filter created: ' .. name)
+  end
+  found.used_at = os.time()  -- 最新扱いにして、戻ったポップアップで選択状態にする
+  memo_filters_save()
+end
+
+-- フィルター選択ポップアップ付きの input()。結果は on_done(input) で受け取る（キャンセル時は ''）
 -- <C-k>/<C-j>: 登録済みフィルター（最新が最下行）から選び、入力欄を置き換える
 --   opts.with_text = true : 「フィルター名 + 元の文言」（元の文言に付いているフィルター名は付け替え）
 --   opts.with_text = false: フィルター名のみ
+--   opts.allow_create = true: 最下行に「＋ フィルターを作成」を出す（最新から <C-j> で移動）。
+--     <CR> で名前入力ポップアップを開き、確定（<Esc> なら作成せず）後にこのポップアップへ戻る
+--   opts.autoshow = true: 起動直後にポップアップを開く（作成後に戻るとき用）
 -- <CR>（ポップアップ表示中）: with_text なら閉じてそのまま確定、そうでなければ閉じて編集を続ける
 -- 文字入力: ポップアップを閉じて編集を続ける（次の <C-k> は再び最新から）
-memo_input_with_filters = function(prompt, default, opts)
+memo_input_with_filters = function(prompt, default, opts, on_done)
   opts = opts or {}
   local list = memo_filters_by_recent()
-  -- idx: 0 = 未選択、1 = 最新、#list = 最古 / base: <C-k> を押し始めた時点の入力内容
-  local st   = { win = nil, idx = 0, last_set = nil, base = '' }
+  -- idx: 0 = 未選択、1 = 最新、#list = 最古 / on_create: 作成メニュー行を選択中
+  -- base: <C-k> を押し始めた時点の入力内容 / action: 'create' なら input を抜けて名前入力へ
+  local st   = { win = nil, idx = 0, on_create = false, last_set = nil, base = '', action = nil }
+  local nrows = #list + (opts.allow_create and 1 or 0)
 
   local function close()
     if st.win and vim.api.nvim_win_is_valid(st.win) then vim.api.nvim_win_close(st.win, true) end
@@ -1454,21 +1514,29 @@ memo_input_with_filters = function(prompt, default, opts)
   end
 
   local function show()
-    local row  = #list - st.idx + 1
-    local name = list[row].name
-    if opts.with_text then
-      local body = memo_strip_any_filter_prefix(st.base)
-      st.last_set = body == '' and (name .. ' ') or (name .. ' ' .. body)
+    local row
+    if st.on_create then
+      row = nrows
+      st.last_set = st.base
     else
-      st.last_set = name
+      row = #list - st.idx + 1
+      local name = list[row].name
+      if opts.with_text then
+        local body = memo_strip_any_filter_prefix(st.base)
+        st.last_set = body == '' and (name .. ' ') or (name .. ' ' .. body)
+      else
+        st.last_set = name
+      end
     end
     vim.fn.setcmdline(st.last_set)
-    local cr    = opts.with_text and '<CR>=決定' or '<CR>=確定'
-    local title = string.format(' Filters (%d/%d)  <C-k>/<C-p>=上(古い) <C-j>/<C-n>=下(新しい) %s ', st.idx, #list, cr)
+    local cr    = st.on_create and '<CR>=作成' or (opts.with_text and '<CR>=決定' or '<CR>=確定')
+    local pos   = st.on_create and '新規' or string.format('%d/%d', st.idx, #list)
+    local title = string.format(' Filters (%s)  <C-k>/<C-p>=上(古い) <C-j>/<C-n>=下(新しい) %s ', pos, cr)
     if not (st.win and vim.api.nvim_win_is_valid(st.win)) then
       local lines, hls = {}, {}
       for i, flt in ipairs(list) do memo_filter_line(flt, i - 1, lines, hls) end
-      st.win = memo_popup_open(memo_popup_buf(lines, hls), #list, title, false)
+      if opts.allow_create then table.insert(lines, ' ＋ フィルターを作成') end
+      st.win = memo_popup_open(memo_popup_buf(lines, hls), nrows, title, false)
     else
       vim.api.nvim_win_set_config(st.win, { title = title })
     end
@@ -1479,28 +1547,43 @@ memo_input_with_filters = function(prompt, default, opts)
   -- 手入力でコマンドラインが変わったらポップアップを閉じる（setcmdline による変更は last_set と一致するので無視）
   local au = vim.api.nvim_create_autocmd('CmdlineChanged', {
     callback = function()
-      if st.win and vim.fn.getcmdline() ~= st.last_set then
+      if st.win and not st.action and vim.fn.getcmdline() ~= st.last_set then
         close()
-        st.idx = 0
+        st.idx, st.on_create = 0, false
         vim.cmd('redraw')
       end
     end,
   })
 
   local function up()
-    if #list == 0 then vim.notify('No filters', vim.log.levels.INFO); return end
-    if st.idx == 0 then st.base = vim.fn.getcmdline() end
-    st.idx = math.min(st.idx + 1, #list)
+    if nrows == 0 then vim.notify('No filters', vim.log.levels.INFO); return end
+    if not st.win then st.base = vim.fn.getcmdline(); st.idx, st.on_create = 0, false end
+    if st.on_create then
+      st.on_create = false
+      st.idx = 1
+    elseif #list == 0 then
+      st.on_create = true
+    else
+      st.idx = math.min(st.idx + 1, #list)
+    end
     show()
   end
   local function down()
-    if st.idx <= 1 then return end
-    st.idx = st.idx - 1
+    if not st.win or st.on_create then return end
+    if st.idx <= 1 then
+      if not opts.allow_create then return end
+      st.on_create = true
+    else
+      st.idx = st.idx - 1
+    end
     show()
   end
-  local function feed(key)
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, false, true), 'n', false)
+  local function feed(key, mode)
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, false, true), mode or 'n', false)
   end
+
+  -- 作成後に戻るとき: input() 開始直後に <C-k> を処理させて最新（= 作成したフィルター）を選択状態にする
+  if opts.autoshow and nrows > 0 then feed('<C-k>', 'm') end
 
   local input = memo_with_cmap({
     ['<C-k>'] = up,
@@ -1509,6 +1592,12 @@ memo_input_with_filters = function(prompt, default, opts)
     ['<C-p>'] = function() if st.win then up() else feed('<C-p>') end end,
     ['<C-n>'] = function() if st.win then down() else feed('<C-n>') end end,
     ['<CR>'] = function()
+      if st.win and st.on_create then
+        -- 作成メニュー: 入力を抜けて（ポップアップは残す）名前入力ポップアップへ
+        st.action = 'create'
+        feed('<Esc>')
+        return
+      end
       if st.win and not opts.with_text then
         close()
         st.idx = 0
@@ -1521,9 +1610,24 @@ memo_input_with_filters = function(prompt, default, opts)
   }, function() return vim.fn.input(prompt, default) end)
 
   pcall(vim.api.nvim_del_autocmd, au)
+
+  if st.action == 'create' then
+    local popup_win = st.win
+    local below_row = vim.api.nvim_win_get_position(popup_win)[1]
+    local width     = vim.api.nvim_win_get_width(popup_win)
+    vim.cmd('redraw')
+    memo_filter_name_popup(below_row, width, function(name)
+      if vim.api.nvim_win_is_valid(popup_win) then vim.api.nvim_win_close(popup_win, true) end
+      if name then memo_filter_register(name) end
+      -- 元の入力内容のまま、フィルター選択ポップアップを開いた状態に戻る
+      memo_input_with_filters(prompt, st.base, vim.tbl_extend('force', opts, { autoshow = true }), on_done)
+    end)
+    return
+  end
+
   close()
   -- コマンドラインでは <C-v> などで改行が文字として入ることがある。メモ・フィルター名には不要なので除去する
-  return (input:gsub('[\r\n]', ''))
+  on_done((input:gsub('[\r\n]', '')))
 end
 
 -- フィルターを決定する
@@ -1539,10 +1643,11 @@ local function memo_filter_set()
     local m = (buf_memos[bufnr] or {})[marks[1][1]]
     if m then default = m.text end
   end
-  local input = memo_input_with_filters('Filter: ', default)
-  vim.cmd('redraw')
-  if input == '' then return end
-  memo_filter_activate(input)
+  memo_input_with_filters('Filter: ', default, nil, function(input)
+    vim.cmd('redraw')
+    if input == '' then return end
+    memo_filter_activate(input)
+  end)
 end
 
 -- フィルターごとの適用 ON/OFF をポップアップで切り替える
