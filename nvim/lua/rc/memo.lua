@@ -1758,7 +1758,7 @@ keymap_list.register('memo', {
   { lhs = '<leader>mt', fn = memo_filter_toggle,                desc = 'フィルターの ON/OFF を切り替え（ポップアップ）' },
   { lhs = '<leader>mo', fn = memo_filter_pick,                  desc = 'フィルター一覧（telescope）' },
   { lhs = '<leader>mr', fn = memo_force_reload,                 desc = '現在のバッファのメモを再読み込み' },
-  { lhs = '<leader>mk', fn = function() keymap_list.open('memo') end, desc = 'memo のキーマップ一覧' },
+  { lhs = '<leader>mp', fn = function() keymap_list.open('memo') end, desc = 'memo のキーマップ一覧' },
 })
 
 
