@@ -121,7 +121,7 @@
                         ]
                     },
                     {
-                        "description": "HHKBロゴキーで英数/かなトグル",
+                        "description": "HHKBロゴキーで英数/かなトグル（HHKB-Hybrid のみ）",
                         "manipulators": [
                             {
                                 "conditions": [
@@ -132,6 +132,15 @@
                                             }
                                         ],
                                         "type": "input_source_if"
+                                    },
+                                    {
+                                        "type": "device_if",
+                                        "identifiers": [
+                                            {
+                                                "vendor_id": 1278,
+                                                "product_id": 34
+                                            }
+                                        ]
                                     }
                                 ],
                                 "from": {
@@ -151,6 +160,114 @@
                                 "to": [
                                     {
                                         "key_code": "japanese_kana"
+                                    }
+                                ],
+                                "type": "basic",
+                                "conditions": [
+                                    {
+                                        "type": "device_if",
+                                        "identifiers": [
+                                            {
+                                                "vendor_id": 1278,
+                                                "product_id": 34
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "description": "HHKB-Hybrid: 無変換で英数、変換でかな",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "type": "device_if",
+                                        "identifiers": [
+                                            {
+                                                "vendor_id": 1278,
+                                                "product_id": 34
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "international5",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "japanese_eisuu"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "type": "device_if",
+                                        "identifiers": [
+                                            {
+                                                "vendor_id": 1278,
+                                                "product_id": 34
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "international4",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "japanese_kana"
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "HHKB-Hybrid: 半角英数で \\ _ ろ キーを \\ にする（Shift 付きは _ のまま）",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "type": "device_if",
+                                        "identifiers": [
+                                            {
+                                                "vendor_id": 1278,
+                                                "product_id": 34
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "input_source_unless",
+                                        "input_sources": [
+                                            {
+                                                "language": "^ja$"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "international1"
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "international3",
+                                        "modifiers": [
+                                            "right_option"
+                                        ]
                                     }
                                 ],
                                 "type": "basic"
@@ -206,18 +323,17 @@
                         ]
                     },
                     {
-                        "description": "コマンドキー（左右どちらでも）を単体で押したときに、英数・かなをトグルで切り替える。 (rev 2)",
-                        "enabled": false,
+                        "description": "内蔵キーボード: 左⌘単体で英数、右⌘単体でかな",
                         "manipulators": [
                             {
                                 "conditions": [
                                     {
-                                        "input_sources": [
+                                        "type": "device_if",
+                                        "identifiers": [
                                             {
-                                                "language": "ja"
+                                                "is_built_in_keyboard": true
                                             }
-                                        ],
-                                        "type": "input_source_if"
+                                        ]
                                     }
                                 ],
                                 "from": {
@@ -227,9 +343,6 @@
                                             "any"
                                         ]
                                     }
-                                },
-                                "parameters": {
-                                    "basic.to_if_held_down_threshold_milliseconds": 100
                                 },
                                 "to": [
                                     {
@@ -242,62 +355,17 @@
                                         "key_code": "japanese_eisuu"
                                     }
                                 ],
-                                "to_if_held_down": [
-                                    {
-                                        "key_code": "left_command"
-                                    }
-                                ],
                                 "type": "basic"
                             },
                             {
                                 "conditions": [
                                     {
-                                        "input_sources": [
+                                        "type": "device_if",
+                                        "identifiers": [
                                             {
-                                                "language": "en"
+                                                "is_built_in_keyboard": true
                                             }
-                                        ],
-                                        "type": "input_source_if"
-                                    }
-                                ],
-                                "from": {
-                                    "key_code": "left_command",
-                                    "modifiers": {
-                                        "optional": [
-                                            "any"
                                         ]
-                                    }
-                                },
-                                "parameters": {
-                                    "basic.to_if_held_down_threshold_milliseconds": 100
-                                },
-                                "to": [
-                                    {
-                                        "key_code": "left_command",
-                                        "lazy": true
-                                    }
-                                ],
-                                "to_if_alone": [
-                                    {
-                                        "key_code": "japanese_kana"
-                                    }
-                                ],
-                                "to_if_held_down": [
-                                    {
-                                        "key_code": "left_command"
-                                    }
-                                ],
-                                "type": "basic"
-                            },
-                            {
-                                "conditions": [
-                                    {
-                                        "input_sources": [
-                                            {
-                                                "language": "ja"
-                                            }
-                                        ],
-                                        "type": "input_source_if"
                                     }
                                 ],
                                 "from": {
@@ -308,49 +376,6 @@
                                         ]
                                     }
                                 },
-                                "parameters": {
-                                    "basic.to_if_held_down_threshold_milliseconds": 100
-                                },
-                                "to": [
-                                    {
-                                        "key_code": "right_command",
-                                        "lazy": true
-                                    }
-                                ],
-                                "to_if_alone": [
-                                    {
-                                        "key_code": "japanese_eisuu"
-                                    }
-                                ],
-                                "to_if_held_down": [
-                                    {
-                                        "key_code": "right_command"
-                                    }
-                                ],
-                                "type": "basic"
-                            },
-                            {
-                                "conditions": [
-                                    {
-                                        "input_sources": [
-                                            {
-                                                "language": "en"
-                                            }
-                                        ],
-                                        "type": "input_source_if"
-                                    }
-                                ],
-                                "from": {
-                                    "key_code": "right_command",
-                                    "modifiers": {
-                                        "optional": [
-                                            "any"
-                                        ]
-                                    }
-                                },
-                                "parameters": {
-                                    "basic.to_if_held_down_threshold_milliseconds": 100
-                                },
                                 "to": [
                                     {
                                         "key_code": "right_command",
@@ -360,11 +385,6 @@
                                 "to_if_alone": [
                                     {
                                         "key_code": "japanese_kana"
-                                    }
-                                ],
-                                "to_if_held_down": [
-                                    {
-                                        "key_code": "right_command"
                                     }
                                 ],
                                 "type": "basic"
