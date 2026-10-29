@@ -108,7 +108,7 @@ function M.remove(mode, queries, root)
   write_data(root, data)
 end
 
--- <C-k>/<C-j> 中に入力欄の真上へ出す履歴ポップアップ
+-- <C-r> で入力欄の真上へ出す履歴ポップアップ
 local POPUP_MAX_HEIGHT = 10
 
 local function popup_close(state)
@@ -130,7 +130,7 @@ local function popup_show(state, prompt_win, list, idx)
     vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, lines)
     vim.bo[state.buf].modifiable = false
   end
-  local title = string.format(' History (%d/%d)  <C-k>/<C-p>=上(古い) <C-j>/<C-n>=下(新しい) <CR>=確定 ', idx, #list)
+  local title = string.format(' History (%d/%d)  <C-r>/<C-k>/<C-p>=上(古い) <C-j>/<C-n>=下(新しい) <CR>=確定 ', idx, #list)
   if not (state.win and vim.api.nvim_win_is_valid(state.win)) then
     -- 入力欄の上端ボーダーのすぐ上に、ポップアップの下端ボーダーが来るように置く
     -- （row/col はボーダーを含む外枠の左上。ボーダー分の 2 行も差し引く）
@@ -157,9 +157,9 @@ local function popup_show(state, prompt_win, list, idx)
 end
 
 -- 検索 picker の attach_mappings 内で呼ぶ
--- 閉じるたびにプロンプトを記録し、<C-k>/<C-j> で履歴を呼び出し、<C-e> で履歴一覧を開く
+-- 閉じるたびにプロンプトを記録し、<C-r> で履歴を呼び出し（表示中は <C-k>/<C-j> でも移動）、<C-e> で履歴一覧を開く
 -- args: { mode, root, reopen = function(query) 同じ条件で開き直す end, is_static = function() 静的リスト化済みか end,
---         popup = true で <C-k>/<C-j> 中に入力欄の上へ履歴ポップアップを表示 }
+--         popup = true で <C-r> 中に入力欄の上へ履歴ポップアップを表示 }
 function M.attach(prompt_bufnr, map, args)
   local popup = {}
   -- picker を閉じたら記録する。telescope 標準の <CR>/<C-t> などは actions.close を通らず
@@ -178,6 +178,7 @@ function M.attach(prompt_bufnr, map, args)
   local list = M.load(args.mode, args.root)
   local idx = 0    -- 0 = 履歴未選択、1 = 最新、#list = 最古
   local last_set   -- 履歴で入力欄に入れた文字列（手入力との区別用）
+  local base = ''  -- ポップアップを開く前の入力内容（<Esc> で戻す）
 
   local function show(b)
     local picker = action_state.get_current_picker(b)
@@ -193,7 +194,10 @@ function M.attach(prompt_bufnr, map, args)
         vim.schedule(function()
           if not popup.win or not vim.api.nvim_buf_is_valid(prompt_bufnr) then return end
           local picker = action_state.get_current_picker(prompt_bufnr)
-          if picker and picker:_get_prompt() ~= last_set then popup_close(popup) end
+          if picker and picker:_get_prompt() ~= last_set then
+            popup_close(popup)
+            idx = 0  -- 次の <C-r> は再び最新から
+          end
         end)
       end,
     })
@@ -214,6 +218,7 @@ function M.attach(prompt_bufnr, map, args)
       return
     end
     -- 初回は最新（ポップアップ最下行）を選択し、以降は 1 つ上（古い方）へ
+    if idx == 0 then base = action_state.get_current_picker(b):_get_prompt() end
     idx = math.min(idx + 1, #list)
     show(b)
   end
@@ -223,10 +228,21 @@ function M.attach(prompt_bufnr, map, args)
     idx = idx - 1
     show(b)
   end
-  map_modes(map, '<C-k>', up)
-  map_modes(map, '<C-j>', down)
-  -- <C-p>/<C-n>: ポップアップ表示中だけ上/下。表示中でなければ telescope 標準の候補移動
   local function popup_open() return popup.win and vim.api.nvim_win_is_valid(popup.win) end
+  -- <C-r>: 履歴ポップアップを開く（表示中なら 1 つ上へ）。memo の入力履歴と同じキー
+  map_modes(map, '<C-r>', up)
+  -- <Esc>: ポップアップ表示中はポップアップだけ閉じて入力欄を開く前の内容に戻す。表示中でなければ picker を閉じる
+  map_modes(map, '<Esc>', function(b)
+    if not popup_open() then return actions.close(b) end
+    popup_close(popup)
+    idx = 0
+    last_set = base
+    action_state.get_current_picker(b):set_prompt(base)
+  end)
+  -- <C-k>/<C-j>: ポップアップ表示中だけ上/下
+  map_modes(map, '<C-k>', function(b) if popup_open() then up(b) end end)
+  map_modes(map, '<C-j>', function(b) if popup_open() then down(b) end end)
+  -- <C-p>/<C-n>: ポップアップ表示中だけ上/下。表示中でなければ telescope 標準の候補移動
   map_modes(map, '<C-p>', function(b)
     if popup_open() then up(b) else actions.move_selection_previous(b) end
   end)

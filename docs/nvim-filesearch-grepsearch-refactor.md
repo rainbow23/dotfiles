@@ -23,21 +23,21 @@
 
 | キー | 動作 |
 |------|------|
-| `<C-r>` | Old Files（最近開いたファイル）に遷移 |
+| `<C-o>` | Old Files（最近開いたファイル）に遷移 |
 | `<C-b>` | Buffers（開いているバッファ）に遷移 |
 | `<C-f>` | プレビュートグル |
 | `<C-t>` | 新規タブで開く |
 | `<C-v>` | vsplit で開く |
 | `<C-h>` | hsplit で開く |
-| `<C-k>` / `<C-j>` | 履歴ポップアップで上（古い）/ 下（新しい）へ移動（プロジェクトごと） |
+| `<C-r>` | 履歴ポップアップを開く（表示中は 1 つ上へ）。表示中は `<C-k>`/`<C-j>` で上（古い）/ 下（新しい）へ移動（プロジェクトごと） |
 | `<C-e>` | 検索履歴一覧を開く |
 
 ### Old Files / Buffers からの戻り方
 
-FileSearch から `<C-r>` で Old Files に遷移した場合、Old Files 内で再度 `<C-r>` を押すと FileSearch に戻る（`<C-b>` → Buffers も同様）。
+FileSearch から `<C-o>` で Old Files に遷移した場合、Old Files 内で再度 `<C-o>` を押すと FileSearch に戻る（`<C-b>` → Buffers も同様）。
 
 ```
-FileSearch  <C-r>→  Old Files  <C-r>→  FileSearch
+FileSearch  <C-o>→  Old Files  <C-o>→  FileSearch
 FileSearch  <C-b>→  Buffers    <C-b>→  FileSearch
 ```
 
@@ -59,7 +59,7 @@ fzf.vim の `FZFMru`・`Buffers` ではなく `telescope.builtin.oldfiles`・`te
 | `<C-t>` | 新規タブで開く |
 | `<C-v>` | vsplit で開く |
 | `<C-h>` | hsplit で開く |
-| `<C-k>` / `<C-j>` | 履歴ポップアップで上（古い）/ 下（新しい）へ移動（プロジェクトごと） |
+| `<C-r>` | 履歴ポップアップを開く（表示中は 1 つ上へ）。表示中は `<C-k>`/`<C-j>` で上（古い）/ 下（新しい）へ移動（プロジェクトごと） |
 | `<C-e>` | 検索履歴一覧を開く |
 
 ---
@@ -99,7 +99,7 @@ end
 `actions.close` でpickerを閉じた直後に別のpickerを開こうとすると描画が競合することがあるため、`vim.schedule` でワンフレーム遅らせて競合を避けています。
 
 ```lua
-map('i', '<C-r>', function(b)
+map('i', '<C-o>', function(b)
   actions.close(b)
   vim.schedule(function() open_oldfiles_with_back(opts) end)
   --  ↑ close後に実行を予約することで描画競合を回避
@@ -159,8 +159,8 @@ end
 FileSearch / GrepSearch / BufGrepSearch で入力したクエリを、picker を閉じるたびに記録する（`<Esc>` で閉じた場合も含む。1 文字のクエリは記録しない）。
 履歴は git root（git 管理外は cwd）ごとに `~/.vim/search_history/<パスの / を % に置換>.json` へ保存し、File と Grep は別々に最新 100 件を持つ。
 
-- picker 内 `<C-k>` / `<C-j>`: 選択中の履歴をプロンプトに挿入。初回の `<C-k>` は最新を選び、以降 `<C-k>` で古い方、`<C-j>` で新しい方へ移動（最新で止まる）。ポップアップ表示中は `<C-p>`/`<C-n>` でも上/下に移動（表示中でなければ telescope 標準の候補移動）
-- FileSearch / GrepSearch / BufGrepSearch では `<C-k>`/`<C-j>` 中、入力欄の真上に履歴ポップアップ（古い順に上から並び最新が最下行、起動直後は最下行を選択、最大 10 行）を表示する。手入力・picker を閉じる・Pinned/Sort で消える。表示中の `<CR>` は確定（ポップアップだけ閉じて選んだ文言を入力欄に残し、そのまま編集できる）
+- picker 内 `<C-r>`: 履歴ポップアップを開いて最新をプロンプトに挿入。以降 `<C-r>`/`<C-k>` で古い方、`<C-j>` で新しい方へ移動（最新で止まる。`<C-k>`/`<C-j>` はポップアップ表示中のみ）。ポップアップ表示中は `<C-p>`/`<C-n>` でも上/下に移動（表示中でなければ telescope 標準の候補移動）
+- FileSearch / GrepSearch / BufGrepSearch では `<C-r>` で入力欄の真上に履歴ポップアップ（古い順に上から並び最新が最下行、起動直後は最下行を選択、最大 10 行）を表示する。手入力・picker を閉じる・Pinned/Sort で消える。表示中の `<CR>` は確定（ポップアップだけ閉じて選んだ文言を入力欄に残し、そのまま編集できる）。表示中の `<Esc>` はポップアップだけ閉じて入力欄を開く前の内容に戻す（表示中でなければ picker を閉じる）
 - GrepSearch で `<Tab>`（Pinned）/ `<C-o>`（Sort）後は live grep に戻らないため、履歴呼び出しは無効
 - 履歴一覧（picker 内 `<C-e>` / `[fzf]r` = `:SearchHistory`）: `<CR>`=再検索 `<C-d>`=削除 `<C-e>`=File/Grep 切替
 - 実装: `nvim/lua/rc/search_history.lua`。記録は prompt バッファの `BufLeave` でフックしている（telescope 標準の `<CR>` などは `actions.close` を通らないため）

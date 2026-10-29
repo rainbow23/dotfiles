@@ -15,8 +15,8 @@ local history            = require('rc.search_history')
 local map_modes          = util.map_modes
 local make_attach_mappings = util.make_attach_mappings
 
-local file_search_shortcut = '<C-r>=MRU <C-b>=Buffers <C-s>=Dir切替 <C-k>/<C-j>=履歴 <C-e>=履歴一覧'
-local grep_search_shortcut = '<C-s>=Dir切替 <C-o>=Sort <Tab>=選択 <C-c>=キャッシュ保存 <C-k>/<C-j>=履歴 <C-e>=履歴一覧'
+local file_search_shortcut = '<C-o>=MRU <C-b>=Buffers <C-s>=Dir切替 <C-r>=履歴 <C-e>=履歴一覧'
+local grep_search_shortcut = '<C-s>=Dir切替 <C-o>=Sort <Tab>=選択 <C-c>=キャッシュ保存 <C-r>=履歴 <C-e>=履歴一覧'
 local results_shortcut     = util.shortcut_common
 
 -- GrepSearch キャッシュ: multi-select した結果を JSON で保存・復元
@@ -107,10 +107,10 @@ end
 
 local open_oldfiles_with_back = function(file_opts)
   builtin.oldfiles({
-    prompt_title    = 'Old Files  <C-r>=FileSearchに戻る',
+    prompt_title    = 'Old Files  <C-o>=FileSearchに戻る',
     results_title   = results_shortcut,
     attach_mappings = make_attach_mappings(false, function(_, map)
-      map_modes(map, '<C-r>', function(b)
+      map_modes(map, '<C-o>', function(b)
         actions.close(b)
         vim.schedule(function() make_file_search(file_opts) end)
       end)
@@ -198,7 +198,7 @@ make_file_search = function(opts)
           end)
         end)
       end
-      map_modes(map, '<C-r>', function(b)
+      map_modes(map, '<C-o>', function(b)
         actions.close(b)
         vim.schedule(function() open_oldfiles_with_back(opts) end)
       end)

@@ -1584,6 +1584,16 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
     end,
   }
   if opts.history then cmaps['<C-r>'] = open_history end
+  -- <Esc>: ポップアップ表示中はポップアップだけ閉じて入力欄を開く前の内容に戻す。表示中でなければ入力を取り消す
+  cmaps['<Esc>'] = function()
+    -- マッピングから送った <Esc> はコマンドラインを「実行」してしまう（:help c_<Esc>）ため、取り消しは <C-c> で行う
+    if not st.win then return feed('<C-c>') end
+    close()
+    st.idx, st.on_create, st.mode, st.hidx = 0, false, nil, 0
+    st.last_set = st.base
+    vim.fn.setcmdline(st.base)
+    vim.cmd('redraw')
+  end
   local input = memo_with_cmap(cmaps, function() return vim.fn.input(prompt, default) end)
 
   pcall(vim.api.nvim_del_autocmd, au)
