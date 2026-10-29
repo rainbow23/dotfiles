@@ -193,6 +193,38 @@ local function memo_mru_touch(filepath, line, text, old_text)
   memo_mru_write(list)
 end
 
+-- メモ入力履歴: <leader>ma / <leader>ms で確定した文言を新しい順に保存する（~/.vim/memo_history.json）
+-- <leader>ma の入力中に <C-r> でポップアップから選べる
+local memo_history_file = vim.fn.expand('~/.vim/memo_history.json')
+local MEMO_HISTORY_MAX  = 100
+
+local function memo_history_read()
+  local f = io.open(memo_history_file, 'r')
+  if not f then return {} end
+  local s = f:read('*a'); f:close()
+  local ok, t = pcall(vim.fn.json_decode, s)
+  if not (ok and type(t) == 'table') then return {} end
+  local list = {}
+  for _, text in ipairs(t) do
+    text = memo_clean_text(text)
+    if type(text) == 'string' and text ~= '' then table.insert(list, text) end
+  end
+  return list
+end
+
+local function memo_history_add(text)
+  text = memo_clean_text(text)
+  if not text or text == '' then return end
+  local list = { text }
+  for _, t in ipairs(memo_history_read()) do
+    if t ~= text then table.insert(list, t) end
+  end
+  while #list > MEMO_HISTORY_MAX do table.remove(list) end
+  local f = io.open(memo_history_file, 'w')
+  if not f then return end
+  f:write(json_pretty(list) .. '\n'); f:close()
+end
+
 local function memo_mru_remove(filepath, text)
   local list = {}
   for _, e in ipairs(memo_mru_read()) do
@@ -294,6 +326,7 @@ local memo_input_with_filters
 
 -- 現在行のメモを追加または編集する
 -- 入力中は <C-k>/<C-j> でフィルターを選ぶと「フィルター名 + 元の文言」に置き換わり、<CR> でそのまま確定する
+-- <C-r> では過去に入力したメモの履歴ポップアップから選べる
 local function memo_add_or_edit()
   local bufnr = vim.api.nvim_get_current_buf()
   local line0 = vim.api.nvim_win_get_cursor(0)[1] - 1
@@ -312,9 +345,10 @@ local function memo_add_or_edit()
     default_text = memo_active_filters[1] .. ' '
   end
   -- フィルター作成メニュー（名前入力ポップアップ）を経由すると入力確定が後になるためコールバックで受け取る
-  memo_input_with_filters('Memo: ', default_text or '', { with_text = true, allow_create = true }, function(input)
+  memo_input_with_filters('Memo: ', default_text or '', { with_text = true, allow_create = true, history = true }, function(input)
     vim.cmd('redraw')
     if input == '' or not vim.api.nvim_buf_is_valid(bufnr) then return end
+    memo_history_add(input)
     if existing_id then
       vim.api.nvim_buf_del_extmark(bufnr, memo_ns, existing_id)
       if buf_memos[bufnr] then buf_memos[bufnr][existing_id] = nil end
@@ -1186,6 +1220,7 @@ local function memo_select_from_list()
           local input = vim.fn.input('Memo: ', selected_text):gsub('[\r\n]', '')
           vim.cmd('redraw')
           if input == '' then return end
+          memo_history_add(input)
           -- 既存メモは置き換える
           local marks = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { line0, 0 }, { line0, -1 }, {})
           for _, m in ipairs(marks) do
@@ -1384,6 +1419,8 @@ end
 --   opts.allow_create = true: 最下行に「＋ フィルターを作成」を出す（最新から <C-j> で移動）。
 --     <CR> で名前入力ポップアップを開き、確定（<Esc> なら作成せず）後にこのポップアップへ戻る
 --   opts.autoshow = true: 起動直後にポップアップを開く（作成後に戻るとき用）
+--   opts.history = true: <C-r> でメモ入力履歴のポップアップ（最新が最下行）を開く。表示中は <C-k>/<C-j> などで移動、
+--     <C-r> でも 1 つ上へ。<CR> でポップアップを閉じて選んだ文言を入力欄に残す（もう一度 <CR> で確定）
 -- <CR>（ポップアップ表示中）: with_text なら閉じてそのまま確定、そうでなければ閉じて編集を続ける
 -- 文字入力: ポップアップを閉じて編集を続ける（次の <C-k> は再び最新から）
 memo_input_with_filters = function(prompt, default, opts, on_done)
@@ -1391,8 +1428,10 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
   local list = memo_filters_by_recent()
   -- idx: 0 = 未選択、1 = 最新、#list = 最古 / on_create: 作成メニュー行を選択中
   -- base: <C-k> を押し始めた時点の入力内容 / action: 'create' なら input を抜けて名前入力へ
-  local st   = { win = nil, idx = 0, on_create = false, last_set = nil, base = '', action = nil }
+  -- mode: 表示中のポップアップ（'filter' / 'history'）/ hidx: 履歴の選択位置（1 = 最新）
+  local st   = { win = nil, idx = 0, on_create = false, last_set = nil, base = '', action = nil, mode = nil, hidx = 0 }
   local nrows = #list + (opts.allow_create and 1 or 0)
+  local hist  = opts.history and memo_history_read() or {}
 
   local function close()
     if st.win and vim.api.nvim_win_is_valid(st.win) then vim.api.nvim_win_close(st.win, true) end
@@ -1400,6 +1439,7 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
   end
 
   local function show()
+    st.mode = 'filter'
     local row
     if st.on_create then
       row = nrows
@@ -1430,18 +1470,54 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
     vim.cmd('redraw')
   end
 
+  -- 履歴ポップアップ（古い順に上から並べ、hidx 番目に新しい文言の行を選択する）
+  local function show_history()
+    st.mode = 'history'
+    local row = #hist - st.hidx + 1
+    st.last_set = hist[st.hidx]
+    vim.fn.setcmdline(st.last_set)
+    local title = string.format(' Memo History (%d/%d)  <C-k>/<C-p>=上(古い) <C-j>/<C-n>=下(新しい) <CR>=入力欄へ ', st.hidx, #hist)
+    if not (st.win and vim.api.nvim_win_is_valid(st.win)) then
+      local lines = {}
+      for i = #hist, 1, -1 do table.insert(lines, ' ' .. hist[i]) end
+      st.win = memo_popup_open(memo_popup_buf(lines, {}), #hist, title, false)
+    else
+      vim.api.nvim_win_set_config(st.win, { title = title })
+    end
+    vim.api.nvim_win_set_cursor(st.win, { row, 0 })
+    vim.cmd('redraw')
+  end
+
+  -- <C-r>: 履歴ポップアップを開く（表示中なら 1 つ上へ）。フィルターポップアップ表示中なら切り替える
+  local function open_history()
+    if #hist == 0 then vim.notify('No memo history', vim.log.levels.INFO); return end
+    if st.win and st.mode == 'history' then
+      st.hidx = math.min(st.hidx + 1, #hist)
+    else
+      if st.win then close() else st.base = vim.fn.getcmdline() end
+      st.idx, st.on_create = 0, false
+      st.hidx = 1
+    end
+    show_history()
+  end
+
   -- 手入力でコマンドラインが変わったらポップアップを閉じる（setcmdline による変更は last_set と一致するので無視）
   local au = vim.api.nvim_create_autocmd('CmdlineChanged', {
     callback = function()
       if st.win and not st.action and vim.fn.getcmdline() ~= st.last_set then
         close()
-        st.idx, st.on_create = 0, false
+        st.idx, st.on_create, st.mode, st.hidx = 0, false, nil, 0
         vim.cmd('redraw')
       end
     end,
   })
 
   local function up()
+    if st.win and st.mode == 'history' then
+      st.hidx = math.min(st.hidx + 1, #hist)
+      show_history()
+      return
+    end
     if nrows == 0 then vim.notify('No filters', vim.log.levels.INFO); return end
     if not st.win then st.base = vim.fn.getcmdline(); st.idx, st.on_create = 0, false end
     if st.on_create then
@@ -1455,6 +1531,12 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
     show()
   end
   local function down()
+    if st.win and st.mode == 'history' then
+      if st.hidx <= 1 then return end
+      st.hidx = st.hidx - 1
+      show_history()
+      return
+    end
     if not st.win or st.on_create then return end
     if st.idx <= 1 then
       if not opts.allow_create then return end
@@ -1471,13 +1553,20 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
   -- 作成後に戻るとき: input() 開始直後に <C-k> を処理させて最新（= 作成したフィルター）を選択状態にする
   if opts.autoshow and nrows > 0 then feed('<C-k>', 'm') end
 
-  local input = memo_with_cmap({
+  local cmaps = {
     ['<C-k>'] = up,
     ['<C-j>'] = down,
     -- <C-p>/<C-n>: ポップアップ表示中だけ上/下。表示中でなければ通常のコマンドライン履歴
     ['<C-p>'] = function() if st.win then up() else feed('<C-p>') end end,
     ['<C-n>'] = function() if st.win then down() else feed('<C-n>') end end,
     ['<CR>'] = function()
+      if st.win and st.mode == 'history' then
+        -- 履歴: ポップアップだけ閉じ、選んだ文言を入力欄に残して編集を続ける（もう一度 <CR> でメモを確定）
+        close()
+        st.mode, st.hidx = nil, 0
+        vim.cmd('redraw')
+        return
+      end
       if st.win and st.on_create then
         -- 作成メニュー: 入力を抜けて（ポップアップは残す）名前入力ポップアップへ
         st.action = 'create'
@@ -1493,7 +1582,9 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
       close()
       feed('<CR>')
     end,
-  }, function() return vim.fn.input(prompt, default) end)
+  }
+  if opts.history then cmaps['<C-r>'] = open_history end
+  local input = memo_with_cmap(cmaps, function() return vim.fn.input(prompt, default) end)
 
   pcall(vim.api.nvim_del_autocmd, au)
 
@@ -1742,7 +1833,7 @@ end
 -- キーマップ登録と <leader>mk の一覧（rc/keymap_list.lua）を同じ表で管理する。並びは一覧の表示順
 local keymap_list = require('rc.keymap_list')
 keymap_list.register('memo', {
-  { lhs = '<leader>ma', fn = memo_add_or_edit,                  desc = 'メモを追加/編集（入力中 <C-k> でフィルター選択・作成）' },
+  { lhs = '<leader>ma', fn = memo_add_or_edit,                  desc = 'メモを追加/編集（入力中 <C-k> でフィルター、<C-r> で入力履歴）' },
   { lhs = '<leader>ms', fn = memo_select_from_list,             desc = '候補リストからメモを追加' },
   { lhs = '<leader>me', fn = memo_edit_candidates,              desc = '候補リストファイルを編集' },
   { lhs = '<leader>mf', fn = memo_add_template,                 desc = '定型メモを追加（呼び出し調査の起点）' },
