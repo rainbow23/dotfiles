@@ -25,6 +25,9 @@ keybinds {
         bind "Alt j" { MoveFocus "Down"; }
         bind "Alt k" { MoveFocus "Up"; }
         bind "Alt l" { MoveFocus "Right"; }
+        // タブ間移動: Alt+i / Alt+o（デフォルトのタブ位置移動 MoveTab を上書き）
+        bind "Alt i" { GoToPreviousTab; }
+        bind "Alt o" { GoToNextTab; }
     }
 
     tmux {
