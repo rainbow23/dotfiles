@@ -72,7 +72,8 @@ local function memo_filters_load()
   local ok, t = pcall(vim.fn.json_decode, s)
   if not (ok and type(t) == 'table') then return end
   memo_filters        = type(t.filters)  == 'table' and t.filters  or {}
-  memo_active_filters = type(t.active)   == 'table' and t.active   or {}
+  -- 適用できるフィルターは 1 つだけ（以前の形式で複数保存されていた場合は先頭だけ残す）
+  memo_active_filters = (type(t.active) == 'table' and t.active[1]) and { t.active[1] } or {}
   memo_filter_enabled = t.enabled == true
   memo_session_states = type(t.sessions) == 'table' and t.sessions or {}
 end
@@ -323,6 +324,10 @@ end
 
 -- フィルター選択ポップアップ付きの input()（定義はフィルター機能の箇所）
 local memo_input_with_filters
+-- フィルター適用中なら新規メモの文言に適用中のフィルター名を付ける（定義はフィルター機能の箇所）
+local memo_apply_active_filter
+-- 指定したフィルターだけを適用状態にする（定義はフィルター機能の箇所）
+local memo_filter_select
 
 -- 現在行のメモを追加または編集する
 -- 入力中は <C-k>/<C-j> でフィルターを選ぶと「フィルター名 + 元の文言」に置き換わり、<CR> でそのまま確定する
@@ -345,9 +350,18 @@ local function memo_add_or_edit()
     default_text = memo_active_filters[1] .. ' '
   end
   -- フィルター作成メニュー（名前入力ポップアップ）を経由すると入力確定が後になるためコールバックで受け取る
-  memo_input_with_filters('Memo: ', default_text or '', { with_text = true, allow_create = true, history = true }, function(input)
+  memo_input_with_filters('Memo: ', default_text or '', { with_text = true, allow_create = true, history = true }, function(input, info)
     vim.cmd('redraw')
     if input == '' or not vim.api.nvim_buf_is_valid(bufnr) then return end
+    -- <C-k> で選んだフィルターのまま確定したら、そのフィルターを適用状態（1 つだけ）にする
+    -- （次の <leader>ma でそのフィルター名が事前入力され、追加したメモも非表示にならない）
+    local chosen = info and info.filter
+    if chosen and memo_filter_prefix_match(input, chosen)
+        and not (memo_filter_enabled and memo_active_filters[1] == chosen) then
+      memo_filter_select(chosen)
+    end
+    -- 新規メモはフィルター適用中なら必ずフィルター名を付ける（付けないと追加直後に非表示になる）
+    if not existing_id then input = memo_apply_active_filter(input) end
     memo_history_add(input)
     if existing_id then
       vim.api.nvim_buf_del_extmark(bufnr, memo_ns, existing_id)
@@ -382,10 +396,12 @@ local function memo_add_template()
       vim.api.nvim_buf_del_extmark(bufnr, memo_ns, m[1])
       if buf_memos[bufnr] then buf_memos[bufnr][m[1]] = nil end
     end
-    memo_set_extmark(bufnr, line0, tpl.text, tpl.color)
+    -- フィルター適用中は「フィルター名 + 定型文」にする（callgraph は文言を部分一致で探すので影響しない）
+    local text = memo_apply_active_filter(tpl.text)
+    memo_set_extmark(bufnr, line0, text, tpl.color)
     memo_flush_buf(bufnr)
-    memo_mru_touch(vim.api.nvim_buf_get_name(bufnr), line0 + 1, tpl.text)
-    vim.notify('Memo: ' .. tpl.text, vim.log.levels.INFO)
+    memo_mru_touch(vim.api.nvim_buf_get_name(bufnr), line0 + 1, text)
+    vim.notify('Memo: ' .. text, vim.log.levels.INFO)
   end
 
   if #memo_templates == 1 then insert(memo_templates[1]); return end
@@ -1220,6 +1236,7 @@ local function memo_select_from_list()
           local input = vim.fn.input('Memo: ', selected_text):gsub('[\r\n]', '')
           vim.cmd('redraw')
           if input == '' then return end
+          input = memo_apply_active_filter(input)
           memo_history_add(input)
           -- 既存メモは置き換える
           local marks = vim.api.nvim_buf_get_extmarks(bufnr, memo_ns, { line0, 0 }, { line0, -1 }, {})
@@ -1412,8 +1429,31 @@ local function memo_filter_register(name)
   memo_filters_save()
 end
 
+memo_filter_select = function(name)
+  for _, flt in ipairs(memo_filters) do
+    if flt.name == name then flt.used_at = os.time() end
+  end
+  memo_active_filters = { name }
+  memo_filter_enabled = true
+  memo_filters_save()
+  memo_refresh_all_bufs()
+  memo_update_airline()
+  vim.notify('Memo filter ON状態: ' .. name)
+end
+
+-- 登録済みフィルターのどれにも当てはまらない文言なら、適用中のフィルター名を先頭に付ける
+-- （別のフィルター名が付いている場合は、意図して選んだものとしてそのまま返す）
+memo_apply_active_filter = function(text)
+  local name = memo_filter_enabled and memo_active_filters[1]
+  if not name or text == '' then return text end
+  if memo_filter_prefix_match(text, name) then return text end
+  if memo_strip_any_filter_prefix(text) ~= text then return text end
+  return name .. ' ' .. text
+end
+
 -- フィルター選択ポップアップ付きの input()。結果は on_done(input) で受け取る（キャンセル時は ''）
 -- <C-k>/<C-j>: 登録済みフィルター（最新が最下行）から選び、入力欄を置き換える
+-- <CR>（フィルターポップアップ表示中）: 選んだ内容を入力欄に決定し、ポップアップは開いたまま。<Esc> で閉じて、もう一度 <CR> で確定
 --   opts.with_text = true : 「フィルター名 + 元の文言」（元の文言に付いているフィルター名は付け替え）
 --   opts.with_text = false: フィルター名のみ
 --   opts.allow_create = true: 最下行に「＋ フィルターを作成」を出す（最新から <C-j> で移動）。
@@ -1421,7 +1461,6 @@ end
 --   opts.autoshow = true: 起動直後にポップアップを開く（作成後に戻るとき用）
 --   opts.history = true: <C-r> でメモ入力履歴のポップアップ（最新が最下行）を開く。表示中は <C-k>/<C-j> などで移動、
 --     <C-r> でも 1 つ上へ。<CR> でポップアップを閉じて選んだ文言を入力欄に残す（もう一度 <CR> で確定）
--- <CR>（ポップアップ表示中）: with_text なら閉じてそのまま確定、そうでなければ閉じて編集を続ける
 -- 文字入力: ポップアップを閉じて編集を続ける（次の <C-k> は再び最新から）
 memo_input_with_filters = function(prompt, default, opts, on_done)
   opts = opts or {}
@@ -1447,6 +1486,7 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
     else
       row = #list - st.idx + 1
       local name = list[row].name
+      st.chosen = name  -- <C-k> ポップアップで選んだフィルター（確定時に on_done へ渡す）
       if opts.with_text then
         local body = memo_strip_any_filter_prefix(st.base)
         st.last_set = body == '' and (name .. ' ') or (name .. ' ' .. body)
@@ -1455,9 +1495,11 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
       end
     end
     vim.fn.setcmdline(st.last_set)
-    local cr    = st.on_create and '<CR>=作成' or (opts.with_text and '<CR>=決定' or '<CR>=確定')
+    local cr    = st.on_create and '<CR>=作成' or '<CR>=決定 <Esc>=閉じる'
     local pos   = st.on_create and '新規' or string.format('%d/%d', st.idx, #list)
-    local title = string.format(' Filters (%s)  <C-k>/<C-p>=上(古い) <C-j>/<C-n>=下(新しい) %s ', pos, cr)
+    -- <CR> で決定済みの行（入力欄の内容 = 決定した内容）には ✔ を出す
+    local done  = (not st.on_create and st.decided == st.last_set) and ' ✔決定' or ''
+    local title = string.format(' Filters (%s)%s  <C-k>/<C-p>=上(古い) <C-j>/<C-n>=下(新しい) %s ', pos, done, cr)
     if not (st.win and vim.api.nvim_win_is_valid(st.win)) then
       local lines, hls = {}, {}
       for i, flt in ipairs(list) do memo_filter_line(flt, i - 1, lines, hls) end
@@ -1474,7 +1516,7 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
   local function show_history()
     st.mode = 'history'
     local row = #hist - st.hidx + 1
-    st.last_set = hist[st.hidx]
+    st.last_set = opts.with_text and memo_apply_active_filter(hist[st.hidx]) or hist[st.hidx]
     vim.fn.setcmdline(st.last_set)
     local title = string.format(' Memo History (%d/%d)  <C-k>/<C-p>=上(古い) <C-j>/<C-n>=下(新しい) <CR>=入力欄へ ', st.hidx, #hist)
     if not (st.win and vim.api.nvim_win_is_valid(st.win)) then
@@ -1573,10 +1615,11 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
         feed('<Esc>')
         return
       end
-      if st.win and not opts.with_text then
-        close()
-        st.idx = 0
-        vim.cmd('redraw')
+      if st.win and st.mode == 'filter' then
+        -- フィルター: 選んだ内容を入力欄に決定し、ポップアップは開いたまま（<Esc> で閉じても決定した内容が残る）
+        st.base    = st.last_set
+        st.decided = st.last_set
+        show()
         return
       end
       close()
@@ -1614,7 +1657,8 @@ memo_input_with_filters = function(prompt, default, opts, on_done)
 
   close()
   -- コマンドラインでは <C-v> などで改行が文字として入ることがある。メモ・フィルター名には不要なので除去する
-  on_done((input:gsub('[\r\n]', '')))
+  -- 第 2 引数: { filter = <C-k> ポップアップで選んだフィルター名（選んでいなければ nil） }
+  on_done((input:gsub('[\r\n]', '')), { filter = st.chosen })
 end
 
 -- フィルターを決定する
@@ -1637,9 +1681,11 @@ local function memo_filter_set()
   end)
 end
 
--- フィルターごとの適用 ON/OFF をポップアップで切り替える
--- 行: 登録済みフィルター（古い順、適用中は ※）+ 最下行「全体」（フィルター適用全体の ON/OFF）
--- 起動直後は最下行。<C-k>/<C-j>（k/j）で移動、<Tab> で切替、<CR>/<Esc>/q で閉じる
+-- 適用するフィルターをポップアップで決める（適用できるのは 1 つだけ）
+-- 行: 登録済みフィルター（古い順、選択中は ※）+ 最下行「全体」（フィルター適用の ON 状態 / OFF 状態）
+-- 起動直後は最下行。<C-k>/<C-j>（k/j）で移動、<CR> で決定（ポップアップは開いたまま）、<Esc>/q で閉じる
+--   フィルター行: そのフィルターだけを適用（適用中のフィルターなら適用を外す）
+--   全体の行    : ON 状態 / OFF 状態を切り替える
 local function memo_filter_toggle()
   if #memo_filters == 0 then
     vim.notify('No filters (<leader>mg で作成)', vim.log.levels.INFO)
@@ -1648,13 +1694,13 @@ local function memo_filter_toggle()
   local list = memo_filters_by_recent()
 
   local function title()
-    return ' Filter Toggle ' .. (memo_filter_enabled and '[ON]' or '[OFF]') .. '  <C-k>/<C-p>=上(古い) <C-j>/<C-n>=下(新しい) <Tab>=ON/OFF <CR>=閉じる '
+    return ' Filter Toggle ' .. (memo_filter_enabled and '[ON状態]' or '[OFF状態]') .. '  <C-k>/<C-p>=上(古い) <C-j>/<C-n>=下(新しい) <CR>=決定 <Esc>=閉じる '
   end
 
   local function render(buf)
     local lines, hls = {}, {}
     for i, flt in ipairs(list) do memo_filter_line(flt, i - 1, lines, hls) end
-    table.insert(lines, memo_filter_enabled and ' ◉ 全体: ON' or ' ○ 全体: OFF')
+    table.insert(lines, memo_filter_enabled and ' ◉ 全体: ON状態' or ' ○ 全体: OFF状態')
     vim.bo[buf].modifiable = true
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
     vim.api.nvim_buf_clear_namespace(buf, -1, 0, -1)
@@ -1667,46 +1713,43 @@ local function memo_filter_toggle()
   local win = memo_popup_open(buf, #list + 1, title(), true)
   vim.api.nvim_win_set_cursor(win, { #list + 1, 0 })
 
-  local function apply()
+  local function close()
+    if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
+  end
+
+  -- <CR>: カーソル行で決定する（閉じない）
+  local function decide()
+    local row = vim.api.nvim_win_get_cursor(win)[1]
+    if row > #list then
+      if #memo_active_filters == 0 then
+        vim.notify('No filter selected (フィルター行で <CR> を押して選ぶ)', vim.log.levels.INFO)
+        return
+      end
+      memo_filter_enabled = not memo_filter_enabled
+    else
+      local flt = list[row]
+      if memo_active_filters[1] == flt.name and memo_filter_enabled then
+        -- 適用中のフィルターなら適用を外す（選択は残すので「全体」の行で再び ON にできる）
+        memo_filter_enabled = false
+      else
+        memo_active_filters = { flt.name }
+        memo_filter_enabled = true
+        flt.used_at = os.time()
+      end
+    end
     memo_filters_save()
     memo_refresh_all_bufs()
     memo_update_airline()
+    -- ポップアップは開いたまま、表示（※ と全体の状態）だけ更新する
     if vim.api.nvim_win_is_valid(win) then
       local cur = vim.api.nvim_win_get_cursor(win)
       render(buf)
       vim.api.nvim_win_set_config(win, { title = title() })
       vim.api.nvim_win_set_cursor(win, cur)
     end
-  end
-
-  local function toggle()
-    local row = vim.api.nvim_win_get_cursor(win)[1]
-    if row > #list then
-      if #memo_active_filters == 0 then
-        vim.notify('No active filter (<Tab> でフィルターを ON にする)', vim.log.levels.INFO)
-        return
-      end
-      memo_filter_enabled = not memo_filter_enabled
-    else
-      local flt = list[row]
-      local removed = false
-      for i, n in ipairs(memo_active_filters) do
-        if n == flt.name then table.remove(memo_active_filters, i); removed = true; break end
-      end
-      if not removed then
-        table.insert(memo_active_filters, flt.name)
-        flt.used_at = os.time()  -- 並び順は次回のポップアップから反映（開いている間は固定）
-      end
-      memo_filter_enabled = #memo_active_filters > 0
-    end
-    apply()
-  end
-
-  local function close()
-    if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
-    vim.notify(memo_filter_enabled and #memo_active_filters > 0
-      and ('Memo filter ON: ' .. table.concat(memo_active_filters, ', '))
-      or  'Memo filter OFF')
+    vim.notify(memo_filter_enabled
+      and ('Memo filter ON状態: ' .. memo_active_filters[1])
+      or  'Memo filter OFF状態')
   end
 
   local o = { buffer = buf, nowait = true }
@@ -1714,8 +1757,8 @@ local function memo_filter_toggle()
   vim.keymap.set('n', '<C-j>', 'j', o)
   vim.keymap.set('n', '<C-p>', 'k', o)
   vim.keymap.set('n', '<C-n>', 'j', o)
-  vim.keymap.set('n', '<Tab>', toggle, o)
-  for _, key in ipairs({ '<CR>', '<Esc>', 'q' }) do vim.keymap.set('n', key, close, o) end
+  vim.keymap.set('n', '<CR>', decide, o)
+  for _, key in ipairs({ '<Esc>', 'q' }) do vim.keymap.set('n', key, close, o) end
   -- 別ウィンドウへ移ったら閉じる
   vim.api.nvim_create_autocmd('WinLeave', {
     buffer = buf,
@@ -1783,16 +1826,16 @@ local function memo_filter_pick()
           pcall(picker.set_selection, picker, math.max(row - 1, 0))
         end, 30)
       end
-      -- <Tab>: カーソル行フィルターの適用/未適用を即時トグルする
+      -- <Tab>: カーソル行のフィルターだけを適用する（適用中なら外す）。適用できるのは 1 つだけ
       local function toggle_filter()
         local sel = action_state.get_selected_entry()
         if not sel then return end
-        local name    = sel.value.name
-        local removed = false
-        for i, n in ipairs(memo_active_filters) do
-          if n == name then table.remove(memo_active_filters, i); removed = true; break end
+        local name = sel.value.name
+        if memo_active_filters[1] == name and memo_filter_enabled then
+          memo_active_filters = {}
+        else
+          memo_active_filters = { name }
         end
-        if not removed then table.insert(memo_active_filters, name) end
         memo_filter_enabled = #memo_active_filters > 0
         memo_filters_save()
         memo_refresh_all_bufs()
@@ -1881,8 +1924,8 @@ end
 function M.session_restore(name)
   local st = memo_session_states[name]
   if not st then return end
-  memo_active_filters = type(st.active) == 'table' and st.active or {}
-  memo_filter_enabled = st.enabled == true
+  memo_active_filters = (type(st.active) == 'table' and st.active[1]) and { st.active[1] } or {}
+  memo_filter_enabled = st.enabled == true and #memo_active_filters > 0
   memo_filters_save()
   memo_refresh_all_bufs()
   memo_update_airline()
