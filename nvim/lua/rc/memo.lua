@@ -93,26 +93,40 @@ end
 memo_filters_load()
 
 -- メモ先頭文字列がフィルター文字列と一致するか判定する（前方一致）
+-- フィルター名の直後が空白か文末のときだけ一致とする（AAA は "AAA hoge" に一致し、"AAABB x" や "AAA!" には一致しない）
+-- フィルター名自体が空白で終わる場合（例: "aa "）はその時点で区切られているので一致とする
 local function memo_filter_prefix_match(text, name)
-  return text:sub(1, #name) == name
+  if name == '' or text:sub(1, #name) ~= name then return false end
+  if name:match('%s$') then return true end
+  local next_ch = text:sub(#name + 1, #name + 1)
+  return next_ch == '' or next_ch:match('%s') ~= nil
+end
+
+-- メモが属するフィルター（グループ）を返す。メモは 1 つのグループだけに属する
+-- 一致するフィルターが複数ある場合（例: "NEW" と "NEW FILETER!"）は名前が最も長いものを返す
+local function memo_filter_of(text)
+  local best
+  for _, flt in ipairs(memo_filters) do
+    if memo_filter_prefix_match(text, flt.name) and (not best or #flt.name > #best.name) then best = flt end
+  end
+  return best
+end
+
+-- メモが指定したフィルターのグループに属するか
+local function memo_belongs_to(text, name)
+  local flt = memo_filter_of(text)
+  return flt ~= nil and flt.name == name
 end
 
 -- 適用中フィルターにマッチするか（フィルター無効時・未適用時は常に表示）
 local function memo_matches_filter(text)
   if not memo_filter_enabled or #memo_active_filters == 0 then return true end
   for _, name in ipairs(memo_active_filters) do
-    if memo_filter_prefix_match(text, name) then return true end
+    if memo_belongs_to(text, name) then return true end
   end
   return false
 end
 
--- メモが属するフィルター（グループ）定義を返す（前方一致で最初に見つかったもの）
-local function memo_filter_of(text)
-  for _, flt in ipairs(memo_filters) do
-    if memo_filter_prefix_match(text, flt.name) then return flt end
-  end
-  return nil
-end
 
 -- パス区切り文字を / に統一する（Windows/GitBash で \ と / が混在する問題を解消）
 local function memo_normalize_path(path)
@@ -771,10 +785,16 @@ local function memo_list(filter_only, default_text)
     ::continue::
   end
   -- フィルター適用中はマッチするメモのみに絞り込む
+  -- 選択中（※）のフィルターのメモだけに絞り込む。OFF 状態でも選択中のフィルターで絞る
   if filter_only then
+    local name = memo_active_filters[1]
+    if not name then
+      vim.notify('No filter selected (<leader>mt で選択)', vim.log.levels.INFO)
+      return
+    end
     local filtered = {}
     for _, r in ipairs(results) do
-      if memo_matches_filter(r.text) then table.insert(filtered, r) end
+      if memo_belongs_to(r.text, name) then table.insert(filtered, r) end
     end
     results = filtered
   end
