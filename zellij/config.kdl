@@ -72,6 +72,8 @@ keybinds {
         bind "d" { Detach; }
         // リネーム
         bind "," { SwitchToMode "RenameTab"; TabNameInput 0; }
+        // アクティブなペインのリネーム: prefix + .（入力後 Enter で確定、Esc でキャンセル）
+        bind "." { SwitchToMode "RenamePane"; PaneNameInput 0; }
         // ペイン移動
         bind "Right" { MoveFocus "Right"; SwitchToMode "Normal"; }
         bind "Left" { MoveFocus "Left"; SwitchToMode "Normal"; }
@@ -102,6 +104,15 @@ keybinds {
         }
         // 終了
         bind "Esc" { SwitchToMode "Normal"; }
+    }
+
+    // リネーム中の Esc: 名前を元に戻して Normal へ（標準だと Tab / Pane モードに入ってしまう）
+    // Enter は標準のまま（確定して Normal へ）
+    renametab {
+        bind "Esc" { UndoRenameTab; SwitchToMode "Normal"; }
+    }
+    renamepane {
+        bind "Esc" { UndoRenamePane; SwitchToMode "Normal"; }
     }
 
     scroll {
