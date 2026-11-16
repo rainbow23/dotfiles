@@ -25,9 +25,17 @@ keybinds {
         bind "Alt j" { MoveFocus "Down"; }
         bind "Alt k" { MoveFocus "Up"; }
         bind "Alt l" { MoveFocus "Right"; }
+        // アクティブなペインの移動: Alt+Shift+hjkl（その方向の隣のペインと位置を入れ替える）
+        bind "Alt H" { MovePane "Left"; }
+        bind "Alt J" { MovePane "Down"; }
+        bind "Alt K" { MovePane "Up"; }
+        bind "Alt L" { MovePane "Right"; }
         // タブ間移動: Alt+i / Alt+o（デフォルトのタブ位置移動 MoveTab を上書き）
         bind "Alt i" { GoToPreviousTab; }
         bind "Alt o" { GoToNextTab; }
+        // アクティブなペインを前/次のタブへ移動: Alt+Shift+i / Alt+Shift+o（隣にタブがなければ新しく作る）
+        bind "Alt I" { BreakPaneLeft; }
+        bind "Alt O" { BreakPaneRight; }
     }
 
     tmux {
@@ -69,6 +77,12 @@ keybinds {
         bind "Left" { MoveFocus "Left"; SwitchToMode "Normal"; }
         bind "Down" { MoveFocus "Down"; SwitchToMode "Normal"; }
         bind "o" { FocusNextPane; SwitchToMode "Normal"; }
+        // アクティブなペインを前後のペインと入れ替え: prefix + { / }（tmux の swap-pane 相当）
+        bind "{" { MovePaneBackwards; SwitchToMode "Normal"; }
+        bind "}" { MovePane; SwitchToMode "Normal"; }
+        // アクティブなペインを前/次のタブへ移動: prefix + < / >
+        bind "<" { BreakPaneLeft; SwitchToMode "Normal"; }
+        bind ">" { BreakPaneRight; SwitchToMode "Normal"; }
         bind "Up" { MoveFocus "Up"; SwitchToMode "Normal"; }
         // タブ選択 (fzf): prefix + k (tmux の prefix+k 相当)
         bind "k" {
