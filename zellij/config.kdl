@@ -30,6 +30,8 @@ keybinds {
         bind "Alt J" { MovePane "Down"; }
         bind "Alt K" { MovePane "Up"; }
         bind "Alt L" { MovePane "Right"; }
+        // アクティブなペインの全画面表示トグル: Alt+z（prefix + z と同じ。どのペインでも使える）
+        bind "Alt z" { ToggleFocusFullscreen; }
         // タブ間移動: Alt+i / Alt+o（デフォルトのタブ位置移動 MoveTab を上書き）
         bind "Alt i" { GoToPreviousTab; }
         bind "Alt o" { GoToNextTab; }
